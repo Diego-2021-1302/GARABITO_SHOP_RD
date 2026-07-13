@@ -35,8 +35,10 @@ WORKDIR /var/www/html
 # 8. Copiar archivos del proyecto
 COPY . .
 
-# 9. Instalar dependencias de PHP
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+# 9. Instalar dependencias de PHP con optimización de memoria y red
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_MEMORY_LIMIT=-1
+RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts --no-progress
 
 # 10. Configurar Apache para usar el puerto dinámico de Render ($PORT)
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
