@@ -33,3 +33,13 @@ export const useCreateInventoryMovement = () => {
     },
   });
 };
+
+export const useKardex = (params?: any) => {
+  return useQuery({
+    queryKey: ['admin', 'inventory-kardex', params],
+    queryFn: async () => {
+      const { data } = await InventoryService.getKardex(params);
+      return data;
+    },
+  });
+};

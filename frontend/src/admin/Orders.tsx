@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { OrderService } from '../api';
-import { Order } from '../types';
+import type { Order } from '../types';
 
 export const AdminOrders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);

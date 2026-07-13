@@ -97,7 +97,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                  navigate('/login');
                  return;
                }
-               addItem({ ...product, quantity: 1 });
+               addItem(product, 1);
                addNotification('success', `${product.name} añadido al carrito`);
              }}
            >

@@ -139,7 +139,7 @@ const AdminWarehouses: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         warehouse={editingWarehouse}
         onSubmit={handleSubmit}
-        isLoading={createWarehouse.isLoading || updateWarehouse.isLoading}
+        isLoading={createWarehouse.isPending || updateWarehouse.isPending}
       />
     </div>
   );

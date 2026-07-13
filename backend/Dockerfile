@@ -41,8 +41,11 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev
 # 10. Permisos correctos para Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# 11. Script de inicio para ejecutar migraciones en cada despliegue
-RUN chmod +x render-build.sh
+# 11. Script de inicio
+RUN chmod +x start.sh
 
 # Render usa la variable $PORT automáticamente
 EXPOSE 80
+
+# Comando para arrancar el contenedor
+CMD ["./start.sh"]

@@ -35,7 +35,7 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ destination, driverLocation }
       mapContainerStyle={{ width: '100%', height: '100%' }}
       center={driverLocation || destination}
       zoom={14}
-      onLoad={m => mapRef.current = m}
+      onLoad={m => { mapRef.current = m; }}
       options={{
         disableDefaultUI: true,
         styles: [

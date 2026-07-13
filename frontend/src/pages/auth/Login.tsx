@@ -99,7 +99,7 @@ const Login: React.FC = () => {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between ml-1">
                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Contraseña</label>
-                <Link to="/forgot-password" size="sm" className="text-[10px] font-black uppercase tracking-widest text-brand-primary hover:text-white transition-colors">
+                <Link to="/forgot-password" className="text-[10px] font-black uppercase tracking-widest text-brand-primary hover:text-white transition-colors">
                   ¿Olvidaste?
                 </Link>
               </div>

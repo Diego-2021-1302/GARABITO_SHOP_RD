@@ -6,9 +6,10 @@ interface User {
   id: number;
   name: string;
   email: string;
-  role: 'admin' | 'customer' | 'driver' | 'vendor';
+  role: 'admin' | 'customer' | 'driver' | 'vendor' | 'staff';
   avatar?: string;
   permissions?: string[];
+  phone?: string;
 }
 
 interface AuthState {

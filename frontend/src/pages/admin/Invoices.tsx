@@ -10,6 +10,7 @@ import {
   Mail,
   MessageSquare
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import SEO from '../../components/common/SEO';
 import { 
   useInvoices, 
@@ -20,6 +21,7 @@ import {
 } from '../../hooks/useInvoices';
 
 const AdminInvoices: React.FC = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const { data: invoicesData, isLoading } = useInvoices({ search: searchTerm });
   const { data: stats } = useInvoiceStats();

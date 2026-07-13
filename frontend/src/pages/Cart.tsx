@@ -118,13 +118,13 @@ const Cart: React.FC = () => {
                   className="bg-[#0B0F1A] border border-white/5 p-6 rounded-[2rem] flex gap-6 group hover:border-white/10 transition-all shadow-xl"
                 >
                   <div className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-[#020617] rounded-2xl border border-white/5 p-4 flex items-center justify-center">
-                    <img src={resolveAssetUrl(item.images?.[0] || item.image_url)} alt={item.name} className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                    <img src={resolveAssetUrl(item.images?.[0])} alt={item.name} className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                   </div>
                   
                   <div className="flex-1 flex flex-col justify-between">
                     <div className="flex justify-between items-start">
                       <div>
-                        <span className="text-[9px] font-black text-brand-primary uppercase tracking-[0.2em]">{item.category?.name}</span>
+                        <span className="text-[9px] font-black text-brand-primary uppercase tracking-[0.2em]">{item.category}</span>
                         <h3 className="text-lg font-black leading-tight uppercase tracking-tight mt-1">{item.name}</h3>
                       </div>
                       <button 
@@ -142,7 +142,7 @@ const Cart: React.FC = () => {
                         <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="p-2.5 hover:bg-white/10 rounded-xl transition-all"><Plus className="w-3 h-3" /></button>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-black tracking-tighter">RD$ {(item.quantity * (item.discount_price || item.price)).toLocaleString()}</p>
+                        <p className="text-2xl font-black tracking-tighter">RD$ {(item.quantity * (item.discountPrice || item.price)).toLocaleString()}</p>
                       </div>
                     </div>
                   </div>

@@ -106,7 +106,7 @@ const MapPickerInline: React.FC<MapPickerProps> = ({ value, onChange, onResolvin
         mapContainerStyle={{ width: '100%', height: '100%' }}
         defaultCenter={{ lat: value.lat, lng: value.lng }}
         defaultZoom={16}
-        onLoad={m => mapRef.current = m}
+        onLoad={m => { mapRef.current = m; }}
         onIdle={onIdle}
         options={{
           disableDefaultUI: true, gestureHandling: 'greedy',

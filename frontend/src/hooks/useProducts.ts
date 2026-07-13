@@ -4,9 +4,11 @@ import type { Product } from '../types/product';
 
 interface ProductFilters {
   category?: string;
+  category_id?: string | number;
   search?: string;
   sort?: string;
   brand?: string | string[];
+  brand_id?: string | number;
   minPrice?: number;
   maxPrice?: number;
   page?: number;

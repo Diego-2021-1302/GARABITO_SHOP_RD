@@ -16,6 +16,7 @@ export const MOCK_PRODUCTS: Product[] = [
     isFeatured: true,
     isNew: true,
     sku: 'IP15PM-BLK',
+    status: 'active',
     specifications: { 'Procesador': 'A17 Pro', 'Pantalla': '6.7"', 'Cámara': '48MP' }
   },
   {
@@ -30,7 +31,8 @@ export const MOCK_PRODUCTS: Product[] = [
     images: ['https://images.unsplash.com/photo-1611186871348-b1ec696e52c9?q=80&w=1000&auto=format&fit=crop'],
     stock: 8,
     isFeatured: true,
-    sku: 'MBA-M2-SG'
+    sku: 'MBA-M2-SG',
+    status: 'active'
   },
   {
     id: '3',
@@ -46,7 +48,8 @@ export const MOCK_PRODUCTS: Product[] = [
     stock: 25,
     isFeatured: true,
     isNew: false,
-    sku: 'SNY-XM5'
+    sku: 'SNY-XM5',
+    status: 'active'
   },
   {
     id: '4',
@@ -60,7 +63,8 @@ export const MOCK_PRODUCTS: Product[] = [
     images: ['https://images.unsplash.com/photo-1616763355548-1b606f439f86?q=80&w=1000&auto=format&fit=crop'],
     stock: 12,
     isNew: true,
-    sku: 'SAM-G7-32'
+    sku: 'SAM-G7-32',
+    status: 'active'
   },
   {
     id: '5',
@@ -74,7 +78,8 @@ export const MOCK_PRODUCTS: Product[] = [
     images: ['https://images.unsplash.com/photo-1618384881928-dfcc80aa4acb?q=80&w=1000&auto=format&fit=crop'],
     stock: 20,
     isFeatured: true,
-    sku: 'KCR-Q1'
+    sku: 'KCR-Q1',
+    status: 'active'
   },
   {
     id: '6',
@@ -88,7 +93,8 @@ export const MOCK_PRODUCTS: Product[] = [
     images: ['https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?q=80&w=1000&auto=format&fit=crop'],
     stock: 50,
     isNew: true,
-    sku: 'LOG-MX3S'
+    sku: 'LOG-MX3S',
+    status: 'active'
   },
   {
     id: '7',
@@ -102,7 +108,8 @@ export const MOCK_PRODUCTS: Product[] = [
     images: ['https://images.unsplash.com/photo-1434493907317-a46b5bc78344?q=80&w=1000&auto=format&fit=crop'],
     stock: 30,
     isFeatured: true,
-    sku: 'AW9-GPS-45'
+    sku: 'AW9-GPS-45',
+    status: 'active'
   },
   {
     id: '8',
@@ -116,6 +123,7 @@ export const MOCK_PRODUCTS: Product[] = [
     images: ['https://images.unsplash.com/photo-1508614589041-895b88991e3e?q=80&w=1000&auto=format&fit=crop'],
     stock: 5,
     isNew: true,
-    sku: 'DJI-M4P'
+    sku: 'DJI-M4P',
+    status: 'active'
   }
 ];

@@ -10,10 +10,10 @@ const CouponService = {
   create: (data: any) =>
     api.post('/admin/coupons', data),
 
-  update: (id: number, data: any) =>
+  update: (id: number | string, data: any) =>
     api.put(`/admin/coupons/${id}`, data),
 
-  delete: (id: number) =>
+  delete: (id: number | string) =>
     api.delete(`/admin/coupons/${id}`),
 };
 

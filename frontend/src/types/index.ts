@@ -4,9 +4,10 @@ export interface User {
   name: string;
   email: string;
   phone: string;
-  role: 'customer' | 'admin' | 'vendor';
+  role: 'customer' | 'admin' | 'vendor' | 'driver' | 'staff';
   is_active: boolean;
   email_verified_at?: string;
+  permissions?: string[];
   created_at: string;
   updated_at: string;
 }
@@ -46,6 +47,7 @@ export interface Product {
   isFeatured?: boolean;
   is_new?: boolean;
   isNew?: boolean;
+  status?: string;
   images?: ProductImage[];
   variants?: ProductVariant[];
   reviews?: Review[];
