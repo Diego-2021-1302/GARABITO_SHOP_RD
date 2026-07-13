@@ -591,7 +591,7 @@ const AdminSettings: React.FC = () => {
                 </motion.div>
               )}
             </AnimatePresence>
-          </form>
+          </div>
         </main>
       </div>
     </div>
