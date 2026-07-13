@@ -90,6 +90,8 @@ const AdminUsers: React.FC = () => {
 
     setFormData(prev => ({ ...prev, role, permissions }));
   };
+
+  const handleOpenModal = (user: any = null) => {
     if (user) {
       setSelectedUser(user);
       setFormData({
