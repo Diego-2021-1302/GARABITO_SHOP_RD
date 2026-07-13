@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans text-brand-secondary bg-white dark:bg-brand-dark dark:text-white transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-poppins font-bold;
+  }
+
+  /* Estilos globales para Select y Option para asegurar compatibilidad con modo oscuro */
+  select {
+    @apply bg-white dark:bg-[#0B0F1A] text-slate-900 dark:text-white border-slate-200 dark:border-white/10 transition-colors;
+  }
+
+  option {
+    @apply bg-white dark:bg-[#0B0F1A] text-slate-900 dark:text-white;
+  }
+
+  /* Quitar el estilo azul por defecto en iOS/Android para campos de formulario */
+  input, select, textarea {
+    @apply focus:ring-brand-primary/20 outline-none;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-brand-primary text-white rounded-premium font-semibold hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-brand-secondary text-white rounded-premium font-semibold hover:bg-gray-800 transition-all active:scale-95 dark:bg-gray-700 dark:hover:bg-gray-600;
+  }
+
+  .card-premium {
+    @apply bg-white dark:bg-gray-800 rounded-premium shadow-premium border border-gray-100 dark:border-gray-700 overflow-hidden transition-all hover:shadow-lg;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Premium Utilities */
+  .glass {
+    @apply backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.3)];
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-primary via-blue-400 to-brand-primary;
+    background-size: 200% auto;
+    animation: shimmer 2.5s infinite linear;
+  }
+
+  .shimmer-btn {
+    @apply relative overflow-hidden;
+  }
+
+  .shimmer-btn::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent;
+    transform: skewX(-20deg);
+    animation: shimmer 2.5s infinite linear;
+  }
+
+  .noise-bg {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.02;
+    pointer-events: none;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-700 rounded-full hover:bg-gray-400 dark:hover:bg-gray-600;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-slate-200 dark:bg-white/10 rounded-full hover:bg-slate-300 dark:hover:bg-white/20;
+}

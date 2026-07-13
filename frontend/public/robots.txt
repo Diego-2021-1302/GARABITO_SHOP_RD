@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cuenta/
+Disallow: /login
+Disallow: /registro
+
+Sitemap: https://garabitoshop.com.do/sitemap.xml

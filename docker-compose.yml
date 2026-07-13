@@ -1,0 +1,76 @@
+services:
+  # Database
+  db:
+    image: postgres:16-alpine
+    container_name: garabito_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-garabito_shop}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - garabito_network
+
+  # Cache & Queues
+  redis:
+    image: redis:7-alpine
+    container_name: garabito_redis
+    restart: always
+    networks:
+      - garabito_network
+
+  # Backend (API)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: garabito_backend
+    restart: always
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+    volumes:
+      - ./backend:/var/www
+    depends_on:
+      - db
+      - redis
+    networks:
+      - garabito_network
+
+  # Queue Worker
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: garabito_worker
+    restart: always
+    command: php artisan queue:work --tries=3 --timeout=90
+    depends_on:
+      - redis
+    networks:
+      - garabito_network
+
+  # Nginx (Entry Point)
+  nginx:
+    image: nginx:alpine
+    container_name: garabito_nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./backend:/var/www
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - backend
+    networks:
+      - garabito_network
+
+networks:
+  garabito_network:
+    driver: bridge
+
+volumes:
+  pgdata:
