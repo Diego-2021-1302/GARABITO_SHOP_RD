@@ -111,13 +111,13 @@ const AdminSettings: React.FC = () => {
   };
 
   const tabs = [
-    { id: 'general', label: 'General', icon: <Globe className="w-4 h-4" />, desc: 'Identidad de la tienda' },
-    { id: 'inventory', label: 'Inventario', icon: <Package className="w-4 h-4" />, desc: 'Stock y disponibilidad' },
-    { id: 'payments', label: 'Pagos', icon: <CreditCard className="w-4 h-4" />, desc: 'Pasarelas de pago' },
-    { id: 'shipping', label: 'Envíos', icon: <Truck className="w-4 h-4" />, desc: 'Zonas y tarifas' },
-    { id: 'notifications', label: 'Alertas', icon: <Bell className="w-4 h-4" />, desc: 'Notificaciones sistema' },
-    { id: 'email', label: 'E-mail', icon: <AtSign className="w-4 h-4" />, desc: 'Configuración de correo' },
-    { id: 'security', label: 'Seguridad', icon: <Lock className="w-4 h-4" />, desc: 'Acceso y sesiones' },
+    { id: 'general', label: 'General', icon: Globe, desc: 'Identidad de la tienda' },
+    { id: 'inventory', label: 'Inventario', icon: Package, desc: 'Stock y disponibilidad' },
+    { id: 'payments', label: 'Pagos', icon: CreditCard, desc: 'Pasarelas de pago' },
+    { id: 'shipping', label: 'Envíos', icon: Truck, desc: 'Zonas y tarifas' },
+    { id: 'notifications', label: 'Alertas', icon: Bell, desc: 'Notificaciones sistema' },
+    { id: 'email', label: 'E-mail', icon: AtSign, desc: 'Configuración de correo' },
+    { id: 'security', label: 'Seguridad', icon: Lock, desc: 'Acceso y sesiones' },
   ];
 
   if (isLoading) {
@@ -182,7 +182,7 @@ const AdminSettings: React.FC = () => {
               }`}
             >
               <div className={`shrink-0 p-2 rounded-lg transition-colors ${activeTab === tab.id ? 'bg-brand-primary/10' : 'bg-slate-100 dark:bg-white/5'}`}>
-                {React.cloneElement(tab.icon as React.ReactElement, { className: 'w-4 h-4' })}
+                <tab.icon className="w-4 h-4" />
               </div>
               <div className="text-left">
                 <p className="text-[13px] font-bold leading-none">{tab.label}</p>
@@ -213,10 +213,22 @@ const AdminSettings: React.FC = () => {
                         Identidad de Marca
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-1.5"><label className={labelClasses}>Nombre Comercial</label><input {...register('general.storeName', { required: true })} className={inputClasses} /></div>
-                        <div className="space-y-1.5"><label className={labelClasses}>Slogan</label><input {...register('general.slogan')} className={inputClasses} /></div>
-                        <div className="space-y-1.5"><label className={labelClasses}>Email Contacto</label><input {...register('general.contactEmail')} className={inputClasses} /></div>
-                        <div className="space-y-1.5"><label className={labelClasses}>WhatsApp</label><input {...register('general.supportPhone')} className={inputClasses} /></div>
+                        <div className="space-y-1.5">
+                          <label className={labelClasses}>Nombre Comercial</label>
+                          <input {...register('general.storeName', { required: true })} className={inputClasses} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className={labelClasses}>Slogan</label>
+                          <input {...register('general.slogan')} className={inputClasses} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className={labelClasses}>Email Contacto</label>
+                          <input {...register('general.contactEmail')} className={inputClasses} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className={labelClasses}>WhatsApp</label>
+                          <input {...register('general.supportPhone')} className={inputClasses} />
+                        </div>
                       </div>
                     </div>
 
@@ -531,7 +543,10 @@ const AdminSettings: React.FC = () => {
                             <input {...register('email.smtpHost')} className={`${inputClasses} pl-11`} />
                           </div>
                         </div>
-                        <div className="space-y-1.5"><label className={labelClasses}>Puerto</label><input type="number" {...register('email.smtpPort', { valueAsNumber: true })} className={inputClasses} /></div>
+                        <div className="space-y-1.5">
+                          <label className={labelClasses}>Puerto</label>
+                          <input type="number" {...register('email.smtpPort', { valueAsNumber: true })} className={inputClasses} />
+                        </div>
                       </div>
                     )}
                   </div>
