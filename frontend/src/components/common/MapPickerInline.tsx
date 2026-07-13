@@ -104,8 +104,8 @@ const MapPickerInline: React.FC<MapPickerProps> = ({ value, onChange, onResolvin
     <div className="relative w-full h-full bg-[#020617] overflow-hidden">
       <GoogleMap
         mapContainerStyle={{ width: '100%', height: '100%' }}
-        defaultCenter={{ lat: value.lat, lng: value.lng }}
-        defaultZoom={16}
+        center={{ lat: value.lat, lng: value.lng }}
+        zoom={16}
         onLoad={m => { mapRef.current = m; }}
         onIdle={onIdle}
         options={{
