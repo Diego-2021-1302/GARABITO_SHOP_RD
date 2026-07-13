@@ -211,15 +211,23 @@ const AdminSettings: React.FC = () => {
         <main className="flex-1 bg-white dark:bg-[#0B0F1A] border border-slate-200/50 dark:border-white/5 rounded-[1.5rem] p-6 md:p-10 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-brand-primary/20 to-transparent" />
           
-          <form id="settings-form" onSubmit={handleSubmit(onSubmit)}>
+          <form id="settings-form" onSubmit={handleSubmit(onSubmit)} className="h-full">
             <AnimatePresence mode="wait">
-              {activeTab === 'general' && (
-                <motion.div key="general" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
-                  <div>
-                    <h2 className="text-base font-bold dark:text-white flex items-center gap-2 mb-6">
-                      <div className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
-                      Identidad de Marca
-                    </h2>
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-8"
+              >
+                {activeTab === 'general' && (
+                  <div className="space-y-8">
+                    <div>
+                      <h2 className="text-base font-bold dark:text-white flex items-center gap-2 mb-6">
+                        <div className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
+                        Identidad de Marca
+                      </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-1.5"><label className={labelClasses}>Nombre Comercial</label><input {...register('general.storeName', { required: true })} className={inputClasses} /></div>
                       <div className="space-y-1.5"><label className={labelClasses}>Slogan</label><input {...register('general.slogan')} className={inputClasses} /></div>
@@ -588,10 +596,9 @@ const AdminSettings: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </motion.div>
-              )}
+              </motion.div>
             </AnimatePresence>
-          </div>
+          </form>
         </main>
       </div>
     </div>
