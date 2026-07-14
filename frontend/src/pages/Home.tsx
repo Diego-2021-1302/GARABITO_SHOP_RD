@@ -249,6 +249,20 @@ const GuestBanner = () => {
                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                      </button>
                    </div>
+
+                   {activeTab === 'register' && (
+                     <div className="relative group">
+                       <Lock size={14} className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-brand-primary transition-colors" />
+                       <input
+                         type={showPassword ? 'text' : 'password'}
+                         required
+                         value={confirmPassword}
+                         onChange={(e) => setConfirmPassword(e.target.value)}
+                         className="w-full px-12 py-4 bg-black/40 border border-white/5 rounded-2xl text-[11px] font-bold text-white placeholder:text-slate-600 outline-none focus:border-brand-primary/50 transition-all"
+                         placeholder="Confirmar Contraseña"
+                       />
+                     </div>
+                   )}
                  </motion.div>
                </AnimatePresence>
 
