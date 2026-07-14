@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Star, ShoppingCart, Heart, Zap } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Star, ShoppingCart, Heart, Zap, Package } from 'lucide-react';
 import type { Product } from '../../types/product';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -17,12 +17,14 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }) => {
   const [isHovered, setIsHovered] = useState(false);
   const { isAuthenticated } = useAuthStore();
-  const addItem = useCartStore((state) => state.addItem);
+  const { items: cartItems, addItem } = useCartStore();
   const { toggleItem, isInWishlist } = useWishlistStore();
   const addNotification = useNotificationStore((state) => state.addNotification);
   const navigate = useNavigate();
 
   const isWishlisted = isInWishlist(product.id);
+  const cartItem = cartItems.find(item => item.id === product.id);
+  const quantityInCart = cartItem?.quantity || 0;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -55,6 +57,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
       onClick={() => navigate(`/producto/${product.id}`)}
       className="group relative flex flex-col bg-[#0B0F1A]/60 backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border border-white/5 transition-all duration-300 hover:border-brand-primary/40 h-full cursor-pointer shadow-lg"
     >
+      {/* Cart Quantity Indicator Badge */}
+      <AnimatePresence>
+        {quantityInCart > 0 && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            className="absolute top-2 right-12 z-30 bg-white text-brand-primary text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full shadow-lg ring-2 ring-brand-primary/20"
+          >
+            {quantityInCart}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Image Container - Square & Compact */}
       <div className="relative aspect-square w-full bg-gradient-to-b from-white/[0.02] to-transparent p-3 sm:p-6">
         <div className="w-full h-full flex items-center justify-center relative z-10">
@@ -66,17 +82,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
           />
         </div>
 
-        {/* Badges & Actions - Compacted for mobile */}
-        <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20">
+        {/* Badges & Actions */}
+        <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 flex flex-col gap-2">
           {product.isNew && (
-            <div className="bg-brand-primary text-white text-[7px] sm:text-[9px] font-black uppercase px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg shadow-lg shadow-brand-primary/20">
+            <div className="bg-brand-primary text-white text-[7px] sm:text-[9px] font-black uppercase px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg shadow-lg">
               <Zap size={8} className="inline mr-1 fill-current" />
               Nuevo
             </div>
           )}
         </div>
 
-        {/* Floating Heart - Only for Authenticated Users */}
         {isAuthenticated && (
           <button
             onClick={handleWishlist}
@@ -89,7 +104,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
         )}
       </div>
 
-      {/* Info Section - Tighter Spacing */}
+      {/* Info Section */}
       <div className="flex flex-col flex-1 p-3 sm:p-6 sm:pt-2">
         <div className="flex items-center justify-between mb-1.5 sm:mb-3">
           <span className="text-[7px] sm:text-[10px] font-black tracking-widest uppercase text-brand-primary truncate max-w-[60%]">
@@ -119,14 +134,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={handleAddToCart}
-              className="w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-brand-primary text-white flex items-center justify-center shadow-lg shadow-brand-primary/20 active:bg-brand-primary/80"
+              className={`w-8 h-8 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg transition-all ${
+                quantityInCart > 0
+                ? 'bg-emerald-500 text-white shadow-emerald-500/20'
+                : 'bg-brand-primary text-white shadow-brand-primary/20'
+              }`}
             >
               <ShoppingCart size={14} className="sm:w-5 sm:h-5" />
             </motion.button>
           )}
         </div>
 
-        {/* Stock Status - Minimalist for Mobile */}
+        {/* Stock Status */}
         <div className="mt-3 sm:mt-5 pt-2 sm:pt-4 border-t border-white/5 flex items-center justify-between">
            <div className="flex items-center gap-1.5">
               <div className={`w-1.5 h-1.5 rounded-full ${product.stock > 0 ? 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]' : 'bg-red-500'}`} />
@@ -135,10 +154,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
               </span>
            </div>
 
-           {product.stock > 0 && product.stock <= 3 && (
-             <span className="text-[6px] sm:text-[8px] font-black text-orange-500 uppercase px-1.5 py-0.5 bg-orange-500/10 rounded">
-               {product.stock}U
-             </span>
+           {quantityInCart > 0 && (
+             <div className="flex items-center gap-1 text-emerald-400">
+               <Package size={10} />
+               <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-tighter">En carrito</span>
+             </div>
            )}
         </div>
       </div>

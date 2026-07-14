@@ -173,7 +173,7 @@ const GuestBanner = () => {
                 {activeTab === 'login' ? 'Bienvenido' : 'Únete Ahora'}
               </h2>
               <p className="text-[10px] text-brand-primary font-bold uppercase tracking-[0.4em] mt-3">
-                Garabito Shop Elite
+                Garabito Shop RD
               </p>
             </div>
 
@@ -327,46 +327,32 @@ const Home: React.FC = () => {
           <GuestBanner />
         </>
       ) : (
-        <div className="relative pt-20 pb-24 overflow-hidden">
+        <div className="relative pt-20 pb-20 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 relative z-10">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-12">
+            <div className="flex flex-col gap-12">
               <motion.div
-                initial={{ opacity: 0, x: -30 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex flex-col gap-6 max-w-2xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex flex-col gap-6 max-w-3xl"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
-                    <Compass size={24} className="text-brand-primary animate-pulse" />
+                  <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
+                    <Sparkles size={20} className="text-brand-primary" />
                   </div>
                   <div>
-                    <p className="text-[10px] font-black tracking-[0.4em] uppercase text-brand-primary leading-none mb-1">Centro de Control</p>
-                    <h2 className="text-xl font-bold text-white/80">Hola, {user?.name.split(' ')[0]}</h2>
+                    <h2 className="text-lg font-bold text-white/90">¡Qué bueno verte de nuevo, {user?.name.split(' ')[0]}!</h2>
+                    <p className="text-[10px] font-black tracking-[0.2em] uppercase text-brand-primary/60 leading-none mt-1">Socio Garabito Shop</p>
                   </div>
                 </div>
-                <h1 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-[0.85]">
-                  Hardware de <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-blue-400 to-indigo-500">Vanguardia.</span>
-                </h1>
-                <p className="text-slate-400 text-sm md:text-lg font-medium leading-relaxed max-w-lg">
-                  Bienvenido a la selección más exclusiva de tecnología. Rendimiento puro para profesionales y entusiastas.
-                </p>
-              </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="hidden lg:block relative group"
-              >
-                <div className="absolute -inset-10 bg-brand-primary/20 rounded-full blur-[100px] group-hover:bg-brand-primary/30 transition-all duration-700" />
-                <div className="relative w-80 h-80 bg-gradient-to-br from-brand-primary/10 to-transparent rounded-[3rem] border border-white/10 backdrop-blur-3xl p-10 flex flex-col items-center justify-center text-center">
-                   <div className="w-24 h-24 bg-brand-primary/20 rounded-full flex items-center justify-center mb-6 border border-brand-primary/30">
-                      <ShoppingBag size={40} className="text-brand-primary" />
-                   </div>
-                   <h3 className="text-xl font-black text-white uppercase tracking-tight mb-2">Pedidos Elite</h3>
-                   <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest">Rastreo en tiempo real activo</p>
-                   <button className="mt-8 px-8 py-3 bg-white/5 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-primary hover:border-brand-primary transition-all">Ver Mis Compras</button>
-                </div>
+                <h1 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.9]">
+                  Tu próximo <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-blue-400 to-indigo-500">Hardware.</span>
+                </h1>
+
+                <p className="text-slate-400 text-sm md:text-xl font-medium leading-relaxed max-w-2xl">
+                  Explora nuestra selección premium preparada para llevar tus proyectos al siguiente nivel. Tecnología de punta, directo a tu puerta.
+                </p>
               </motion.div>
             </div>
           </div>

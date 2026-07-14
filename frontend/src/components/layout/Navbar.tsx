@@ -85,25 +85,23 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                {location.pathname !== '/' && (
-                  <Link
-                    to="/carrito"
-                    className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-gray-400 hover:text-white hover:bg-white/[0.08] transition-all relative group"
-                  >
-                    <ShoppingCart className="w-5 h-5" />
-                    <AnimatePresence>
-                      {totalItems > 0 && (
-                        <motion.span
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          className="absolute -top-1 -right-1 bg-brand-primary text-white text-[8px] font-black min-w-[18px] h-[18px] rounded-full flex items-center justify-center ring-2 ring-[#020617] shadow-lg shadow-brand-primary/20"
-                        >
-                          {totalItems}
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </Link>
-                )}
+                <Link
+                  to="/carrito"
+                  className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-gray-400 hover:text-white hover:bg-white/[0.08] transition-all relative group"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  <AnimatePresence>
+                    {totalItems > 0 && (
+                      <motion.span
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 bg-brand-primary text-white text-[8px] font-black min-w-[18px] h-[18px] rounded-full flex items-center justify-center ring-2 ring-[#020617] shadow-lg shadow-brand-primary/20"
+                      >
+                        {totalItems}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </Link>
 
                 <Link 
                   to="/cuenta/favoritos" 
