@@ -9,8 +9,12 @@ chmod -R 777 storage bootstrap/cache
 echo "📂 Ejecutando migraciones..."
 php artisan migrate --force
 
+# 2.1 Opcional: Sembrar base de datos si está vacía (puedes comentar esto si no lo deseas)
+# php artisan db:seed --force
+
 # 3. Limpiar y generar cache de configuración
 echo "🧹 Optimizando cache..."
+php artisan config:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
