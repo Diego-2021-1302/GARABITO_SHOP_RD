@@ -17,15 +17,12 @@ return [
         'http://127.0.0.1:5173',
         'http://localhost:5178',
         'http://127.0.0.1:5178',
-        'http://localhost',
-        'http://127.0.0.1',
     ],
 
     'allowed_origins_patterns' => [
-        // Permitir cualquier IP de red local con el puerto de Vite
+        '#^https://.*\.vercel\.app$#',
         '#^http://192\.168\.\d+\.\d+:5178$#',
         '#^http://10\.\d+\.\d+\.\d+:5178$#',
-        '#^http://25\.\d+\.\d+\.\d+:5178$#',
     ],
 
     'allowed_headers' => ['*'],
