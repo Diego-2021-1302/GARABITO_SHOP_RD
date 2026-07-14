@@ -141,25 +141,28 @@ const AdminInventory: React.FC = () => {
             { id: 'stock', label: 'Existencias Actuales', icon: Boxes },
             { id: 'movements', label: 'Historial de Movimientos', icon: History },
             { id: 'reorder', label: 'Sugerencias de Pedido', icon: ShoppingCart, badge: lowStockProducts.length }
-          ].map((tab) => (
-            <button 
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex-1 min-w-[150px] flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                  activeTab === tab.id 
-                    ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' 
-                    : 'text-slate-400 hover:text-slate-600 dark:hover:text-white'
-                }`}
-            >
-                <tab.icon className="w-4 h-4" /> 
-                {tab.label}
-                {tab.badge ? (
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-[9px] ${activeTab === tab.id ? 'bg-white text-brand-primary' : 'bg-red-500 text-white'}`}>
-                    {tab.badge}
-                  </span>
-                ) : null}
-            </button>
-          ))}
+            ].map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`flex-1 min-w-[150px] flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                      activeTab === tab.id
+                        ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
+                        : 'text-slate-400 hover:text-slate-600 dark:hover:text-white'
+                    }`}
+                >
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                    {tab.badge ? (
+                      <span className={`ml-2 px-2 py-0.5 rounded-full text-[9px] ${activeTab === tab.id ? 'bg-white text-brand-primary' : 'bg-red-500 text-white'}`}>
+                        {tab.badge}
+                      </span>
+                    ) : null}
+                </button>
+              );
+            })}
       </div>
 
       {/* BARRA DE FILTROS DINÁMICA */}

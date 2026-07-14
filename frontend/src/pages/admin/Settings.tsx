@@ -110,7 +110,14 @@ const AdminSettings: React.FC = () => {
     setValue(path, !currentValue, { shouldDirty: true, shouldValidate: true });
   };
 
-  const tabs = [
+  interface TabItem {
+    id: string;
+    label: string;
+    icon: React.ElementType;
+    desc: string;
+  }
+
+  const tabs: TabItem[] = [
     { id: 'general', label: 'General', icon: Globe, desc: 'Identidad de la tienda' },
     { id: 'inventory', label: 'Inventario', icon: Package, desc: 'Stock y disponibilidad' },
     { id: 'payments', label: 'Pagos', icon: CreditCard, desc: 'Pasarelas de pago' },
@@ -182,7 +189,7 @@ const AdminSettings: React.FC = () => {
               }`}
             >
               <div className={`shrink-0 p-2 rounded-lg transition-colors ${activeTab === tab.id ? 'bg-brand-primary/10' : 'bg-slate-100 dark:bg-white/5'}`}>
-                <tab.icon className="w-4 h-4" />
+                {React.createElement(tab.icon, { className: "w-4 h-4" })}
               </div>
               <div className="text-left">
                 <p className="text-[13px] font-bold leading-none">{tab.label}</p>
