@@ -3,20 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\Brand;
+use App\Services\Cloudinary\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
+    protected $cloudinary;
+
+    public function __construct(CloudinaryService $cloudinary)
+    {
+        $this->cloudinary = $cloudinary;
+    }
+
     public function index(Request $request)
     {
         $query = Brand::query();
-
         if ($request->has('all')) {
             return response()->json($query->orderBy('name')->get());
         }
-
         return response()->json($query->orderBy('name')->paginate($request->get('per_page', 20)));
     }
 
@@ -30,15 +36,12 @@ class BrandController extends Controller
         ]);
 
         if ($request->hasFile('logo')) {
-            $path = $request->file('logo')->store('brands', 'public');
-            $validated['logo_url'] = Storage::url($path);
+            $validated['logo_url'] = $this->cloudinary->upload($request->file('logo'), 'brands');
         }
 
         $validated['slug'] = Str::slug($validated['name']);
-
         $brand = Brand::create($validated);
-
-        return response()->json($brand, 211);
+        return response()->json($brand, 201);
     }
 
     public function show(Brand $brand)
@@ -56,11 +59,7 @@ class BrandController extends Controller
         ]);
 
         if ($request->hasFile('logo')) {
-            if ($brand->logo_url) {
-                Storage::disk('public')->delete(str_replace('/storage/', '', $brand->logo_url));
-            }
-            $path = $request->file('logo')->store('brands', 'public');
-            $validated['logo_url'] = Storage::url($path);
+            $validated['logo_url'] = $this->cloudinary->upload($request->file('logo'), 'brands');
         }
 
         if (isset($validated['name'])) {
@@ -68,18 +67,12 @@ class BrandController extends Controller
         }
 
         $brand->update($validated);
-
         return response()->json($brand);
     }
 
     public function destroy(Brand $brand)
     {
-        if ($brand->logo_url) {
-            Storage::disk('public')->delete(str_replace('/storage/', '', $brand->logo_url));
-        }
-
         $brand->delete();
-
         return response()->json(['message' => 'Marca eliminada con éxito']);
     }
 }
