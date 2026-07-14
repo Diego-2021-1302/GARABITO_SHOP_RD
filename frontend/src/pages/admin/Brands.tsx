@@ -17,13 +17,7 @@ import type { Brand } from '../../hooks/useBrands';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-
-// Función para asegurar que la URL de la imagen sea correcta usando rutas relativas
-const getImageUrl = (url?: string) => {
-  if (!url) return null;
-  if (url.startsWith('http')) return url;
-  return url.startsWith('/') ? url : `/${url}`;
-};
+import { getAssetUrl } from '../../utils/asset';
 
 const Brands: React.FC = () => {
   const navigate = useNavigate();
@@ -161,7 +155,7 @@ const Brands: React.FC = () => {
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center overflow-hidden border border-slate-200 dark:border-white/10 shrink-0">
                           {brand.logo_url ? (
-                            <img src={getImageUrl(brand.logo_url) || ''} alt={brand.name} className="w-full h-full object-contain" />
+                            <img src={getAssetUrl(brand.logo_url)} alt={brand.name} className="w-full h-full object-contain" />
                           ) : (
                             <Award className="w-6 h-6 text-slate-400" />
                           )}
@@ -257,7 +251,7 @@ const Brands: React.FC = () => {
                     <div className="w-24 h-24 rounded-3xl bg-slate-50 dark:bg-white/5 border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center relative overflow-hidden group">
                       {(selectedFile || editingBrand?.logo_url) ? (
                         <img 
-                          src={selectedFile ? URL.createObjectURL(selectedFile) : getImageUrl(editingBrand?.logo_url) || ''} 
+                          src={selectedFile ? URL.createObjectURL(selectedFile) : getAssetUrl(editingBrand?.logo_url)}
                           className="w-full h-full object-contain p-2" 
                           alt="Logo" 
                         />

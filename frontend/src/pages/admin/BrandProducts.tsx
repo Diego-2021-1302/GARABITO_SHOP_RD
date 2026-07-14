@@ -17,13 +17,7 @@ import { useBrands } from '../../hooks/useBrands';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import { motion } from 'framer-motion';
 import SEO from '../../components/common/SEO';
-
-// Función para asegurar que la URL de la imagen apunte al backend usando rutas relativas
-const getImageUrl = (url?: string) => {
-  if (!url) return '/placeholder.png';
-  if (url.startsWith('http')) return url;
-  return url.startsWith('/') ? url : `/${url}`;
-};
+import { getAssetUrl } from '../../utils/asset';
 
 const BrandProducts: React.FC = () => {
   const { brandId } = useParams<{ brandId: string }>();
@@ -90,7 +84,7 @@ const BrandProducts: React.FC = () => {
           <div className="flex items-center gap-4">
             {brand?.logo_url && (
               <div className="w-12 h-12 rounded-xl bg-white p-1 border border-slate-200">
-                <img src={getImageUrl(brand.logo_url) || ''} className="w-full h-full object-contain" alt="" />
+                <img src={getAssetUrl(brand.logo_url)} className="w-full h-full object-contain" alt="" />
               </div>
             )}
             <div>
@@ -166,7 +160,7 @@ const BrandProducts: React.FC = () => {
                           <td className="px-8 py-6">
                             <div className="flex items-center gap-4">
                               <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-white/5 overflow-hidden border border-slate-200 dark:border-white/10 shrink-0">
-                                <img src={getImageUrl(product.images?.[0])} alt="" className="w-full h-full object-cover" />
+                                <img src={getAssetUrl(product.images?.[0])} alt="" className="w-full h-full object-cover" />
                               </div>
                               <div>
                                 <p className="font-black text-slate-800 dark:text-white line-clamp-1 leading-tight">{product.name}</p>

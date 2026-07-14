@@ -23,8 +23,12 @@ const BottomNav: React.FC = () => {
     },
   ];
 
-  // Filtramos los items si el usuario no está autenticado
-  const filteredItems = navItems.filter(item => !item.protected || isAuthenticated);
+  // Filtramos los items si el usuario no está autenticado o si estamos en la Home (sin carrito)
+  const filteredItems = navItems.filter(item => {
+    if (item.protected && !isAuthenticated) return false;
+    if (item.path === '/carrito' && location.pathname === '/') return false;
+    return true;
+  });
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-[#020617]/90 backdrop-blur-2xl border-t border-gray-100 dark:border-white/5 px-2 pt-3 pb-[env(safe-area-inset-bottom,1.5rem)] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.2)] z-[100]">

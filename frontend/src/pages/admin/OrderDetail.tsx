@@ -26,6 +26,7 @@ import { useDrivers } from '../../hooks/useShipments';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getAssetUrl } from '../../utils/asset';
 
 const statusStyles: Record<string, string> = {
   'pendiente_pago': 'bg-amber-50 text-amber-600 border-amber-100',
@@ -302,7 +303,7 @@ const AdminOrderDetail: React.FC = () => {
                 <div key={item.id} className="p-6 flex items-center gap-4">
                   <div className="w-20 h-20 bg-slate-100 dark:bg-white/5 rounded-2xl flex-shrink-0 overflow-hidden border border-slate-200/50 dark:border-white/5">
                     <img
-                      src={item.product?.images?.[0]?.image_url ? (item.product.images[0].image_url.includes('/storage/') ? item.product.images[0].image_url : `/storage/${item.product.images[0].image_url}`) : (item.product?.image_url || 'https://via.placeholder.com/150?text=P')}
+                      src={getAssetUrl(item.product?.images?.[0] || item.product?.image_url)}
                       alt={item.product?.name}
                       className="w-full h-full object-cover"
                     />

@@ -85,23 +85,25 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-4">
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <Link 
-                  to="/carrito" 
-                  className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-gray-400 hover:text-white hover:bg-white/[0.08] transition-all relative group"
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  <AnimatePresence>
-                    {totalItems > 0 && (
-                      <motion.span 
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 bg-brand-primary text-white text-[8px] font-black min-w-[18px] h-[18px] rounded-full flex items-center justify-center ring-2 ring-[#020617] shadow-lg shadow-brand-primary/20"
-                      >
-                        {totalItems}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </Link>
+                {location.pathname !== '/' && (
+                  <Link
+                    to="/carrito"
+                    className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-gray-400 hover:text-white hover:bg-white/[0.08] transition-all relative group"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    <AnimatePresence>
+                      {totalItems > 0 && (
+                        <motion.span
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="absolute -top-1 -right-1 bg-brand-primary text-white text-[8px] font-black min-w-[18px] h-[18px] rounded-full flex items-center justify-center ring-2 ring-[#020617] shadow-lg shadow-brand-primary/20"
+                        >
+                          {totalItems}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </Link>
+                )}
 
                 <Link 
                   to="/cuenta/favoritos" 
@@ -136,7 +138,29 @@ const Navbar: React.FC = () => {
                   <ChevronDown className="w-3 h-3 text-gray-500 group-hover:text-brand-primary transition-colors hidden md:block" />
                 </Link>
               </div>
-            ) : null}
+            ) : (
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    const authForm = document.getElementById('auth-form');
+                    if (authForm) authForm.scrollIntoView({ behavior: 'smooth' });
+                    else navigate('/');
+                  }}
+                  className="hidden sm:flex items-center gap-2 px-6 py-2.5 bg-brand-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand-primary/20"
+                >
+                  <User size={14} />
+                  Iniciar Sesión
+                </button>
+                {location.pathname !== '/' && (
+                  <Link
+                    to="/catalogo"
+                    className="p-3 rounded-2xl bg-white/5 border border-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                  </Link>
+                )}
+              </div>
+            )}
             
             <button 
               className="lg:hidden p-3 bg-white/5 rounded-2xl border border-white/5 text-gray-400 active:scale-90 transition-all" 

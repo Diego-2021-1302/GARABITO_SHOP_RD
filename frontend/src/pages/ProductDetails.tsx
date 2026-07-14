@@ -24,6 +24,7 @@ import { useSettings } from '../hooks/useSettings';
 import ProductGrid from '../components/home/ProductGrid';
 import SEO from '../components/common/SEO';
 import { WhatsAppService } from '../services/WhatsAppService';
+import { getAssetUrl } from '../utils/asset';
 
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,15 +39,6 @@ const ProductDetails: React.FC = () => {
   const addItem = useCartStore((state) => state.addItem);
   const { toggleItem, isInWishlist } = useWishlistStore();
   const addNotification = useNotificationStore((state) => state.addNotification);
-
-  const resolveAssetUrl = (path: string | undefined) => {
-    if (!path) return '';
-    if (path.startsWith('blob:')) return path;
-    if (path.startsWith('http') && path.includes('/storage/')) {
-      return path.substring(path.indexOf('/storage/'));
-    }
-    return path;
-  };
 
   const isWishlisted = product ? isInWishlist(product.id) : false;
 
@@ -140,7 +132,7 @@ const ProductDetails: React.FC = () => {
               className="aspect-square bg-[#0B0F1A] rounded-[3rem] border border-white/5 flex items-center justify-center p-12 relative overflow-hidden group"
             >
               <img 
-                src={resolveAssetUrl(product.images[activeImage])}
+                src={getAssetUrl(product.images[activeImage])}
                 alt={product.name} 
                 className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-110"
               />
@@ -163,7 +155,7 @@ const ProductDetails: React.FC = () => {
                     activeImage === idx ? 'border-brand-primary' : 'border-transparent opacity-40 hover:opacity-100'
                   }`}
                 >
-                  <img src={resolveAssetUrl(img)} alt="" className="w-full h-full object-contain" />
+                  <img src={getAssetUrl(img)} alt="" className="w-full h-full object-contain" />
                 </button>
               ))}
             </div>

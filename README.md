@@ -29,7 +29,7 @@ php artisan tinker
 
 App\Models\User::create([
     'name' => 'Admin',
-    'email' => 'diegoesmerlingarabito@hotmail.com',
+    'email' => 'garabitoShopRD@gmail.com',
     'phone' => '8498810114',
     'password' => Hash::make('Garabito'),
     'role' => 'admin',

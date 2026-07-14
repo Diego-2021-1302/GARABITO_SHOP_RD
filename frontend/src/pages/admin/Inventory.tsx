@@ -28,6 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import { useInventoryMovements } from '../../hooks/useInventory';
 import { useProducts } from '../../hooks/useProducts';
 import SEO from '../../components/common/SEO';
+import { getAssetUrl } from '../../utils/asset';
 
 const AdminInventory: React.FC = () => {
   const navigate = useNavigate();
@@ -91,14 +92,6 @@ const AdminInventory: React.FC = () => {
     });
     return groups;
   }, [lowStockProducts]);
-
-  const getImageUrl = (image: any) => {
-    if (!image) return '/placeholder.png';
-    const url = typeof image === 'string' ? image : image.image_url;
-    if (!url) return '/placeholder.png';
-    if (url.startsWith('http')) return url;
-    return url.startsWith('/') ? url : `/${url}`;
-  };
 
   const handlePrintList = () => {
     window.print();
@@ -250,7 +243,7 @@ const AdminInventory: React.FC = () => {
                             <td className="px-8 py-6">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/5 overflow-hidden border border-slate-100 dark:border-white/10 shrink-0">
-                                        <img src={getImageUrl(product.images?.[0])} alt="" className="w-full h-full object-cover" />
+                                        <img src={getAssetUrl(product.images?.[0])} alt="" className="w-full h-full object-cover" />
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="font-black text-slate-800 dark:text-white uppercase tracking-tight">{product.name}</span>
@@ -415,7 +408,7 @@ const AdminInventory: React.FC = () => {
                   <div key={p.id} className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 rounded-[32px] p-6 hover:border-brand-primary/20 transition-all group shadow-sm">
                     <div className="flex gap-4 mb-4">
                       <div className="w-16 h-16 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 overflow-hidden shrink-0">
-                        <img src={getImageUrl(p.images?.[0])} className="w-full h-full object-cover" alt="" />
+                        <img src={getAssetUrl(p.images?.[0])} className="w-full h-full object-cover" alt="" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-black text-slate-800 dark:text-white uppercase truncate tracking-tight">{p.name}</h4>

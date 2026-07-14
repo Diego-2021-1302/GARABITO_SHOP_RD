@@ -30,6 +30,7 @@ import { useProducts } from '../../hooks/useProducts';
 import { useCreatePurchaseInvoice, usePurchaseInvoice, useUpdatePurchaseInvoice } from '../../hooks/usePurchaseInvoices';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import type { Product, Provider } from '../../types';
+import { getAssetUrl } from '../../utils/asset';
 
 interface InvoiceItem {
   id?: number;
@@ -54,16 +55,6 @@ interface PurchaseInvoiceFormData {
   notes: string;
   details: InvoiceItem[];
 }
-
-// Usamos rutas relativas para compatibilidad con acceso desde cualquier IP
-const getImageUrl = (image: any) => {
-  if (!image) return '/placeholder.png';
-  const url = typeof image === 'string' ? image : image.image_url;
-  if (!url) return '/placeholder.png';
-  
-  if (url.startsWith('http')) return url;
-  return url.startsWith('/') ? url : `/${url}`;
-};
 
 const AdminPurchaseInvoiceForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -374,7 +365,7 @@ const AdminPurchaseInvoiceForm: React.FC = () => {
                               {productsData.map((p: Product) => (
                                   <button key={p.id} type="button" onClick={() => handleSelectProduct(p)} className="w-full p-4 text-left hover:bg-brand-primary/5 dark:hover:bg-white/5 border-b border-slate-100 dark:border-white/5 flex items-center gap-4 transition-colors group">
                                       <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-white/10 overflow-hidden border shrink-0 group-hover:scale-105 transition-transform">
-                                          <img src={getImageUrl(p.images?.[0])} className="w-full h-full object-cover" alt="" />
+                                          <img src={getAssetUrl(p.images?.[0])} className="w-full h-full object-cover" alt="" />
                                       </div>
                                       <div className="flex-1 min-w-0">
                                           <p className="font-black text-slate-700 dark:text-white text-sm truncate">{p.name}</p>
@@ -408,7 +399,7 @@ const AdminPurchaseInvoiceForm: React.FC = () => {
               {selectedProduct && (
                 <div className="mt-6 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex items-start gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="w-12 h-12 rounded-xl bg-white p-1 border overflow-hidden shrink-0 shadow-sm">
-                        <img src={getImageUrl(selectedProduct.images?.[0])} className="w-full h-full object-contain" alt="" />
+                        <img src={getAssetUrl(selectedProduct.images?.[0])} className="w-full h-full object-contain" alt="" />
                     </div>
                     <div className="flex-1">
                         <div className="flex justify-between items-start">

@@ -20,10 +20,7 @@ const MainLayout: React.FC = () => {
       </main>
       
       <Footer />
-      
-      {/* Soporte y Comunicación Global */}
-      <ChatWidget />
-      
+
       {/* Mobile Bottom Navigation */}
       <div className="md:hidden">
         <BottomNav />

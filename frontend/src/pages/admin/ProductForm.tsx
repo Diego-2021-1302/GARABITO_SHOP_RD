@@ -32,13 +32,7 @@ import { useCategories } from '../../hooks/useCategories';
 import { useBrands } from '../../hooks/useBrands';
 import type { Brand } from '../../hooks/useBrands';
 import SEO from '../../components/common/SEO';
-
-// Función para asegurar que la URL de la imagen apunte al backend usando rutas relativas
-const getImageUrl = (url?: string) => {
-  if (!url) return null;
-  if (url.startsWith('http')) return url;
-  return url.startsWith('/') ? url : `/${url}`;
-};
+import { getAssetUrl } from '../../utils/asset';
 
 // Función para limpiar valores numéricos y evitar el error NaN
 const parseNumber = (val: any) => {
@@ -275,7 +269,7 @@ const AdminProductForm: React.FC = () => {
               {/* Imágenes existentes en el servidor */}
               {isEdit && product?.images && product.images.map((imgUrl: string, idx: number) => (
                 <div key={`existing-${idx}`} className="aspect-square rounded-[28px] bg-slate-100 relative overflow-hidden group border border-slate-100">
-                  <img src={getImageUrl(imgUrl) || ''} className="w-full h-full object-cover" alt="existing" />
+                  <img src={getAssetUrl(imgUrl)} className="w-full h-full object-cover" alt="existing" />
                 </div>
               ))}
 
