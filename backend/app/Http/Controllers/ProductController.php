@@ -44,18 +44,43 @@ class ProductController extends Controller
                 });
             }
 
-            // Filtro por marca
+            // Filtro por marca (ID o Nombre)
             if ($request->filled('brand_id')) {
                 $query->where('brand_id', $request->brand_id);
             }
 
-            // Búsqueda
+            if ($request->filled('brand')) {
+                $brands = is_array($request->brand) ? $request->brand : explode(',', $request->brand);
+                $query->where(function($q) use ($brands) {
+                    $q->whereIn('brand', $brands)
+                      ->orWhereHas('brandRelation', function($sq) use ($brands) {
+                          $sq->whereIn('name', $brands);
+                      });
+                });
+            }
+
+            // Filtro por rango de precio
+            if ($request->filled('minPrice')) {
+                $query->where('price', '>=', $request->minPrice);
+            }
+            if ($request->filled('maxPrice')) {
+                $query->where('price', '<=', $request->maxPrice);
+            }
+
+            // Búsqueda inteligente (Compatible con Postgres ILIKE)
             if ($request->filled('search')) {
                 $search = $request->search;
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', '%' . $search . '%')
-                      ->orWhere('sku', 'like', '%' . $search . '%')
-                      ->orWhere('id', $search);
+                    $like = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
+                    $q->where('name', $like, '%' . $search . '%')
+                      ->orWhere('sku', $like, '%' . $search . '%')
+                      ->orWhere('barcode', $like, '%' . $search . '%')
+                      ->orWhere('internal_code', $like, '%' . $search . '%');
+
+                    if (is_numeric($search)) {
+                        $q->orWhere('id', $search);
+                    }
                 });
             }
 
@@ -73,7 +98,10 @@ class ProductController extends Controller
             return ProductResource::collection($products);
         } catch (\Exception $e) {
             Log::error("Error en ProductController@index: " . $e->getMessage());
-            return response()->json(['error' => 'Error al cargar productos'], 500);
+            return response()->json([
+                'error' => 'Error al cargar productos',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -115,10 +143,15 @@ class ProductController extends Controller
     public function show(int|string $id)
     {
         try {
-            $product = Product::with(['images', 'variants', 'reviews.user', 'category', 'brandRelation', 'mainProvider'])
-                              ->where('id', $id)
-                              ->orWhere('slug', $id)
-                              ->firstOrFail();
+            $query = Product::with(['images', 'variants', 'reviews.user', 'category', 'brandRelation', 'mainProvider']);
+
+            if (is_numeric($id)) {
+                $query->where('id', $id);
+            } else {
+                $query->where('slug', $id);
+            }
+
+            $product = $query->firstOrFail();
 
             return new ProductResource($product);
         } catch (\Exception $e) {

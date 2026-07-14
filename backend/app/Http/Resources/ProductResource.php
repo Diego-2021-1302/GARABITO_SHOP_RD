@@ -43,7 +43,9 @@ class ProductResource extends JsonResource
             'weight' => $this->weight !== null ? (float) $this->weight : null,
             'averageCost' => $this->average_cost !== null ? (float) $this->average_cost : null,
             'lastCost' => $this->last_cost !== null ? (float) $this->last_cost : null,
-            'lastCostUpdatedAt' => $this->last_cost_updated_at?->toDateTimeString(),
+            'lastCostUpdatedAt' => $this->last_cost_updated_at instanceof \Carbon\Carbon
+                ? $this->last_cost_updated_at->toDateTimeString()
+                : (is_string($this->last_cost_updated_at) ? $this->last_cost_updated_at : null),
             'mainProviderId' => $this->main_provider_id,
             'mainProviderName' => $this->mainProvider ? $this->mainProvider->commercial_name : null,
             'isActive' => (bool) $this->is_active,
