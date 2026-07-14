@@ -18,6 +18,7 @@ import {
 import SEO from '../../components/common/SEO';
 import { useOrderDetail, useUploadPaymentProof } from '../../hooks/useOrders';
 import { useSettings } from '../../hooks/useSettings';
+import { useNotificationStore } from '../../store/useNotificationStore';
 import { getAssetUrl } from '../../utils/asset';
 
 const UserPayment: React.FC = () => {
