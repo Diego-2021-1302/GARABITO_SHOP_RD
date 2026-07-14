@@ -25,6 +25,7 @@ import SEO from '../../components/common/SEO';
 import { useOrderDetail, useCancelOrder, useUploadPaymentProof, useMarkAsDelivered } from '../../hooks/useOrders';
 import { useSettings } from '../../hooks/useSettings';
 import { useNotificationStore } from '../../store/useNotificationStore';
+import { getAssetUrl } from '../../utils/asset';
 
 import TrackingMap from '../../components/common/TrackingMap';
 
@@ -72,23 +73,6 @@ const UserOrderDetail: React.FC = () => {
     return () => clearInterval(interval);
   }, [order?.shipment?.last_location_update]);
 
-  const resolveAssetUrl = (path: any) => {
-    if (!path) return '/logo.png';
-    const finalPath = typeof path === 'object' ? path.image_url : path;
-    if (!finalPath) return '/logo.png';
-
-    if (finalPath.startsWith('blob:') || finalPath.startsWith('data:')) return finalPath;
-
-    let cleanPath = finalPath.replace(/\/+/g, '/');
-
-    if (cleanPath.includes('/storage/')) {
-      cleanPath = cleanPath.substring(cleanPath.indexOf('/storage/'));
-    } else if (!cleanPath.startsWith('http') && !cleanPath.startsWith('/')) {
-      cleanPath = `/storage/${cleanPath}`;
-    }
-
-    return cleanPath;
-  };
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -184,7 +168,7 @@ const UserOrderDetail: React.FC = () => {
           </div>
           {hasInvoice && (
             <a 
-              href={`${import.meta.env.VITE_API_URL}/storage/${order.invoice_pdf_path}`}
+              href={getAssetUrl(order.invoice_pdf_path)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 p-3 bg-slate-900 text-white rounded-2xl hover:scale-105 transition-all shadow-xl shadow-slate-900/20"
@@ -236,7 +220,7 @@ const UserOrderDetail: React.FC = () => {
                         <div className="flex justify-between items-start mb-4">
                           <div className="flex items-center gap-2">
                             {bank.bankLogo && (
-                              <img src={resolveAssetUrl(bank.bankLogo)} alt={bank.bankName} className="w-5 h-5 object-contain" />
+                              <img src={getAssetUrl(bank.bankLogo)} alt={bank.bankName} className="w-5 h-5 object-contain" />
                             )}
                             <span className="text-[10px] font-black text-brand-primary uppercase tracking-widest">{bank.bankName}</span>
                           </div>
@@ -276,7 +260,7 @@ const UserOrderDetail: React.FC = () => {
                       </div>
                    </div>
                    {order.payment_proof && (
-                     <a href={order.payment_proof?.startsWith('http') ? order.payment_proof : `/storage/${order.payment_proof}`} target="_blank" className="text-[10px] font-black text-brand-primary uppercase underline tracking-widest">Ver Archivo</a>
+                     <a href={getAssetUrl(order.payment_proof)} target="_blank" className="text-[10px] font-black text-brand-primary uppercase underline tracking-widest">Ver Archivo</a>
                    )}
                 </div>
               )}
@@ -355,7 +339,7 @@ const UserOrderDetail: React.FC = () => {
                 <div key={item.id} className="p-8 flex items-center gap-6 group hover:bg-slate-50 dark:hover:bg-white/[0.01] transition-colors">
                   <div className="w-24 h-24 rounded-3xl bg-slate-50 dark:bg-white/5 overflow-hidden shrink-0 border border-slate-100 dark:border-white/5 shadow-inner">
                     <img
-                      src={resolveAssetUrl(item.product?.images?.[0] || item.product?.image_url)}
+                      src={getAssetUrl(item.product?.images?.[0] || item.product?.image_url)}
                       alt={item.product?.name}
                       className="w-full h-full object-cover transition-transform group-hover:scale-110"
                     />

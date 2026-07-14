@@ -23,6 +23,7 @@ import { useNotificationStore } from '../../store/useNotificationStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { WhatsAppService } from '../../services/WhatsAppService';
 import SEO from '../../components/common/SEO';
+import { getAssetUrl } from '../../utils/asset';
 
 const statusStyles: Record<string, string> = {
   'pendiente_pago': 'bg-amber-50 text-amber-600 border-amber-100',
@@ -62,20 +63,6 @@ const UserOrders: React.FC = () => {
   const [selectedOrderForPayment, setSelectedOrderForPayment] = useState<any | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const resolveAssetUrl = (path: string | undefined) => {
-    if (!path) return '/logo.png';
-    if (path.startsWith('blob:') || path.startsWith('data:')) return path;
-
-    let cleanPath = path.replace(/\/+/g, '/');
-
-    if (cleanPath.includes('/storage/')) {
-      cleanPath = cleanPath.substring(cleanPath.indexOf('/storage/'));
-    } else if (!cleanPath.startsWith('http') && !cleanPath.startsWith('/')) {
-      cleanPath = `/storage/${cleanPath}`;
-    }
-
-    return cleanPath;
-  };
 
   const handleCopy = (text: string, id: string) => {
     if (!text) return;
@@ -164,7 +151,7 @@ const UserOrders: React.FC = () => {
                 <div className="flex -space-x-3 overflow-hidden">
                   {order.items?.slice(0, 5).map((item: any, i: number) => (
                     <div key={i} className="w-12 h-12 rounded-lg border-2 border-white dark:border-[#0B0F1A] bg-slate-100 overflow-hidden shadow-sm">
-                      <img src={resolveAssetUrl(item.product?.images?.[0]?.image_url || item.product?.image_url)} alt="" className="w-full h-full object-cover" />
+                      <img src={getAssetUrl(item.product?.images?.[0]?.image_url || item.product?.image_url)} alt="" className="w-full h-full object-cover" />
                     </div>
                   ))}
                   {order.items?.length > 5 && (
@@ -259,7 +246,7 @@ const UserOrders: React.FC = () => {
                           <div className="flex justify-between items-center mb-1 relative z-10">
                             <div className="flex items-center gap-2">
                               {bank.bankLogo && (
-                                <img src={resolveAssetUrl(bank.bankLogo)} alt={bank.bankName} className="w-5 h-5 object-contain" />
+                                <img src={getAssetUrl(bank.bankLogo)} alt={bank.bankName} className="w-5 h-5 object-contain" />
                               )}
                               <span className="text-[10px] font-black text-brand-primary uppercase tracking-widest">{bank.bankName}</span>
                             </div>

@@ -31,6 +31,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import SEO from '../../components/common/SEO';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import { useSettings, useUpdateSettings } from '../../hooks/useSettings';
+import { getAssetUrl } from '../../utils/asset';
 import type { StoreSettings } from '../../types/settings';
 
 const AdminSettings: React.FC = () => {
@@ -98,12 +99,7 @@ const AdminSettings: React.FC = () => {
     if (previews[bankId]) return previews[bankId];
     const savedLogo = watch(`general.bankAccounts.${index}.bankLogo`);
     if (!savedLogo) return null;
-    if (savedLogo.startsWith('blob:') || savedLogo.startsWith('data:')) return savedLogo;
-    if (savedLogo.includes('/storage/')) {
-      return savedLogo.substring(savedLogo.indexOf('/storage/')).replace(/\/\//g, '/');
-    }
-    if (savedLogo.startsWith('http')) return savedLogo;
-    return `/storage/${savedLogo}`;
+    return getAssetUrl(savedLogo);
   };
 
   const handleToggle = (path: any, currentValue: boolean) => {

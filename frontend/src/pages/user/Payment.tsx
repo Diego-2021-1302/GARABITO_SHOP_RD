@@ -18,7 +18,7 @@ import {
 import SEO from '../../components/common/SEO';
 import { useOrderDetail, useUploadPaymentProof } from '../../hooks/useOrders';
 import { useSettings } from '../../hooks/useSettings';
-import { useNotificationStore } from '../../store/useNotificationStore';
+import { getAssetUrl } from '../../utils/asset';
 
 const UserPayment: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,23 +43,6 @@ const UserPayment: React.FC = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const resolveAssetUrl = (path: any) => {
-    if (!path) return '/logo.png';
-    const finalPath = typeof path === 'object' ? path.image_url : path;
-    if (!finalPath) return '/logo.png';
-
-    if (finalPath.startsWith('blob:') || finalPath.startsWith('data:')) return finalPath;
-
-    let cleanPath = finalPath.replace(/\/+/g, '/');
-
-    if (cleanPath.includes('/storage/')) {
-      cleanPath = cleanPath.substring(cleanPath.indexOf('/storage/'));
-    } else if (!cleanPath.startsWith('http') && !cleanPath.startsWith('/')) {
-      cleanPath = `/storage/${cleanPath}`;
-    }
-
-    return cleanPath;
-  };
 
   if (isLoadingOrder || isLoadingSettings) {
     return (
@@ -143,7 +126,7 @@ const UserPayment: React.FC = () => {
                       <div className="flex items-center gap-3">
                         {bank.bankLogo && (
                           <div className="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center shadow-2xl">
-                            <img src={resolveAssetUrl(bank.bankLogo)} alt={bank.bankName} className="w-full h-full object-contain" />
+                            <img src={getAssetUrl(bank.bankLogo)} alt={bank.bankName} className="w-full h-full object-contain" />
                           </div>
                         )}
                         <span className="text-[10px] font-black uppercase tracking-widest text-brand-primary">{bank.bankName}</span>
@@ -262,7 +245,7 @@ const UserPayment: React.FC = () => {
                 {order.items?.map((item: any) => (
                   <div key={item.id} className="flex gap-5 group/item">
                     <div className="w-16 h-20 rounded-2xl bg-[#0B0F1A] overflow-hidden shrink-0 border border-white/5 shadow-inner">
-                      <img src={resolveAssetUrl(item.product?.images?.[0] || item.product?.image_url)} alt="" className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500" />
+                      <img src={getAssetUrl(item.product?.images?.[0] || item.product?.image_url)} alt="" className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-500" />
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <p className="text-[11px] font-black text-white uppercase truncate tracking-tight">{item.product?.name}</p>

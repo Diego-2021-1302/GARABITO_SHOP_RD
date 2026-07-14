@@ -3,12 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\StoreSetting;
+use App\Services\Cloudinary\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
+    protected $cloudinary;
+
+    public function __construct(CloudinaryService $cloudinary)
+    {
+        $this->cloudinary = $cloudinary;
+    }
+
     public function index()
     {
         try {
@@ -87,17 +95,15 @@ class SettingsController extends Controller
                 return response()->json(['message' => 'No se recibieron datos'], 422);
             }
 
-            // Procesar logos si existen
+            // Procesar logos si existen - Subida a Cloudinary
             if ($request->hasFile('logo_light')) {
-                $path = $request->file('logo_light')->store('logos', 'public');
-                $settingsData['general']['logoLight'] = '/storage/' . $path;
+                $settingsData['general']['logoLight'] = $this->cloudinary->upload($request->file('logo_light'), 'logos');
             }
             if ($request->hasFile('logo_dark')) {
-                $path = $request->file('logo_dark')->store('logos', 'public');
-                $settingsData['general']['logoDark'] = '/storage/' . $path;
+                $settingsData['general']['logoDark'] = $this->cloudinary->upload($request->file('logo_dark'), 'logos');
             }
 
-            // Procesar logos de bancos si existen
+            // Procesar logos de bancos si existen - Subida a Cloudinary
             if (isset($settingsData['general']['bankAccounts'])) {
                 $existingSettings = StoreSetting::where('key', 'general')->first();
                 $existingGeneral = $existingSettings ? $existingSettings->value : [];
@@ -106,8 +112,7 @@ class SettingsController extends Controller
                 foreach ($settingsData['general']['bankAccounts'] as &$bank) {
                     $fileKey = 'bank_logo_' . $bank['id'];
                     if ($request->hasFile($fileKey)) {
-                        $path = $request->file($fileKey)->store('bank_logos', 'public');
-                        $bank['bankLogo'] = '/storage/' . $path;
+                        $bank['bankLogo'] = $this->cloudinary->upload($request->file($fileKey), 'bank_logos');
                     } else {
                         // Si no hay archivo nuevo, intentar mantener el logo anterior buscando por ID
                         foreach ($existingBanks as $existingBank) {

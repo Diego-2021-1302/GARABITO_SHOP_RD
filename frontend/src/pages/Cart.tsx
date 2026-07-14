@@ -23,6 +23,7 @@ import { useUserAddresses } from '../hooks/useUserAccount';
 import { useSettings } from '../hooks/useSettings';
 import SEO from '../components/common/SEO';
 import { WhatsAppService } from '../services/WhatsAppService';
+import { getAssetUrl } from '../utils/asset';
 import type { Address } from '../types';
 
 const Cart: React.FC = () => {
@@ -41,26 +42,6 @@ const Cart: React.FC = () => {
 
   const addressList = Array.isArray(addresses) ? addresses : (addresses as any)?.data || [];
 
-  const resolveAssetUrl = (path: any) => {
-    if (!path) return '/logo.png';
-
-    // Extraer URL si es un objeto de relación
-    const finalPath = typeof path === 'object' ? path.image_url : path;
-
-    if (!finalPath) return '/logo.png';
-    if (finalPath.startsWith('blob:') || finalPath.startsWith('data:')) return finalPath;
-
-    // Limpiar barras duplicadas
-    let cleanPath = finalPath.replace(/\/+/g, '/');
-
-    if (cleanPath.includes('/storage/')) {
-      cleanPath = cleanPath.substring(cleanPath.indexOf('/storage/'));
-    } else if (!cleanPath.startsWith('http') && !cleanPath.startsWith('/')) {
-      cleanPath = `/storage/${cleanPath}`;
-    }
-
-    return cleanPath;
-  };
 
   React.useEffect(() => {
     if (addressList.length > 0 && selectedAddressId === null) {
@@ -118,7 +99,7 @@ const Cart: React.FC = () => {
                   className="bg-[#0B0F1A] border border-white/5 p-6 rounded-[2rem] flex gap-6 group hover:border-white/10 transition-all shadow-xl"
                 >
                   <div className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 bg-[#020617] rounded-2xl border border-white/5 p-4 flex items-center justify-center">
-                    <img src={resolveAssetUrl(item.images?.[0])} alt={item.name} className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                    <img src={getAssetUrl(item.images?.[0])} alt={item.name} className="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                   </div>
                   
                   <div className="flex-1 flex flex-col justify-between">

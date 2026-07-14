@@ -175,7 +175,7 @@ const AdminOrderDetail: React.FC = () => {
         <div className="flex gap-3">
           {isPaid && (
             <button
-              onClick={() => window.open(`${import.meta.env.VITE_API_URL}/storage/${order.invoice_pdf_path}`, '_blank')}
+              onClick={() => window.open(getAssetUrl(order.invoice_pdf_path), '_blank')}
               className="px-6 py-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2"
             >
               <FileText className="w-4 h-4" />
@@ -232,7 +232,7 @@ const AdminOrderDetail: React.FC = () => {
           </div>
           <div className="flex flex-wrap gap-3">
             <a
-              href={order.payment_proof?.startsWith('http') ? order.payment_proof : `/storage/${order.payment_proof}`}
+              href={getAssetUrl(order.payment_proof)}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-6 py-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm"
@@ -240,7 +240,7 @@ const AdminOrderDetail: React.FC = () => {
               <Eye className="w-4 h-4" /> Ver Comprobante
             </a>
             <a
-              href={order.payment_proof?.startsWith('http') ? order.payment_proof : `/storage/${order.payment_proof}`}
+              href={getAssetUrl(order.payment_proof)}
               download
               className="flex items-center gap-2 px-6 py-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm"
             >
@@ -280,7 +280,7 @@ const AdminOrderDetail: React.FC = () => {
             <p className="text-sm font-bold text-slate-700 dark:text-gray-300 uppercase tracking-tight">Factura generada y enviada al cliente</p>
           </div>
           <a 
-            href={`${import.meta.env.VITE_API_URL}/storage/${order.invoice_pdf_path}`}
+            href={getAssetUrl(order.invoice_pdf_path)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all"

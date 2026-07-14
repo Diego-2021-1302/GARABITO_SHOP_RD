@@ -22,6 +22,7 @@ export const getAssetUrl = (path: any): string => {
   const isBackendAsset = cleanPath.includes('/storage/') ||
                          cleanPath.includes('brands/') ||
                          cleanPath.includes('products/') ||
+                         cleanPath.includes('bank_logos/') ||
                          cleanPath.includes('categories/');
 
   if (isBackendAsset) {
