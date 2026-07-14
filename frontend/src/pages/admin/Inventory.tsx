@@ -268,9 +268,13 @@ const AdminInventory: React.FC = () => {
                             </td>
                             <td className="px-8 py-6 text-center">
                                 <span className={`text-[9px] font-black px-3 py-1.5 rounded-xl uppercase tracking-widest ${
-                                  !isLowStock ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
+                                  stock <= 0
+                                    ? 'bg-red-500/20 text-red-600 border border-red-500/20'
+                                    : isLowStock
+                                      ? 'bg-amber-500/10 text-amber-500'
+                                      : 'bg-emerald-500/10 text-emerald-500'
                                 }`}>
-                                  {!isLowStock ? 'Suficiente' : 'Stock Bajo'}
+                                  {stock <= 0 ? 'Agotado' : !isLowStock ? 'Suficiente' : 'Stock Bajo'}
                                 </span>
                             </td>
                         </tr>

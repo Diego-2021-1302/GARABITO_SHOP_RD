@@ -96,6 +96,10 @@ const ProductDetails: React.FC = () => {
       navigate('/login');
       return;
     }
+    if (product.stock <= 0) {
+      addNotification('error', 'Este producto se encuentra agotado actualmente');
+      return;
+    }
     addItem({ ...product, quantity });
     addNotification('success', 'Añadido al carrito correctamente');
   };
@@ -171,9 +175,9 @@ const ProductDetails: React.FC = () => {
                   <span className="text-xs font-black tracking-widest">4.9 (120)</span>
                 </div>
                 <div className="h-4 w-px bg-white/10" />
-                <span className="text-[10px] text-brand-success font-black uppercase tracking-widest flex items-center gap-2">
-                  <div className="w-2 h-2 bg-brand-success rounded-full animate-pulse" />
-                  En Stock
+                <span className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-2 ${product.stock > 0 ? 'text-brand-success' : 'text-red-500'}`}>
+                  <div className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-brand-success animate-pulse' : 'bg-red-500'}`} />
+                  {product.stock > 0 ? 'En Stock' : 'Agotado'}
                 </span>
               </div>
             </div>

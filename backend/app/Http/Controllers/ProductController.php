@@ -41,7 +41,9 @@ class ProductController extends Controller
                 $query->where(function ($q) use ($search) {
                     $like = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
                     $q->where('name', $like, '%' . $search . '%')
-                      ->orWhere('sku', $like, '%' . $search . '%');
+                      ->orWhere('sku', $like, '%' . $search . '%')
+                      ->orWhere('barcode', $like, '%' . $search . '%')
+                      ->orWhere('internal_code', $like, '%' . $search . '%');
                 });
             }
 
@@ -93,6 +95,14 @@ class ProductController extends Controller
             'cost' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'sku' => 'required|string|max:255|unique:products,sku',
+            'barcode' => 'nullable|string|max:255',
+            'internal_code' => 'nullable|string|max:255',
+            'unit_of_measurement' => 'nullable|string|max:50',
+            'weight' => 'nullable|numeric|min:0',
+            'location' => 'nullable|string|max:255',
+            'minimum_stock' => 'nullable|integer|min:0',
+            'maximum_stock' => 'nullable|integer|min:0',
+            'main_provider_id' => 'nullable|exists:providers,id',
             'is_active' => 'sometimes|boolean',
             'featured' => 'sometimes|boolean',
             'is_new' => 'sometimes|boolean',
@@ -144,6 +154,14 @@ class ProductController extends Controller
             'cost' => 'sometimes|nullable|numeric|min:0',
             'category_id' => 'sometimes|exists:categories,id',
             'sku' => 'sometimes|string|max:255|unique:products,sku,' . $id,
+            'barcode' => 'sometimes|nullable|string|max:255',
+            'internal_code' => 'sometimes|nullable|string|max:255',
+            'unit_of_measurement' => 'sometimes|nullable|string|max:50',
+            'weight' => 'sometimes|nullable|numeric|min:0',
+            'location' => 'sometimes|nullable|string|max:255',
+            'minimum_stock' => 'sometimes|nullable|integer|min:0',
+            'maximum_stock' => 'sometimes|nullable|integer|min:0',
+            'main_provider_id' => 'nullable|exists:providers,id',
             'is_active' => 'sometimes|boolean',
             'featured' => 'sometimes|boolean',
             'is_new' => 'sometimes|boolean',
@@ -185,7 +203,6 @@ class ProductController extends Controller
     {
         return DB::transaction(function () use ($id) {
             $product = Product::findOrFail($id);
-            // Nota: Aquí podrías añadir lógica para borrar de Cloudinary si guardas el public_id
             $product->images()->delete();
             $product->delete();
             return response()->json(['message' => 'Producto eliminado permanentemente']);

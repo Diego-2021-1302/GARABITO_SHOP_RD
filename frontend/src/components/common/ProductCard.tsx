@@ -81,6 +81,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
                    document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' });
                    return;
                  }
+                 if (product.stock <= 0) {
+                   addNotification('error', 'Producto agotado');
+                   return;
+                 }
                  addItem(product, 1);
                  addNotification('success', `${product.name} añadido`);
                }}
