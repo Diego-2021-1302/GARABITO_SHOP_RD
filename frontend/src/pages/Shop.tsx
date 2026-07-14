@@ -109,14 +109,14 @@ const Shop: React.FC = () => {
         </div>
 
         {/* CATEGORY SELECTOR */}
-        <div className="flex gap-3 mb-12 overflow-x-auto scrollbar-hide pb-2">
+        <div className="flex gap-3 mb-12 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory px-2 -mx-2">
           {availableCategories.map(cat => (
             <button
               key={cat}
               onClick={() => handleCategoryChange(cat)}
-              className={`px-8 py-4 rounded-[1.25rem] text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 ${
+              className={`px-8 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 snap-start ${
                 selectedCategory === cat 
-                  ? 'bg-brand-primary border-brand-primary text-white shadow-2xl shadow-brand-primary/30 scale-105' 
+                  ? 'bg-brand-primary border-brand-primary text-white shadow-2xl shadow-brand-primary/30 scale-105 z-10'
                   : 'bg-white/[0.03] text-gray-500 border-transparent hover:text-gray-300 hover:bg-white/[0.06]'
               }`}
             >
@@ -142,25 +142,25 @@ const Shop: React.FC = () => {
              )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full md:w-auto">
              <button 
               onClick={() => setIsFilterOpen(true)}
-              className="flex items-center gap-3 px-6 py-3.5 bg-white/[0.03] border border-white/5 hover:border-white/20 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all"
+              className="flex-1 md:flex-none flex items-center justify-center gap-3 px-8 py-4 bg-white/[0.03] border border-white/5 hover:border-brand-primary/40 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all shadow-lg"
              >
                <SlidersHorizontal className="w-4 h-4" />
                Filtros
              </button>
 
-             <div className="relative group">
+             <div className="relative flex-1 md:flex-none group">
                 <select 
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none bg-white/[0.03] border border-white/5 hover:border-white/20 rounded-2xl py-3.5 pl-6 pr-12 text-[10px] font-black uppercase tracking-widest text-gray-400 outline-none cursor-pointer transition-all focus:border-brand-primary/40 group-hover:text-white"
+                  className="w-full appearance-none bg-white/[0.03] border border-white/5 hover:border-brand-primary/40 rounded-2xl py-4 pl-6 pr-12 text-[10px] font-black uppercase tracking-widest text-gray-400 outline-none cursor-pointer transition-all focus:border-brand-primary/40 group-hover:text-white shadow-lg"
                 >
                   <option value="popularidad">Destacados</option>
-                  <option value="precio-bajo">Precio más bajo</option>
-                  <option value="precio-alto">Precio más alto</option>
-                  <option value="nuevo">Lo más nuevo</option>
+                  <option value="precio-bajo">Menor Precio</option>
+                  <option value="precio-alto">Mayor Precio</option>
+                  <option value="nuevo">Nuevos</option>
                 </select>
                 <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none group-hover:text-brand-primary transition-colors" />
              </div>

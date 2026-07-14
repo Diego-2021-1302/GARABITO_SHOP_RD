@@ -44,8 +44,8 @@ const Navbar: React.FC = () => {
   return (
     <nav className={`fixed top-0 w-full z-[110] transition-all duration-500 ease-in-out ${
       isScrolled 
-        ? 'bg-[#020617]/95 backdrop-blur-3xl py-3 shadow-2xl' 
-        : 'bg-[#020617]/40 backdrop-blur-sm py-6'
+        ? 'bg-[#020617]/95 backdrop-blur-3xl py-3 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] border-b border-white/5'
+        : 'bg-transparent py-6'
     }`}>
       <div className="container-custom mx-auto px-6">
         <div className="flex items-center justify-between gap-8">
@@ -116,7 +116,7 @@ const Navbar: React.FC = () => {
 
                 <Link 
                   to={['admin', 'driver', 'vendor'].includes(user?.role || '') ? "/admin" : "/cuenta"}
-                  className="flex items-center gap-3 pl-1.5 pr-4 py-1.5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-brand-primary/30 hover:bg-white/[0.06] transition-all duration-300 group"
+                  className="hidden lg:flex items-center gap-3 pl-1.5 pr-4 py-1.5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-brand-primary/30 hover:bg-white/[0.06] transition-all duration-300 group"
                 >
                   <div className="w-9 h-9 rounded-xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center overflow-hidden shrink-0">
                     {user?.avatar ? (
@@ -151,14 +151,6 @@ const Navbar: React.FC = () => {
                   <User size={14} />
                   Iniciar Sesión
                 </button>
-                {location.pathname !== '/' && (
-                  <Link
-                    to="/catalogo"
-                    className="p-3 rounded-2xl bg-white/5 border border-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all"
-                  >
-                    <ShoppingCart className="w-5 h-5" />
-                  </Link>
-                )}
               </div>
             )}
             

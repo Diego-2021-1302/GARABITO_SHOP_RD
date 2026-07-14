@@ -179,20 +179,23 @@ const Cart: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-white/5">
-                <div className="flex justify-between items-end mb-8">
-                  <span className="font-black text-gray-500 uppercase text-xs tracking-widest">Total</span>
-                  <span className="text-4xl font-black tracking-tighter text-brand-primary">RD$ {finalTotal.toLocaleString()}</span>
+              <div className="pt-6 border-t border-white/10">
+                <div className="flex justify-between items-end mb-10">
+                  <div>
+                    <span className="font-black text-gray-500 uppercase text-[10px] tracking-[0.3em] block mb-1">Monto Final</span>
+                    <span className="text-[10px] text-brand-primary font-black uppercase tracking-widest">Impuestos Incluidos</span>
+                  </div>
+                  <span className="text-5xl font-black tracking-tighter text-white">RD$ {finalTotal.toLocaleString()}</span>
                 </div>
 
                 <div className="space-y-4">
                   <button 
                     onClick={handleGoToCheckout}
                     disabled={items.length === 0}
-                    className="w-full py-6 bg-brand-primary text-white rounded-[1.5rem] font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 group"
+                    className="w-full py-7 bg-brand-primary text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.4em] shadow-[0_20px_40px_-10px_rgba(37,99,235,0.5)] hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-4 disabled:opacity-50 group"
                   >
-                    <Zap className="w-5 h-5 fill-current" />
-                    Realizar Compra
+                    <Zap className="w-5 h-5 fill-current animate-pulse" />
+                    PROCEDER AL PAGO
                   </button>
 
                   <button 

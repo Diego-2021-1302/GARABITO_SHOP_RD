@@ -23,16 +23,15 @@ const BottomNav: React.FC = () => {
     },
   ];
 
-  // Filtramos los items si el usuario no está autenticado o si estamos en la Home (sin carrito)
+  // We want the bottom nav to be always visible but items might change
   const filteredItems = navItems.filter(item => {
     if (item.protected && !isAuthenticated) return false;
-    if (item.path === '/carrito' && location.pathname === '/') return false;
     return true;
   });
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-[#020617]/90 backdrop-blur-2xl border-t border-gray-100 dark:border-white/5 px-2 pt-3 pb-[env(safe-area-inset-bottom,1.5rem)] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.2)] z-[100]">
-      <div className="flex items-center justify-around max-w-lg mx-auto relative">
+    <nav className="md:hidden fixed bottom-6 left-6 right-6 bg-[#0B0F1A]/80 backdrop-blur-2xl border border-white/10 px-4 py-3 rounded-[2rem] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] z-[100]">
+      <div className="flex items-center justify-between max-w-lg mx-auto relative">
         {filteredItems.map((item) => {
           const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
           
@@ -40,30 +39,28 @@ const BottomNav: React.FC = () => {
             <Link 
               key={item.path} 
               to={item.path}
-              className="relative flex flex-col items-center gap-1.5 py-1 min-w-[64px] outline-none group"
+              className="relative flex flex-col items-center gap-1 py-1 min-w-[50px] outline-none group"
             >
               <motion.div 
                 animate={{ 
-                  y: isActive ? -2 : 0,
-                  scale: isActive ? 1.1 : 1
+                  y: isActive ? -4 : 0,
+                  scale: isActive ? 1.2 : 1
                 }}
                 whileTap={{ scale: 0.9 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className={`relative z-10 transition-colors duration-200 ${
-                  isActive ? 'text-brand-primary' : 'text-slate-400 dark:text-gray-500'
+                className={`relative z-10 p-2 rounded-2xl transition-colors duration-300 ${
+                  isActive ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/40' : 'text-slate-500'
                 }`}
               >
                 {item.icon}
                 
-                {/* Badge de Carrito Dinámico con estilo Exploration */}
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                   {item.count !== undefined && item.count > 0 && (
                     <motion.span 
-                      key={item.count}
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
-                      className="absolute -top-2 -right-2 bg-brand-primary text-white text-[9px] font-black min-w-[18px] h-[18px] flex items-center justify-center rounded-full ring-2 ring-white dark:ring-[#020617] shadow-lg shadow-brand-primary/40"
+                      className="absolute -top-1 -right-1 bg-white text-brand-primary text-[8px] font-black min-w-[16px] h-[16px] flex items-center justify-center rounded-full ring-2 ring-brand-primary shadow-sm"
                     >
                       {item.count > 9 ? '9+' : item.count}
                     </motion.span>
@@ -71,19 +68,10 @@ const BottomNav: React.FC = () => {
                 </AnimatePresence>
               </motion.div>
 
-              <span className={`text-[9px] font-black uppercase tracking-[0.15em] transition-colors duration-200 ${
-                isActive ? 'text-brand-primary' : 'text-slate-400 dark:text-gray-600'
-              }`}>
-                {item.label}
-              </span>
-
-              {/* Indicador de Estado Activo con estilo Exploration */}
-              {isActive && (
-                <motion.div 
-                  layoutId="activeNavTab"
-                  className="absolute inset-0 bg-brand-primary/5 dark:bg-brand-primary/10 rounded-2xl z-0 border border-brand-primary/10"
-                  transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                />
+              {!isActive && (
+                <span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-600">
+                  {item.label}
+                </span>
               )}
             </Link>
           );
