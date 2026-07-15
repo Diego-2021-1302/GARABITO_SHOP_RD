@@ -24,8 +24,8 @@ export const authService = {
     const { data } = await api.post('/reset-password', resetData);
     return data;
   },
-  resendVerificationEmail: async (email: string) => {
-    const { data } = await api.post('/email/resend', { email });
+  resendVerificationEmail: async (email?: string) => {
+    const { data } = await api.post('/email/resend', email ? { email } : {});
     return data;
   },
   verifyEmail: async (url: string) => {

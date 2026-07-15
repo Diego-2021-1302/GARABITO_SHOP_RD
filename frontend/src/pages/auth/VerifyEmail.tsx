@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, Mail, ArrowRight, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { authService } from '../../api/auth';
+import { useAuthStore } from '../../store/useAuthStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import SEO from '../../components/common/SEO';
 
@@ -10,6 +11,7 @@ const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'idle'>('idle');
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const addNotification = useNotificationStore((state) => state.addNotification);
 
   useEffect(() => {
@@ -37,10 +39,10 @@ const VerifyEmail = () => {
 
   const handleResend = async () => {
     try {
-      await authService.resendVerificationEmail();
+      await authService.resendVerificationEmail(user?.email);
       addNotification('success', 'Enlace de verificación reenviado');
     } catch (error: any) {
-      addNotification('error', 'No se pudo reenviar el enlace');
+      addNotification('error', error.response?.data?.message || 'No se pudo reenviar el enlace');
     }
   };
 
