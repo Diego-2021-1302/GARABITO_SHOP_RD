@@ -12,23 +12,29 @@
     </style>
 </head>
 <body>
-    <div className="container">
-        <div className="header">
+    <div class="container">
+        <div class="header">
             <h1>Garabito Shop RD - Admin</h1>
         </div>
         <h2>Nuevo Comprobante Recibido</h2>
         <p>Un cliente ha subido un comprobante de pago para el siguiente pedido:</p>
 
-        <div className="order-info">
+        <div class="order-info">
             <p><strong>Pedido:</strong> #{{ $order->order_number }}</p>
             <p><strong>Cliente:</strong> {{ $order->user->name }} ({{ $order->user->email }})</p>
             <p><strong>Monto Declarado:</strong> RD$ {{ number_format($order->amount_paid, 2) }}</p>
             <p><strong>Banco:</strong> {{ $order->issuing_bank }}</p>
-            <p><strong>Referencia:</strong> {{ $order->transaction_reference }}</p>
         </div>
 
+        @if($order->payment_proof)
+        <div style="margin-top: 20px; text-align: center;">
+            <p><strong>Vista previa del comprobante:</strong></p>
+            <img src="{{ $order->payment_proof }}" style="max-width: 100%; border-radius: 10px; border: 1px solid #ddd;" alt="Comprobante de Pago">
+        </div>
+        @endif
+
         <div style="text-align: center; margin-top: 30px;">
-            <a href="{{ config('app.frontend_url') }}/admin/pedidos/{{ $order->id }}" className="button">Ver Pedido en Panel</a>
+            <a href="{{ config('app.frontend_url') }}/admin/pedidos/{{ $order->id }}" class="button">Ver Pedido en Panel</a>
         </div>
 
         <div className="footer">

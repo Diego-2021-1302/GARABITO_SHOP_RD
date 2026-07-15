@@ -243,11 +243,14 @@ class OrderController extends Controller
         // Notificar administradores
         try {
             $admins = \App\Models\User::where('role', \App\Models\User::ROLE_ADMIN)->get();
+            if ($admins->isEmpty()) {
+                Log::warning('No se encontraron administradores para notificar nuevo comprobante.');
+            }
             foreach ($admins as $admin) {
-                Mail::to($admin->email)->send(new AdminNewPaymentProof($order));
+                Mail::to($admin->email)->send(new AdminNewPaymentProof($order->load('user')));
             }
         } catch (\Exception $e) {
-            Log::error('Error enviando notificación a admin: ' . $e->getMessage());
+            Log::error('Error enviando notificación a admin (comprobante): ' . $e->getMessage());
         }
 
         return response()->json([
