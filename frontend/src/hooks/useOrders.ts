@@ -126,10 +126,6 @@ export const useUpdateOrderStatus = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, status, comment, ncf_type, driver_id, rejection_reason }: { id: string | number; status: string; comment?: string; ncf_type?: string; driver_id?: number; rejection_reason?: string }) => {
-      // Si el estado es pago_confirmado, primero verificamos el pago automáticamente
-      if (status === 'pago_confirmado') {
-        await api.patch(`/admin/orders/${id}/verify-payment`);
-      }
       const { data } = await api.patch(`/admin/orders/${id}/status`, { status, comment, ncf_type, driver_id, rejection_reason });
       return data;
     },

@@ -27,6 +27,7 @@ import { useNotificationStore } from '../../store/useNotificationStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAssetUrl } from '../../utils/asset';
+import api from '../../api/axios';
 
 const statusStyles: Record<string, string> = {
   'pendiente_pago': 'bg-amber-50 text-amber-600 border-amber-100',
@@ -125,6 +126,16 @@ const AdminOrderDetail: React.FC = () => {
       setRejectionReason('');
     } catch (err: any) {
       addNotification('error', err.response?.data?.message || 'Error al actualizar estado');
+    }
+  };
+
+  const handleResendInvoice = async () => {
+    if (!order) return;
+    try {
+      await api.post(`/admin/invoices/${order.id}/send-email`);
+      addNotification('success', 'Factura reenviada correctamente al cliente.');
+    } catch (err) {
+      addNotification('error', 'Error al reenviar la factura.');
     }
   };
 
@@ -314,6 +325,12 @@ const AdminOrderDetail: React.FC = () => {
           >
             <Download className="w-4 h-4" /> Descargar Factura
           </a>
+          <button
+            onClick={handleResendInvoice}
+            className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-brand-primary/20"
+          >
+            <Mail className="w-4 h-4" /> Reenviar por Correo
+          </button>
         </div>
       )}
 

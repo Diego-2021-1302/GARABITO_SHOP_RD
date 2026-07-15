@@ -28,23 +28,44 @@ class InvoiceService
         $path = 'invoices/' . $fileName;
 
         try {
-            // Mock de contenido PDF para este entorno
             $htmlContent = view('emails.orders.invoice_pdf', compact('order', 'settings'))->render();
-            Storage::disk('public')->put($path, $htmlContent);
+
+            // Si está instalado DomPDF, lo usamos para generar un PDF real
+            if (class_exists('\Barryvdh\DomPDF\Facade\Pdf')) {
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($htmlContent);
+                Storage::disk('public')->put($path, $pdf->output());
+            } else {
+                // Fallback: Guardar como HTML pero con extensión PDF (no recomendado para producción)
+                Storage::disk('public')->put($path, $htmlContent);
+            }
 
             $order->update(['invoice_pdf_path' => $path]);
 
-            // Enviar factura por correo
-            try {
-                Mail::to($order->user->email)->send(new OrderInvoiceMail($order));
-            } catch (\Exception $e) {
-                Log::error("Error enviando correo de factura: " . $e->getMessage());
-            }
+            // Enviar factura por correo automáticamente
+            $this->sendInvoiceByEmail($order);
 
             return $path;
         } catch (\Exception $e) {
             Log::error("Error generando factura PDF: " . $e->getMessage());
             return '';
+        }
+    }
+
+    /**
+     * Envía la factura por correo al cliente.
+     */
+    public function sendInvoiceByEmail(Order $order): bool
+    {
+        try {
+            if (!$order->user || !$order->user->email) {
+                return false;
+            }
+
+            Mail::to($order->user->email)->send(new OrderInvoiceMail($order));
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Error enviando correo de factura para pedido {$order->order_number}: " . $e->getMessage());
+            return false;
         }
     }
 
