@@ -128,7 +128,17 @@ const AdminOrderDetail: React.FC = () => {
     }
   };
 
-  const getNextStatus = (currentStatus: string) => {
+  const getNextStatus = (currentStatus: string, paymentMethod: string) => {
+    // Si es transferencia y está pendiente, el admin debe esperar el comprobante del cliente
+    if (paymentMethod === 'transfer' && currentStatus === 'pendiente_pago') {
+      return null;
+    }
+
+    // Si es efectivo, el admin puede saltar directamente a preparación
+    if (paymentMethod === 'cod' && currentStatus === 'pendiente_pago') {
+      return 'preparando';
+    }
+
     const flow = [
       'pendiente_pago',
       'comprobante_subido',
@@ -140,14 +150,20 @@ const AdminOrderDetail: React.FC = () => {
     ];
     const currentIndex = flow.indexOf(currentStatus);
     if (currentIndex === -1 || currentIndex === flow.length - 1) return null;
-    return flow[currentIndex + 1];
+
+    const next = flow[currentIndex + 1];
+
+    // El administrador NO puede marcar como entregado ni pasar a comprobante subido (el sistema lo hace)
+    if (next === 'entregado' || next === 'comprobante_subido') return null;
+
+    return next;
   };
 
-  const nextStatusValue = getNextStatus(order.status);
+  const nextStatusValue = getNextStatus(order.status, order.payment_method);
   const isPaid = order.payment_status === 'completed';
 
-  // El administrador NO puede marcar como entregado (según flujo oficial)
-  const filteredNextStatus = nextStatusValue === 'entregado' ? null : nextStatusValue;
+  // Siguiente estado filtrado para el botón principal
+  const filteredNextStatus = nextStatusValue;
 
   return (
     <div className="space-y-6 pb-20">
@@ -216,8 +232,19 @@ const AdminOrderDetail: React.FC = () => {
           className="bg-blue-500/10 border border-blue-500/20 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-blue-500 text-white rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <FileText className="w-8 h-8" />
+            <div className="w-24 h-24 bg-white/10 rounded-2xl overflow-hidden flex items-center justify-center border border-white/10 shrink-0 group relative">
+              {order.payment_proof?.toLowerCase().endsWith('.pdf') ? (
+                <FileText className="w-10 h-10 text-white" />
+              ) : (
+                <img
+                  src={getAssetUrl(order.payment_proof)}
+                  alt="Comprobante"
+                  className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                />
+              )}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Eye className="w-6 h-6 text-white" />
+              </div>
             </div>
             <div>
               <h3 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">Comprobante recibido</h3>

@@ -23,6 +23,7 @@ export const getAssetUrl = (path: any): string => {
                          cleanPath.includes('brands/') ||
                          cleanPath.includes('products/') ||
                          cleanPath.includes('bank_logos/') ||
+                         cleanPath.includes('payment_proofs/') ||
                          cleanPath.includes('categories/');
 
   if (isBackendAsset) {

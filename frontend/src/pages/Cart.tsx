@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -16,7 +16,10 @@ import {
   MapPin,
   ChevronDown,
   MessageCircle,
-  ShoppingBag
+  ShoppingBag,
+  Map as MapIcon,
+  X,
+  Navigation
 } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
@@ -25,6 +28,7 @@ import { useSettings } from '../hooks/useSettings';
 import SEO from '../components/common/SEO';
 import { WhatsAppService } from '../services/WhatsAppService';
 import { getAssetUrl } from '../utils/asset';
+import MapPickerInline from '../components/common/MapPickerInline';
 import type { Address } from '../types';
 
 const Cart: React.FC = () => {
@@ -35,20 +39,56 @@ const Cart: React.FC = () => {
 
   const { data: addresses, isLoading: isLoadingAddresses } = useUserAddresses();
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
-
-  const totalPrice = getTotalPrice();
-  const totalItems = getTotalItems();
-  const shipping = totalPrice > 5000 ? 0 : 250;
-  const finalTotal = totalPrice + shipping;
+  const [manualLocation, setManualLocation] = useState<any>(null);
+  const [showMapModal, setShowMapModal] = useState(false);
 
   const addressList = Array.isArray(addresses) ? addresses : (addresses as any)?.data || [];
 
+  const totalPrice = getTotalPrice();
+  const totalItems = getTotalItems();
+
+  const shippingInfo = useMemo(() => {
+    const fallback = { cost: 250, isFree: false, zoneName: 'Estándar' };
+
+    // 1. Obtener ubicación de referencia (dirección seleccionada o manual del mapa)
+    let locationRef: any = null;
+    if (manualLocation) {
+      locationRef = manualLocation;
+    } else if (selectedAddressId) {
+      locationRef = addressList.find((a: Address) => a.id === selectedAddressId);
+    }
+
+    if (!locationRef || !settings?.shipping?.zones) return fallback;
+
+    // 2. Buscar zona coincidente
+    const zones = settings.shipping.zones;
+    const match = zones.find((z: any) =>
+      locationRef.sector?.toLowerCase().includes(z.name.toLowerCase()) ||
+      locationRef.municipio?.toLowerCase().includes(z.name.toLowerCase()) ||
+      locationRef.provincia?.toLowerCase().includes(z.name.toLowerCase()) ||
+      z.name.toLowerCase().includes(locationRef.sector?.toLowerCase() || '') ||
+      z.name.toLowerCase().includes(locationRef.municipio?.toLowerCase() || '')
+    );
+
+    if (!match) return fallback;
+
+    const isFree = totalPrice >= match.freeFrom;
+    return {
+      cost: isFree ? 0 : match.cost,
+      isFree,
+      zoneName: match.name
+    };
+  }, [selectedAddressId, manualLocation, addressList, settings, totalPrice]);
+
+  const shipping = shippingInfo.cost;
+  const finalTotal = totalPrice + shipping;
+
   React.useEffect(() => {
-    if (addressList.length > 0 && selectedAddressId === null) {
+    if (addressList.length > 0 && selectedAddressId === null && !manualLocation) {
       const defaultAddr = addressList.find((a: Address) => a.is_default) || addressList[0];
       setSelectedAddressId(defaultAddr.id);
     }
-  }, [addressList, selectedAddressId]);
+  }, [addressList, selectedAddressId, manualLocation]);
 
   const handleGoToCheckout = () => {
     if (items.length === 0) return;
@@ -77,6 +117,60 @@ const Cart: React.FC = () => {
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-primary/5 blur-[120px] rounded-full" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/5 blur-[120px] rounded-full" />
       </div>
+
+      <AnimatePresence>
+        {showMapModal && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-[#0B0F1A] w-full max-w-4xl h-[80vh] rounded-[3rem] border border-white/10 shadow-3xl overflow-hidden flex flex-col"
+            >
+              <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
+                    <MapIcon size={20} className="text-brand-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black uppercase tracking-tight">Seleccionar Ubicación</h3>
+                    <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Para calcular el costo de envío exacto</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowMapModal(false)} className="p-2 text-gray-500 hover:text-white transition-colors bg-white/5 rounded-full">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 relative">
+                <MapPickerInline
+                  value={manualLocation ? { lat: manualLocation.lat, lng: manualLocation.lng, addressText: manualLocation.addressText } : { lat: 18.4861, lng: -69.9312, addressText: '' }}
+                  onChange={(loc) => {
+                    setManualLocation(loc);
+                    setSelectedAddressId(null);
+                  }}
+                />
+              </div>
+
+              <div className="p-8 bg-black/40 backdrop-blur-xl border-t border-white/5 flex items-center justify-between gap-6">
+                <div className="flex-1 min-w-0">
+                   <p className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] mb-1">Ubicación Detectada</p>
+                   <p className="text-sm font-bold text-white truncate italic">
+                     {manualLocation?.addressText || 'Mueve el pin en el mapa...'}
+                   </p>
+                </div>
+                <button
+                  onClick={() => setShowMapModal(false)}
+                  disabled={!manualLocation}
+                  className="bg-brand-primary text-white px-10 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-brand-primary/30 disabled:opacity-50"
+                >
+                  Confirmar y Calcular
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <div className="container-custom px-6 relative z-10">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
@@ -189,10 +283,15 @@ const Cart: React.FC = () => {
               <div className="space-y-5">
                 <div className="flex justify-between items-center px-1">
                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Destino de Envío:</label>
-                   <Link to="/cuenta/direcciones" className="text-[9px] font-black text-brand-primary uppercase hover:underline tracking-widest">Cambiar</Link>
+                   <button
+                     onClick={() => setShowMapModal(true)}
+                     className="text-[9px] font-black text-brand-primary uppercase hover:underline tracking-widest flex items-center gap-1.5"
+                   >
+                     <MapIcon size={10} /> Cambiar en mapa
+                   </button>
                 </div>
 
-                {!isLoadingAddresses && addressList.length > 0 ? (
+                {!isLoadingAddresses && addressList.length > 0 && !manualLocation ? (
                   <div className="relative group">
                     <div className="absolute left-5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
                        <MapPin className="text-brand-primary w-4 h-4" />
@@ -204,20 +303,44 @@ const Cart: React.FC = () => {
                     >
                       {addressList.map((addr: Address) => (
                         <option key={addr.id} value={addr.id} className="bg-[#0B0F1A]">
-                          {addr.sector} — {addr.first_name}
+                          {addr.alias || addr.sector} — {addr.first_name}
                         </option>
                       ))}
                     </select>
                     <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none group-hover:text-white transition-colors" />
                   </div>
-                ) : !isLoadingAddresses && (
-                   <div className="p-5 bg-amber-500/5 border border-amber-500/20 rounded-3xl flex items-start gap-4">
-                      <AlertTriangle className="w-6 h-6 text-amber-500 shrink-0" />
-                      <div className="space-y-1">
-                        <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest leading-none">Dirección faltante</p>
-                        <p className="text-[9px] font-bold text-amber-200/40 uppercase tracking-tighter">Agrega una ubicación en Santo Domingo para procesar el envío.</p>
+                ) : manualLocation ? (
+                  <div className="bg-brand-primary/5 border border-brand-primary/20 rounded-[1.5rem] p-5 flex items-center justify-between group relative overflow-hidden">
+                    <div className="flex items-center gap-4 relative z-10">
+                      <div className="w-10 h-10 rounded-xl bg-brand-primary text-white flex items-center justify-center shadow-lg">
+                        <Navigation size={18} />
                       </div>
-                   </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest mb-0.5">Ubicación Manual</p>
+                        <p className="text-[11px] font-bold text-white truncate max-w-[150px] italic">
+                          {manualLocation.sector || manualLocation.municipio}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setManualLocation(null);
+                        if (addressList.length > 0) setSelectedAddressId(addressList[0].id);
+                      }}
+                      className="relative z-10 p-2 text-gray-500 hover:text-white transition-colors"
+                    >
+                      <X size={16} />
+                    </button>
+                    <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-brand-primary/10 rounded-full blur-2xl group-hover:bg-brand-primary/20 transition-all" />
+                  </div>
+                ) : !isLoadingAddresses && (
+                   <button
+                     onClick={() => setShowMapModal(true)}
+                     className="w-full p-6 bg-white/5 border border-dashed border-white/10 rounded-[1.5rem] flex flex-col items-center gap-3 hover:bg-white/10 transition-all text-gray-500 hover:text-white"
+                   >
+                      <MapIcon size={24} className="opacity-40" />
+                      <p className="text-[10px] font-black uppercase tracking-widest">Ubicar en el mapa</p>
+                   </button>
                 )}
               </div>
 
@@ -227,9 +350,12 @@ const Cart: React.FC = () => {
                   <span className="text-white text-base">RD$ {totalPrice.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm font-bold uppercase tracking-widest text-gray-500">
-                  <span className="text-[10px] tracking-[0.2em]">Logística (Express)</span>
-                  <span className={shipping === 0 ? 'text-emerald-500 text-base' : 'text-white text-base'}>
-                    {shipping === 0 ? 'BONIFICADO' : `RD$ ${shipping.toLocaleString()}`}
+                  <div className="flex flex-col">
+                    <span className="text-[10px] tracking-[0.2em]">Logística ({shippingInfo.zoneName})</span>
+                    {shippingInfo.isFree && <span className="text-[8px] text-emerald-500 font-black uppercase">¡Bonificado por volumen!</span>}
+                  </div>
+                  <span className={shippingInfo.isFree ? 'text-emerald-500 text-base' : 'text-white text-base'}>
+                    {shippingInfo.isFree ? 'GRATIS' : `RD$ ${shipping.toLocaleString()}`}
                   </span>
                 </div>
               </div>

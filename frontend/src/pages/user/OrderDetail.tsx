@@ -260,7 +260,18 @@ const UserOrderDetail: React.FC = () => {
                       </div>
                    </div>
                    {order.payment_proof && (
-                     <a href={getAssetUrl(order.payment_proof)} target="_blank" className="text-[10px] font-black text-brand-primary uppercase underline tracking-widest">Ver Archivo</a>
+                     <div className="flex flex-col items-center gap-2 shrink-0">
+                       <div className="w-16 h-20 rounded-xl overflow-hidden border border-white/10 bg-black shadow-lg">
+                          {order.payment_proof.toLowerCase().endsWith('.pdf') ? (
+                            <div className="w-full h-full flex items-center justify-center bg-brand-primary/10">
+                              <FileText className="w-6 h-6 text-brand-primary" />
+                            </div>
+                          ) : (
+                            <img src={getAssetUrl(order.payment_proof)} alt="Proof" className="w-full h-full object-cover" />
+                          )}
+                       </div>
+                       <a href={getAssetUrl(order.payment_proof)} target="_blank" className="text-[9px] font-black text-brand-primary uppercase underline tracking-widest">Ver Archivo</a>
+                     </div>
                    )}
                 </div>
               )}

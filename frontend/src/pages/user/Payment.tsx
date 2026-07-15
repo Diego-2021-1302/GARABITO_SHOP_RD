@@ -28,6 +28,7 @@ const UserPayment: React.FC = () => {
   const { data: order, isLoading: isLoadingOrder, error } = useOrderDetail(id);
   const uploadProof = useUploadPaymentProof();
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (order && !['pendiente_pago', 'pending', 'awaiting_payment'].includes(order.status)) {
@@ -35,6 +36,21 @@ const UserPayment: React.FC = () => {
       navigate(`/cuenta/pedidos/${id}`);
     }
   }, [order, id, navigate, addNotification]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFilePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setFilePreview('pdf');
+      }
+    }
+  };
 
   const handleCopy = (text: string, bankId: string) => {
     navigator.clipboard.writeText(text);
@@ -201,11 +217,33 @@ const UserPayment: React.FC = () => {
                   </div>
                   <div className="md:col-span-2 space-y-2.5">
                     <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-2">Suelta tu comprobante aquí</label>
-                    <div className="relative group/file">
-                       <input name="proof" type="file" required accept="image/*,.pdf" className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-12 text-xs font-bold text-white outline-none focus:border-brand-primary/50 transition-all file:hidden cursor-pointer text-center" />
-                       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none opacity-40 group-hover/file:opacity-100 transition-opacity">
-                          <Upload className="w-8 h-8 mb-2 text-brand-primary" />
-                          <span className="text-[10px] font-black uppercase tracking-widest">Elige un archivo o arrástralo aquí</span>
+                    <div className="relative group/file h-48">
+                       <input
+                         name="proof"
+                         type="file"
+                         required
+                         accept="image/*,.pdf"
+                         onChange={handleFileChange}
+                         className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
+                       />
+                       <div className="absolute inset-0 bg-white/5 border border-white/10 rounded-2xl flex flex-col items-center justify-center transition-all group-hover/file:bg-white/10">
+                          {filePreview ? (
+                            filePreview === 'pdf' ? (
+                              <div className="flex flex-col items-center">
+                                <FileText className="w-12 h-12 text-brand-primary mb-2" />
+                                <span className="text-[10px] font-black uppercase text-white">Archivo PDF seleccionado</span>
+                              </div>
+                            ) : (
+                              <div className="w-full h-full p-2">
+                                <img src={filePreview} alt="Preview" className="w-full h-full object-contain rounded-xl" />
+                              </div>
+                            )
+                          ) : (
+                            <div className="flex flex-col items-center opacity-40 group-hover/file:opacity-100 transition-opacity">
+                              <Upload className="w-8 h-8 mb-2 text-brand-primary" />
+                              <span className="text-[10px] font-black uppercase tracking-widest">Elige un archivo o arrástralo aquí</span>
+                            </div>
+                          )}
                        </div>
                     </div>
                   </div>

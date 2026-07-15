@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
 use App\Models\Product;
+use App\Services\Cloudinary\CloudinaryService;
 use App\Services\Inventory\InventoryService;
 use App\Services\InvoiceService;
 use App\Mail\OrderReceived;
@@ -23,13 +24,16 @@ class OrderController extends Controller
 {
     protected InventoryService $inventoryService;
     protected InvoiceService $invoiceService;
+    protected CloudinaryService $cloudinary;
 
     public function __construct(
         InventoryService $inventoryService,
-        InvoiceService $invoiceService
+        InvoiceService $invoiceService,
+        CloudinaryService $cloudinary
     ) {
         $this->inventoryService = $inventoryService;
         $this->invoiceService = $invoiceService;
+        $this->cloudinary = $cloudinary;
     }
 
     public function index(Request $request)
@@ -209,7 +213,13 @@ class OrderController extends Controller
             ], 422);
         }
 
-        $path = $request->file('proof')->store('payment_proofs', 'public');
+        // Subir a Cloudinary
+        try {
+            $path = $this->cloudinary->upload($request->file('proof'), 'payment_proofs');
+        } catch (\Exception $e) {
+            Log::error("Error subiendo comprobante a Cloudinary: " . $e->getMessage());
+            return response()->json(['message' => 'Error al procesar el archivo del comprobante.'], 500);
+        }
 
         $order->update([
             'status' => Order::STATUS_PROOF_SUBMITTED,
