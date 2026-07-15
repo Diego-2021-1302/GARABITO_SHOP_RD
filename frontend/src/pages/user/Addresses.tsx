@@ -1,144 +1,292 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Plus, Trash2, Home, CheckCircle2, X, Loader2, Star, Navigation2, Info, Mail } from 'lucide-react';
+import {
+  MapPin,
+  Plus,
+  Trash2,
+  Navigation2,
+  Navigation,
+  Check,
+  User,
+  Phone,
+  ChevronRight,
+  Loader2,
+  Tag,
+  AlertTriangle,
+  X
+} from 'lucide-react';
+import { useUserAddresses, useDeleteAddress, useSetDefaultAddress } from '../../hooks/useUserAccount';
 import { useNotificationStore } from '../../store/useNotificationStore';
-import { useUserAddresses, useCreateAddress, useDeleteAddress, useSetDefaultAddress } from '../../hooks/useUserAccount';
-import { useAuthStore } from '../../store/useAuthStore';
-import MapPickerInline from '../../components/common/MapPickerInline';
 import SEO from '../../components/common/SEO';
 import type { Address } from '../../types';
 
 const UserAddresses: React.FC = () => {
-  const { user } = useAuthStore();
+  const navigate = useNavigate();
   const { data: addresses, isLoading } = useUserAddresses();
-  const createMutation = useCreateAddress();
-  const deleteMutation = useDeleteAddress();
-  const setDefaultMutation = useSetDefaultAddress();
-  
-  const [isAdding, setIsAdding] = useState(false);
-  const [isResolving, setIsResolving] = useState(false);
-  
-  const [newAddress, setNewAddress] = useState({
-    type: 'shipping' as 'shipping' | 'billing',
-    first_name: user?.name?.split(' ')[0] || '',
-    last_name: user?.name?.split(' ').slice(1).join(' ') || '',
-    phone: user?.phone || '',
-    email: user?.email || '',
-    provincia: 'Santo Domingo',
-    municipio: '',
-    sector: '',
-    referencia: '',
-    latitude: 18.4861,
-    longitude: -69.9312,
-    formatted_address: '',
-    is_default: false
-  });
-
   const addNotification = useNotificationStore(state => state.addNotification);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!newAddress.municipio || !newAddress.sector) {
-        addNotification('error', 'Por favor, ubica tu dirección en el mapa.');
-        return;
-    }
+  const [addressToDelete, setAddressToDelete] = useState<number | null>(null);
 
-    try {
-      await createMutation.mutateAsync(newAddress);
-      addNotification('success', '¡Ubicación guardada con éxito!');
-      setIsAdding(false);
-      resetForm();
-    } catch (error: any) {
-      const serverMessage = error.response?.data?.message;
-      const errors = error.response?.data?.errors;
-      console.error("Error al guardar:", errors);
-      addNotification('error', serverMessage || 'Error de validación. Revisa los datos.');
-    }
-  };
-
-  const resetForm = () => {
-    setNewAddress({
-        type: 'shipping', 
-        first_name: user?.name?.split(' ')[0] || '',
-        last_name: user?.name?.split(' ').slice(1).join(' ') || '',
-        phone: user?.phone || '',
-        email: user?.email || '',
-        provincia: 'Santo Domingo',
-        municipio: '', sector: '', referencia: '', latitude: 18.4861, longitude: -69.9312,
-        formatted_address: '', is_default: false
-    });
-  };
+  const deleteMutation = useDeleteAddress();
+  const setDefaultMutation = useSetDefaultAddress();
 
   const addressList = Array.isArray(addresses) ? addresses : (addresses as any)?.data || [];
 
+  // Identificar la última agregada (ID más alto)
+  const lastAddedId = addressList.length > 0
+    ? [...addressList].sort((a, b) => b.id - a.id)[0].id
+    : null;
+
+  const handleDeleteClick = (id: number) => {
+    if (id === lastAddedId) {
+      addNotification('warning', 'No puedes eliminar la última ubicación agregada.');
+      return;
+    }
+    setAddressToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!addressToDelete) return;
+    try {
+      await deleteMutation.mutateAsync(addressToDelete);
+      addNotification('success', 'Dirección eliminada correctamente');
+    } catch (error) {
+      addNotification('error', 'Error al eliminar la dirección');
+    } finally {
+      setAddressToDelete(null);
+    }
+  };
+
+  const handleSetDefault = async (id: number) => {
+    try {
+      await setDefaultMutation.mutateAsync(id);
+      addNotification('success', 'Dirección principal actualizada');
+    } catch (error) {
+      addNotification('error', 'Error al actualizar la dirección principal');
+    }
+  };
+
   return (
-    <div className="space-y-8 pb-20 px-4 md:px-0">
+    <div className="space-y-10 pb-24 relative">
       <SEO title="Mis Direcciones | Garabito Shop" />
-      
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h1 className="text-3xl font-black text-slate-800 dark:text-white uppercase tracking-tighter">Mis Ubicaciones</h1>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Donde recibes tus compras</p>
+
+      {/* Modal de Confirmación Gráfico */}
+      <AnimatePresence>
+        {addressToDelete && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setAddressToDelete(null)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative w-full max-w-md bg-white dark:bg-[#0B0F1A] rounded-[2.5rem] border border-slate-200 dark:border-white/10 p-8 shadow-2xl overflow-hidden"
+            >
+               <div className="absolute top-0 right-0 p-6">
+                  <button onClick={() => setAddressToDelete(null)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors bg-slate-50 dark:bg-white/5 rounded-full">
+                    <X size={16} />
+                  </button>
+               </div>
+
+               <div className="flex flex-col items-center text-center space-y-6">
+                  <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center text-red-500">
+                    <AlertTriangle size={40} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tighter">¿Eliminar Ubicación?</h3>
+                    <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed">
+                      Esta acción no se puede deshacer. La dirección se borrará permanentemente de tu cuenta.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col w-full gap-3 pt-4">
+                    <button
+                      onClick={confirmDelete}
+                      disabled={deleteMutation.isPending}
+                      className="w-full py-5 bg-red-500 text-white rounded-2xl font-black text-[12px] uppercase tracking-widest shadow-xl shadow-red-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+                    >
+                      {deleteMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Trash2 size={18} />}
+                      Sí, Eliminar Ahora
+                    </button>
+                    <button
+                      onClick={() => setAddressToDelete(null)}
+                      className="w-full py-5 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-2xl font-black text-[12px] uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
+                    >
+                      No, Mantener
+                    </button>
+                  </div>
+               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Header Premium Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div className="space-y-3">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20 shadow-lg shadow-brand-primary/5">
+              <Navigation className="text-brand-primary w-6 h-6 animate-pulse" />
+            </div>
+            <div>
+              <h1 className="text-3xl md:text-5xl font-black text-slate-800 dark:text-white uppercase tracking-tighter leading-none">Mis Ubicaciones</h1>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Gestión de entrega en Santo Domingo</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <button 
-          onClick={() => setIsAdding(true)}
-          className="flex items-center gap-3 px-8 py-4 bg-brand-primary text-white rounded-2xl font-black text-xs uppercase shadow-xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95 transition-all"
+
+        <button
+          onClick={() => navigate('/cuenta/direcciones/nueva')}
+          className="group relative flex items-center gap-3 px-10 py-5 bg-brand-primary text-white rounded-[1.5rem] font-black text-[11px] uppercase tracking-widest shadow-[0_20px_40px_-10px_rgba(37,99,235,0.4)] hover:scale-[1.02] active:scale-95 transition-all overflow-hidden"
         >
-          <Plus className="w-5 h-5" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+          <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
           Nueva Dirección
         </button>
       </div>
 
+      {/* Grid de Direcciones */}
       {isLoading ? (
-        <div className="py-20 flex flex-col items-center justify-center gap-4">
-           <Loader2 className="w-10 h-10 animate-spin text-brand-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-72 bg-white dark:bg-white/5 animate-pulse rounded-[2.5rem] border border-slate-100 dark:border-white/5" />
+          ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence mode="popLayout">
             {addressList.length === 0 ? (
-              <div className="col-span-full py-20 bg-slate-50 dark:bg-white/[0.02] rounded-[40px] border border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center text-center px-10">
-                <Navigation2 className="w-12 h-12 text-slate-300 dark:text-slate-700 mb-4" />
-                <h3 className="text-lg font-black text-slate-400 uppercase tracking-tight">No tienes direcciones</h3>
-                <p className="text-xs font-bold text-slate-500 mt-2 uppercase tracking-widest">Agrega una para agilizar tus pedidos.</p>
-              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="col-span-full py-32 bg-white/[0.01] dark:bg-white/[0.01] rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-white/10 flex flex-col items-center justify-center text-center px-10 backdrop-blur-xl relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/5 to-transparent opacity-50" />
+                <div className="w-24 h-24 bg-slate-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-8 shadow-inner relative z-10">
+                  <Navigation2 className="w-12 h-12 text-slate-300 dark:text-slate-600" />
+                </div>
+                <h3 className="text-2xl font-black text-slate-400 dark:text-slate-500 uppercase tracking-tight relative z-10">Sin direcciones registradas</h3>
+                <p className="text-[10px] font-bold text-slate-500 mt-3 uppercase tracking-[0.2em] max-w-xs relative z-10 leading-relaxed">Agrega una ubicación exacta para agilizar tus pedidos y disfrutar de nuestras entregas express.</p>
+              </motion.div>
             ) : addressList.map((addr: Address) => (
               <motion.div
-                key={addr.id} layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                className={`group relative bg-white dark:bg-[#0B0F1A] p-8 rounded-[32px] border-2 transition-all ${
-                  addr.is_default ? 'border-brand-primary shadow-xl shadow-brand-primary/10' : 'border-slate-100 dark:border-white/5'
+                key={addr.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className={`group relative bg-white dark:bg-[#0B0F1A]/60 backdrop-blur-3xl p-8 rounded-[2.5rem] border-2 transition-all duration-500 flex flex-col h-full overflow-hidden ${
+                  addr.is_default
+                    ? 'border-brand-primary shadow-[0_30px_60px_-15px_rgba(37,99,235,0.2)]'
+                    : 'border-slate-100 dark:border-white/5 hover:border-brand-primary/40'
                 }`}
               >
-                <div className="flex justify-between items-start mb-6">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${addr.is_default ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20' : 'bg-slate-50 dark:bg-white/5 text-slate-400'}`}>
-                      <MapPin className="w-7 h-7" />
-                    </div>
-                    <div>
-                      <h3 className="font-black text-slate-800 dark:text-white uppercase tracking-tighter text-xl truncate max-w-[150px]">{addr.sector}</h3>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{addr.municipio}</span>
+                {/* Glow Background */}
+                {addr.is_default && <div className="absolute -right-10 -top-10 w-32 h-32 bg-brand-primary/10 rounded-full blur-3xl" />}
+
+                {/* Status Badge */}
+                <div className="absolute top-8 right-8 flex gap-2 z-10">
+                   {addr.is_default && (
+                      <div className="bg-brand-primary text-white text-[8px] font-black uppercase px-3 py-1.5 rounded-xl shadow-lg shadow-brand-primary/20 flex items-center gap-1.5">
+                        <Check size={10} strokeWidth={4} /> Principal
+                      </div>
+                   )}
+                </div>
+
+                <div className="flex items-center gap-5 mb-8">
+                  <div className={`w-16 h-16 rounded-[1.5rem] flex items-center justify-center shrink-0 transition-all duration-500 ${
+                    addr.is_default
+                      ? 'bg-brand-primary text-white shadow-xl shadow-brand-primary/30'
+                      : 'bg-slate-50 dark:bg-white/5 text-slate-400 group-hover:bg-brand-primary/10 group-hover:text-brand-primary'
+                  }`}>
+                    {addr.alias ? <Tag className="w-8 h-8" /> : <MapPin className="w-8 h-8" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-black text-slate-800 dark:text-white uppercase tracking-tighter text-3xl md:text-4xl truncate">
+                      {addr.alias || addr.sector}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1">
+                       <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest truncate">
+                         {addr.alias ? addr.sector + ', ' : ''}{addr.municipio}
+                       </span>
                     </div>
                   </div>
-                  {!addr.is_default && (
-                    <button onClick={() => deleteMutation.mutate(addr.id)} className="p-3 bg-red-500/10 text-red-500 rounded-xl opacity-0 group-hover:opacity-100 transition-all"><Trash2 className="w-4 h-4" /></button>
-                  )}
                 </div>
 
-                <div className="p-5 bg-slate-50 dark:bg-white/[0.03] rounded-2xl border border-slate-100 dark:border-white/10 mb-6">
-                    <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 leading-relaxed uppercase italic truncate">
-                      "{addr.referencia}"
-                    </p>
+                <div className="flex-1 space-y-6 relative z-10">
+                  <div className="p-5 bg-slate-50/50 dark:bg-white/[0.03] rounded-2xl border border-slate-100 dark:border-white/5 relative group-hover:bg-white/[0.05] transition-colors min-h-[5rem] overflow-y-auto custom-scrollbar">
+                      <div className="flex flex-col gap-1 mb-3">
+                         <p className="text-[9px] font-black text-brand-primary uppercase tracking-widest">Ubicación Exacta</p>
+                         <p className="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase italic">
+                            {addr.calle ? `${addr.calle}, ` : ''}{addr.sector}, {addr.municipio}, {addr.provincia}
+                         </p>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                         <p className="text-[9px] font-black text-brand-primary uppercase tracking-widest">Punto de Referencia</p>
+                         <p className="text-[11px] font-bold text-slate-600 dark:text-slate-400 leading-relaxed uppercase italic">
+                           "{addr.referencia}"
+                         </p>
+                      </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                      <div className="w-7 h-7 rounded-lg bg-brand-primary/5 flex items-center justify-center">
+                        <User size={12} className="text-brand-primary" />
+                      </div>
+                      <span className="truncate">{addr.first_name} {addr.last_name}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                      <div className="w-7 h-7 rounded-lg bg-brand-primary/5 flex items-center justify-center">
+                        <Phone size={12} className="text-brand-primary" />
+                      </div>
+                      <span>{addr.phone}</span>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-6 border-t border-slate-50 dark:border-white/5">
-                   <span className="text-xs font-black dark:text-white uppercase tracking-tight">{addr.first_name} {addr.last_name}</span>
-                   {addr.is_default ? (
-                      <span className="text-[8px] font-black uppercase text-emerald-500 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Principal
-                      </span>
+                <div className="flex items-center justify-between pt-8 mt-8 border-t border-slate-100 dark:border-white/5">
+                   {!addr.is_default ? (
+                     <button
+                       onClick={() => handleSetDefault(addr.id)}
+                       disabled={setDefaultMutation.isPending}
+                       className="flex items-center gap-2 text-[10px] font-black text-brand-primary uppercase tracking-widest hover:bg-brand-primary hover:text-white px-5 py-2.5 rounded-xl transition-all border border-brand-primary/20 disabled:opacity-50"
+                     >
+                       {setDefaultMutation.isPending && setDefaultMutation.variables === addr.id ? (
+                         <Loader2 size={12} className="animate-spin" />
+                       ) : (
+                         <>Definir Principal <ChevronRight size={12} /></>
+                       )}
+                     </button>
                    ) : (
-                     <button onClick={() => setDefaultMutation.mutate(addr.id)} className="text-[10px] font-black text-brand-primary uppercase tracking-widest hover:scale-105 transition-all">Definir principal</button>
+                     <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-2 bg-emerald-500/10 px-4 py-2 rounded-xl">
+                        <Check size={12} /> Configurada
+                     </div>
+                   )}
+
+                   {addr.id !== lastAddedId && (
+                    <button
+                      onClick={() => handleDeleteClick(addr.id)}
+                      disabled={deleteMutation.isPending}
+                      className="ml-auto p-3 text-slate-400 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all disabled:opacity-50"
+                      title="Eliminar dirección"
+                    >
+                      {deleteMutation.isPending && deleteMutation.variables === addr.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
                    )}
                 </div>
               </motion.div>
@@ -146,89 +294,6 @@ const UserAddresses: React.FC = () => {
           </AnimatePresence>
         </div>
       )}
-
-      {/* MODAL UX PREMIUM */}
-      <AnimatePresence>
-        {isAdding && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsAdding(false)} className="absolute inset-0 bg-slate-950/90 backdrop-blur-xl" />
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="bg-white dark:bg-[#0B0F1A] w-full max-w-6xl h-full md:h-[85vh] overflow-hidden md:rounded-[40px] shadow-2xl relative z-10 flex flex-col md:flex-row border border-white/10"
-            >
-              <div className="flex-1 bg-slate-100 dark:bg-brand-dark relative order-2 md:order-1 h-[40vh] md:h-auto">
-                 <MapPickerInline 
-                    value={{ lat: newAddress.latitude, lng: newAddress.longitude, addressText: newAddress.formatted_address }}
-                    onResolving={setIsResolving}
-                    onChange={(loc) => setNewAddress({ 
-                        ...newAddress, latitude: loc.lat, longitude: loc.lng, formatted_address: loc.addressText,
-                        municipio: loc.municipio || '', sector: loc.sector || ''
-                    })}
-                 />
-              </div>
-
-              <div className="w-full md:w-[450px] p-8 md:p-10 overflow-y-auto custom-scrollbar order-1 md:order-2 bg-white dark:bg-[#0B0F1A]">
-                <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tighter">Detalles de Entrega</h2>
-                  <button onClick={() => setIsAdding(false)} className="p-3 bg-slate-100 dark:bg-white/5 rounded-2xl text-slate-400 hover:text-white transition-all"><X className="w-5 h-5" /></button>
-                </div>
-
-                <form onSubmit={handleSave} className="space-y-5">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Municipio</label>
-                        <div className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-xl py-4 px-5 text-xs font-bold dark:text-white/60 truncate italic">
-                            {newAddress.municipio || 'Detectando...'}
-                        </div>
-                    </div>
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Sector</label>
-                        <div className="w-full bg-slate-50 dark:bg-white/5 border-none rounded-xl py-4 px-5 text-xs font-bold dark:text-white/60 truncate italic">
-                            {newAddress.sector || 'Detectando...'}
-                        </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nombre</label>
-                      <input type="text" required className="w-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-xl py-4 px-5 text-xs font-bold dark:text-white outline-none focus:ring-2 focus:ring-brand-primary/20" value={newAddress.first_name} onChange={(e) => setNewAddress({...newAddress, first_name: e.target.value})} />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Apellido</label>
-                      <input type="text" required className="w-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-xl py-4 px-5 text-xs font-bold dark:text-white outline-none focus:ring-2 focus:ring-brand-primary/20" value={newAddress.last_name} onChange={(e) => setNewAddress({...newAddress, last_name: e.target.value})} />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Teléfono</label>
-                        <input type="tel" required placeholder="809-000-0000" className="w-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-xl py-4 px-5 text-xs font-bold dark:text-white outline-none focus:ring-2 focus:ring-brand-primary/20" value={newAddress.phone} onChange={(e) => setNewAddress({...newAddress, phone: e.target.value})} />
-                    </div>
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email</label>
-                        <input type="email" required className="w-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-xl py-4 px-5 text-xs font-bold dark:text-white outline-none focus:ring-2 focus:ring-brand-primary/20" value={newAddress.email} onChange={(e) => setNewAddress({...newAddress, email: e.target.value})} />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Referencia exacta de llegada</label>
-                    <textarea required placeholder="Ej. Casa de 2 niveles, portón negro..." className="w-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 rounded-xl py-4 px-5 text-xs font-bold dark:text-white resize-none outline-none focus:ring-2 focus:ring-brand-primary/20" rows={2} value={newAddress.referencia} onChange={(e) => setNewAddress({...newAddress, referencia: e.target.value})} />
-                  </div>
-
-                  <button 
-                    type="submit" disabled={createMutation.isPending || isResolving}
-                    className="w-full py-5 bg-brand-primary text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-brand-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                  >
-                    {createMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : (isResolving ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />)}
-                    {isResolving ? 'Precisando Ubicación...' : 'Confirmar Dirección'}
-                  </button>
-                </form>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

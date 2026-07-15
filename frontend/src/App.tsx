@@ -30,6 +30,7 @@ const UserOrderDetail = lazy(() => import('./pages/user/OrderDetail'));
 const UserPayment = lazy(() => import('./pages/user/Payment'));
 const UserWishlist = lazy(() => import('./pages/user/Wishlist'));
 const UserAddresses = lazy(() => import('./pages/user/Addresses'));
+const UserAddAddress = lazy(() => import('./pages/user/AddAddress'));
 
 // Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
@@ -108,6 +109,7 @@ const AnimatedRoutes = () => {
           <Route path="pedidos/:id/pagar" element={<UserPayment />} />
           <Route path="favoritos" element={<UserWishlist />} />
           <Route path="direcciones" element={<UserAddresses />} />
+          <Route path="direcciones/nueva" element={<UserAddAddress />} />
         </Route>
 
         {/* Admin Panel Routes */}

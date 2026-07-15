@@ -12,7 +12,6 @@ import {
   Check,
   Upload,
   ShoppingBag,
-  Wallet,
   Info
 } from 'lucide-react';
 import SEO from '../../components/common/SEO';
@@ -104,12 +103,12 @@ const UserPayment: React.FC = () => {
             <div className="glass rounded-[3rem] p-10 flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-primary via-blue-400 to-brand-primary" />
                <div className="text-center md:text-left">
-                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Referencia del Pedido</p>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Referencia del Pedido</p>
                   <p className="text-2xl font-black font-mono tracking-tighter">#{order.order_number}</p>
                </div>
                <div className="h-12 w-px bg-white/10 hidden md:block" />
                <div className="text-center md:text-right">
-                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Monto a Transferir</p>
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Monto a Transferir</p>
                   <p className="text-5xl font-black text-white tracking-tighter">RD$ {Number(order.total).toLocaleString()}</p>
                </div>
             </div>

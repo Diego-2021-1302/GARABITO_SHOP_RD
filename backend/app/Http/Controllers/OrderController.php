@@ -106,8 +106,8 @@ class OrderController extends Controller
             foreach ($validated['items'] as $item) {
                 $product = Product::lockForUpdate()->findOrFail($item['id']);
 
-                if ($product->available_stock < $item['quantity']) {
-                    return response()->json(['message' => "Stock insuficiente para: {$product->name}. Disponible: {$product->available_stock}"], 422);
+                if ($product->stock_quantity < $item['quantity']) {
+                    return response()->json(['message' => "Stock insuficiente para: {$product->name}. Disponible: {$product->stock_quantity}"], 422);
                 }
 
                 $price = $product->discount_price ?? $product->price;
@@ -126,10 +126,13 @@ class OrderController extends Controller
             $shipping = $subtotal > 5000 ? 0 : 250;
             $total = $subtotal + $shipping;
 
+            $isCod = $validated['payment_method'] === 'cod';
+            $initialStatus = $isCod ? Order::STATUS_PREPARING : Order::STATUS_PENDING_PAYMENT;
+
             $order = Order::create([
                 'user_id' => $request->user()->id,
                 'order_number' => 'GS-' . strtoupper(Str::random(10)),
-                'status' => Order::STATUS_PENDING_PAYMENT,
+                'status' => $initialStatus,
                 'subtotal' => $subtotal,
                 'shipping_cost' => $shipping,
                 'total' => $total,
@@ -146,13 +149,18 @@ class OrderController extends Controller
 
             OrderStatusHistory::create([
                 'order_id' => $order->id,
-                'status' => Order::STATUS_PENDING_PAYMENT,
-                'comment' => 'Pedido realizado. Pendiente de pago.',
+                'status' => $initialStatus,
+                'comment' => $isCod ? 'Pedido en efectivo confirmado. Iniciando preparación.' : 'Pedido realizado. Pendiente de pago.',
                 'user_id' => Auth::id(),
             ]);
 
-            // Reserva de inventario inmediata
-            $this->inventoryService->reserveOrderStock($order);
+            // Lógica de inventario
+            if ($isCod) {
+                // Para COD descontamos físicamente de una vez al confirmar el pedido
+                $this->inventoryService->finalizeOrderStockExit($order);
+            }
+            // Eliminada la reserva automática para pedidos de transferencia
+            // para que el stock solo se descuente al subir el comprobante.
 
             try {
                 Mail::to($request->user()->email)->send(new OrderReceived($order));
@@ -211,6 +219,9 @@ class OrderController extends Controller
             'proof_uploaded_at' => now(),
         ]);
 
+        // Descontar stock automáticamente al subir comprobante
+        $this->inventoryService->finalizeOrderStockExit($order);
+
         OrderStatusHistory::create([
             'order_id' => $order->id,
             'status' => Order::STATUS_PROOF_SUBMITTED,
@@ -257,6 +268,9 @@ class OrderController extends Controller
             $reason = $validated['rejection_reason'] ?? $validated['comment'] ?? 'Comprobante rechazado';
 
             return DB::transaction(function () use ($order, $reason) {
+                // Regresar el stock al inventario disponible al rechazar
+                $this->inventoryService->revertSalesOrderInventory($order);
+
                 $order->update(['status' => Order::STATUS_PENDING_PAYMENT]);
 
                 OrderStatusHistory::create([
@@ -308,7 +322,7 @@ class OrderController extends Controller
                         $order->payment_status = Order::PAYMENT_STATUS_COMPLETED;
                         $order->paid_at = now();
 
-                        // Salida definitiva de inventario
+                        // Asegurar salida de inventario (por si no se hizo en proof_submitted o es tarjeta)
                         $this->inventoryService->finalizeOrderStockExit($order);
 
                         // Generar Factura PDF (Sin NCF ni ITBIS) y enviar correo
@@ -344,7 +358,7 @@ class OrderController extends Controller
                         $order->payment_status = Order::PAYMENT_STATUS_COMPLETED;
                         $order->paid_at = now();
 
-                        // Para pedidos COD, la salida de inventario se hace al entregar
+                        // Asegurar salida de inventario (normalmente hecha en store para COD)
                         $this->inventoryService->finalizeOrderStockExit($order);
                     }
                     if ($order->shipment) {
@@ -445,7 +459,16 @@ class OrderController extends Controller
         }
 
         DB::transaction(function () use ($order, $request) {
-            if ($order->payment_status === Order::PAYMENT_STATUS_COMPLETED) {
+            // Si el stock ya había salido (comprobante subido o posterior), lo revertimos físicamente
+            // De lo contrario, solo liberamos la reserva.
+            $alreadyExited = in_array($order->status, [
+                Order::STATUS_PROOF_SUBMITTED,
+                Order::STATUS_PAID_CONFIRMED,
+                Order::STATUS_PREPARING,
+                Order::STATUS_READY_FOR_SHIPPING
+            ]);
+
+            if ($alreadyExited || $order->payment_status === Order::PAYMENT_STATUS_COMPLETED) {
                 $this->inventoryService->revertSalesOrderInventory($order);
             } else {
                 $this->inventoryService->releaseOrderStock($order);

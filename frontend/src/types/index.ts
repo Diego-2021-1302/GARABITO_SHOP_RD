@@ -101,6 +101,7 @@ export interface Address {
   id: number;
   user_id: number;
   type: 'shipping' | 'billing';
+  alias?: string;
   first_name: string;
   last_name: string;
   phone: string;
@@ -108,6 +109,7 @@ export interface Address {
   provincia: string;
   municipio: string;
   sector: string;
+  calle?: string;
   referencia: string;
   latitude?: number;
   longitude?: number;

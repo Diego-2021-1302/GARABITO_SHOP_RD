@@ -375,32 +375,34 @@ const Home: React.FC = () => {
 
       {/* --- Marcas Marquee - Ultra Premium --- */}
       {brands && brands.length > 0 && (
-        <div className="py-24 border-y border-white/5 bg-white/[0.01] overflow-hidden relative group">
-          <div className="absolute left-0 top-0 bottom-0 w-40 bg-gradient-to-r from-[#020617] to-transparent z-10" />
-          <div className="absolute right-0 top-0 bottom-0 w-40 bg-gradient-to-l from-[#020617] to-transparent z-10" />
+        <div className="py-20 border-y border-white/5 bg-white/[0.02] overflow-hidden relative group">
+          {/* Gradient Masks */}
+          <div className="absolute left-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none" />
 
-          <div className="max-w-7xl mx-auto px-6 mb-16">
-             <div className="flex items-center gap-4">
-                <div className="w-1.5 h-6 bg-brand-primary rounded-full shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
-                <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500">Marcas Autorizadas</h2>
+          {/* Header Centralizado */}
+          <div className="max-w-7xl mx-auto px-6 mb-14">
+             <div className="flex flex-col items-center justify-center gap-4">
+                <div className="w-12 h-1 bg-brand-primary rounded-full shadow-[0_0_20px_rgba(37,99,235,0.6)]" />
+                <h2 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 text-center">Marcas Autorizadas</h2>
              </div>
           </div>
 
-          <div className="flex gap-20 animate-marquee whitespace-nowrap items-center px-6">
+          <div className="flex gap-24 animate-marquee whitespace-nowrap items-center px-6">
             {/* Multiplicamos el array para asegurar que el scroll infinito sea fluido */}
-            {[...brands, ...brands, ...brands, ...brands].map((brand: any, i) => (
+            {[...brands, ...brands, ...brands, ...brands, ...brands].map((brand: any, i) => (
               <div
                 key={`${brand.id}-${i}`}
-                className="flex items-center justify-center min-w-[140px] md:min-w-[180px] transition-all duration-700 hover:scale-110"
+                className="flex items-center justify-center min-w-[120px] md:min-w-[200px] transition-all duration-700 hover:scale-110 group/brand"
               >
                 {brand.logo_url ? (
                   <img
                     src={getAssetUrl(brand.logo_url)}
                     alt={brand.name}
-                    className="h-12 md:h-14 w-auto object-contain opacity-40 hover:opacity-100 grayscale hover:grayscale-0 transition-all duration-500 filter brightness-200"
+                    className="h-8 md:h-12 w-auto object-contain opacity-30 group-hover/brand:opacity-100 grayscale group-hover/brand:grayscale-0 transition-all duration-500 filter brightness-150 group-hover/brand:brightness-100"
                   />
                 ) : (
-                  <span className="text-2xl font-black text-white/20 tracking-tighter uppercase">{brand.name}</span>
+                  <span className="text-xl md:text-3xl font-black text-white/10 tracking-tighter uppercase group-hover/brand:text-brand-primary/40 transition-colors">{brand.name}</span>
                 )}
               </div>
             ))}

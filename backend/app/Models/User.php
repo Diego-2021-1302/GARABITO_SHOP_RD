@@ -55,6 +55,11 @@ class User extends Authenticatable
         return in_array($permission, $this->permissions);
     }
 
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new \App\Notifications\CustomVerifyEmail);
+    }
+
     public function orders() {
         return $this->hasMany(Order::class);
     }

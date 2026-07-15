@@ -16,7 +16,7 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email:rfc,dns|max:255|unique:users',
             'phone' => 'required|string|max:20',
             'password' => 'required|string|min:8|confirmed',
         ]);
@@ -44,7 +44,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validated = $request->validate([
-            'email' => 'required|string|email',
+            'email' => 'required|string|email:rfc,dns',
             'password' => 'required|string',
         ]);
 
@@ -52,20 +52,20 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => ['Las credenciales proporcionadas son incorrectas.'],
             ]);
         }
 
         if (!$user->is_active) {
             throw ValidationException::withMessages([
-                'email' => ['This account is inactive.'],
+                'email' => ['Esta cuenta está inactiva.'],
             ]);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => 'Login exitoso',
             'user' => $user,
             'token' => $token,
         ]);
@@ -79,7 +79,7 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logged out successfully',
+            'message' => 'Sesión cerrada correctamente',
         ]);
     }
 
@@ -101,7 +101,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'phone' => 'sometimes|string|max:20',
-            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $request->user()->id,
+            'email' => 'sometimes|string|email:rfc,dns|max:255|unique:users,email,' . $request->user()->id,
         ]);
 
         $request->user()->update($validated);

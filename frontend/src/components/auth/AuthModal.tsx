@@ -27,7 +27,7 @@ interface AuthModalProps {
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTab = 'login' }) => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>(initialTab);
-  const loginUser = useAuthStore((state) => state.login);
+  const setAuth = useAuthStore((state) => state.setAuth);
   const addNotification = useNotificationStore((state) => state.addNotification);
 
   const { register: regLogin, handleSubmit: handleLoginSubmit, formState: { errors: loginErrors, isSubmitting: isLoggingIn } } = useForm({
@@ -41,7 +41,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTab = 'lo
   const onLogin = async (data: any) => {
     try {
       const res = await authService.login(data);
-      loginUser(res.user, res.token);
+      setAuth(res.user, res.token);
       addNotification('success', `¡Bienvenido, ${res.user.name}!`);
       onClose();
     } catch (err: any) {
@@ -52,7 +52,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialTab = 'lo
   const onRegister = async (data: any) => {
     try {
       const res = await authService.register(data);
-      loginUser(res.user, res.token);
+      setAuth(res.user, res.token);
       addNotification('success', 'Cuenta creada con éxito');
       onClose();
     } catch (err: any) {

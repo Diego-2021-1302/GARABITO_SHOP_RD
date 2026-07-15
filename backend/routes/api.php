@@ -33,6 +33,8 @@ Route::middleware('throttle:api')->group(function () {
     Route::middleware('throttle:auth')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
+        Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+        Route::post('/email/resend', [AuthController::class, 'resendVerification']);
     });
 
     Route::post('/logout', [AuthController::class, 'logout']);

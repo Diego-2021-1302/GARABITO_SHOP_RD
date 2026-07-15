@@ -27,12 +27,9 @@ const Login: React.FC = () => {
     try {
       await login(email, password);
       
-      // Obtenemos el usuario actualizado del store
       const user = useAuthStore.getState().user;
-      
       addNotification('success', '¡Bienvenido de nuevo!');
       
-      // Redirección inteligente basada en el rol
       if (user?.role === 'admin') {
         navigate('/admin');
       } else {

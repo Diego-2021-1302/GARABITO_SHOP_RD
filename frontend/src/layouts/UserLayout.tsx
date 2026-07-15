@@ -70,7 +70,6 @@ const UserLayout: React.FC = () => {
       title: 'Configuración',
       items: [
         { name: 'Direcciones', icon: <MapPin className="w-5 h-5" />, path: '/cuenta/direcciones' },
-        { name: 'Métodos de Pago', icon: <CreditCard className="w-5 h-5" />, path: '/cuenta/pagos' },
         { name: 'Mi Perfil', icon: <Settings className="w-5 h-5" />, path: '/cuenta/configuracion' },
       ]
     }

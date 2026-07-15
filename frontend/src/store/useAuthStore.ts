@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { authService } from '../api/auth';
+import { useCartStore } from './useCartStore';
+import { useWishlistStore } from './useWishlistStore';
+import { useRecentProductsStore } from './useRecentProductsStore';
+import { useCompareStore } from './useCompareStore';
 
 interface User {
   id: number;
@@ -39,7 +43,14 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         try {
           const response = await authService.login({ email, password });
-          set({ 
+
+          // Limpiar estados de otros usuarios para evitar filtraciones
+          useCartStore.getState().clearCart();
+          useWishlistStore.getState().clearWishlist();
+          useRecentProductsStore.getState().clearHistory();
+          useCompareStore.getState().clearCompare();
+
+          set({
             user: response.user, 
             token: response.token, 
             isAuthenticated: true,
@@ -53,11 +64,24 @@ export const useAuthStore = create<AuthState>()(
       },
 
       setAuth: (user, token) => {
+        // Limpiar estados previos al establecer autenticación manual (ej: desde modal)
+        useCartStore.getState().clearCart();
+        useWishlistStore.getState().clearWishlist();
+        useRecentProductsStore.getState().clearHistory();
+        useCompareStore.getState().clearCompare();
+
         set({ user, token, isAuthenticated: true });
         localStorage.setItem('token', token);
       },
 
       logout: () => {
+        // Limpiar estados de todos los stores que persisten en localStorage
+        // para evitar filtraciones de datos entre diferentes usuarios en la misma máquina
+        useCartStore.getState().clearCart();
+        useWishlistStore.getState().clearWishlist();
+        useRecentProductsStore.getState().clearHistory();
+        useCompareStore.getState().clearCompare();
+
         set({ user: null, token: null, isAuthenticated: false });
         localStorage.removeItem('token');
         window.location.href = '/login';

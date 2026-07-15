@@ -70,8 +70,13 @@ class PaymentService
                 // Update order status
                 $order->update([
                     'payment_status' => Order::PAYMENT_STATUS_COMPLETED,
-                    'status' => Order::STATUS_PROCESSING,
+                    'status' => Order::STATUS_PAID_CONFIRMED,
+                    'paid_at' => now(),
                 ]);
+
+                // Descontar stock para pagos con tarjeta exitosos
+                $inventoryService = app(\App\Services\Inventory\InventoryService::class);
+                $inventoryService->finalizeOrderStockExit($order);
 
                 Log::info('Payment processed successfully', [
                     'order_id' => $order->id,

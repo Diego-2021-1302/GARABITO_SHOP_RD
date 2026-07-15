@@ -293,8 +293,8 @@ const Checkout: React.FC = () => {
                             <ShoppingCart className="w-6 h-6" />
                           </div>
                           <div>
-                            <p className="font-black text-sm uppercase tracking-tight">{addr.sector}</p>
-                            <p className="text-[10px] text-gray-500 mt-1 uppercase font-bold">{addr.provincia}, {addr.municipio}</p>
+                            <p className="font-black text-sm uppercase tracking-tight">{addr.alias || addr.sector}</p>
+                            <p className="text-[10px] text-gray-500 mt-1 uppercase font-bold">{addr.alias ? addr.sector + ', ' : ''}{addr.provincia}, {addr.municipio}</p>
                           </div>
                         </div>
                         {selectedAddressId === addr.id && <CheckCircle2 className="w-6 h-6 text-brand-primary" />}

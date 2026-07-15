@@ -39,8 +39,12 @@ class PaymentController extends Controller
             // Contra Entrega doesn't require payment processing
             $order->update([
                 'payment_status' => Order::PAYMENT_STATUS_PENDING,
-                'status' => Order::STATUS_PROCESSING,
+                'status' => Order::STATUS_PREPARING,
             ]);
+
+            // Descontar stock para pedidos en efectivo al confirmar preparación
+            $inventoryService = app(\App\Services\Inventory\InventoryService::class);
+            $inventoryService->finalizeOrderStockExit($order);
 
             return response()->json([
                 'success' => true,
