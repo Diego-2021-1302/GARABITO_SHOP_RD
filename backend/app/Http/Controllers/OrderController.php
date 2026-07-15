@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\OrderStatusUpdated;
 use App\Mail\AdminNewPaymentProof;
+use App\Mail\AdminOrderDelivered;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
@@ -336,6 +337,8 @@ class OrderController extends Controller
                         $this->inventoryService->finalizeOrderStockExit($order);
 
                         // Generar Factura PDF (Sin NCF ni ITBIS) y enviar correo
+                        // Pasamos el objeto $order cargado con sus relaciones necesarias
+                        $order->load(['user', 'items.product', 'shippingAddress']);
                         $this->invoiceService->generateInvoicePDF($order);
                     }
                     break;
@@ -449,6 +452,16 @@ class OrderController extends Controller
                 'user_id' => Auth::id(),
             ]);
 
+            // Notificar administradores de la venta finalizada
+            try {
+                $admins = \App\Models\User::where('role', \App\Models\User::ROLE_ADMIN)->get();
+                foreach ($admins as $admin) {
+                    Mail::to($admin->email)->send(new AdminOrderDelivered($order));
+                }
+            } catch (\Exception $e) {
+                Log::error('Error enviando notificación de entrega a admin: ' . $e->getMessage());
+            }
+
             return response()->json([
                 'message' => 'Pedido marcado como entregado con éxito.',
                 'order' => $order
@@ -496,6 +509,13 @@ class OrderController extends Controller
                 'user_id' => Auth::id(),
             ]);
         });
+
+        // Enviar notificación por correo de cancelación
+        try {
+            Mail::to($order->user->email)->send(new OrderStatusUpdated($order, 'Cancelado', 'El pedido ha sido cancelado.'));
+        } catch (\Exception $e) {
+            Log::error('Error enviando correo de cancelación: ' . $e->getMessage());
+        }
 
         return response()->json(['message' => 'Pedido cancelado', 'order' => $order]);
     }

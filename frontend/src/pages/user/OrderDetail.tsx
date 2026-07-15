@@ -171,9 +171,10 @@ const UserOrderDetail: React.FC = () => {
               href={getAssetUrl(order.invoice_pdf_path)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 p-3 bg-slate-900 text-white rounded-2xl hover:scale-105 transition-all shadow-xl shadow-slate-900/20"
+              className="flex items-center gap-3 px-6 py-3 bg-slate-900 text-white rounded-2xl hover:scale-105 transition-all shadow-xl shadow-slate-900/20"
             >
-              <Download className="w-5 h-5" />
+              <FileText className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-widest hidden sm:inline">Descargar Factura</span>
             </a>
           )}
         </div>
@@ -182,8 +183,8 @@ const UserOrderDetail: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           
-          {/* SECCIÓN DE PAGO (Solo si está pendiente o subido) */}
-          {(isPendingPayment || isProofSubmitted) && (
+          {/* SECCIÓN DE PAGO (Visible si está pendiente o si ya existe un comprobante) */}
+          {(isPendingPayment || !!order.payment_proof) && (
             <section className="bg-brand-primary/5 border border-brand-primary/20 rounded-[2.5rem] p-8 md:p-10 space-y-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-brand-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-brand-primary/20">
@@ -191,12 +192,14 @@ const UserOrderDetail: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tight">
-                    {isPendingPayment ? 'Completa tu pago' : 'Comprobante recibido'}
+                    {isPendingPayment ? 'Completa tu pago' : (order.status === 'pago_confirmado' ? 'Pago Verificado' : 'Comprobante recibido')}
                   </h3>
                   <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-0.5">
                     {isPendingPayment
                       ? 'Realiza la transferencia para procesar tu pedido'
-                      : 'Hemos recibido tus datos, el administrador comenzará la revisión pronto.'}
+                      : (order.status === 'pago_confirmado'
+                          ? 'Tu pago ha sido validado exitosamente.'
+                          : 'Hemos recibido tus datos, el administrador comenzará la revisión pronto.')}
                   </p>
                 </div>
               </div>

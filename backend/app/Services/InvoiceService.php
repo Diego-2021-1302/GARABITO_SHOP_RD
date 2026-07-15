@@ -39,10 +39,15 @@ class InvoiceService
                 Storage::disk('public')->put($path, $htmlContent);
             }
 
+            // Cambiar visibilidad a pública para que sea accesible vía URL
+            Storage::disk('public')->setVisibility($path, 'public');
+
             $order->update(['invoice_pdf_path' => $path]);
 
-            // Enviar factura por correo automáticamente
-            $this->sendInvoiceByEmail($order);
+            // Enviar factura por correo automáticamente si el pedido ya está confirmado
+            if ($order->status === \App\Models\Order::STATUS_PAID_CONFIRMED || $order->payment_status === \App\Models\Order::PAYMENT_STATUS_COMPLETED) {
+                $this->sendInvoiceByEmail($order);
+            }
 
             return $path;
         } catch (\Exception $e) {

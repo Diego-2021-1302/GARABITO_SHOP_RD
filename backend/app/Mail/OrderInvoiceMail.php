@@ -41,10 +41,13 @@ class OrderInvoiceMail extends Mailable implements ShouldQueue
     {
         $attachments = [];
 
-        if ($this->order->invoice_pdf_path && Storage::disk('public')->exists($this->order->invoice_pdf_path)) {
-            $attachments[] = Attachment::fromPath(Storage::disk('public')->path($this->order->invoice_pdf_path))
-                ->as('Factura_' . $this->order->order_number . '.pdf')
-                ->withMime('application/pdf');
+        if ($this->order->invoice_pdf_path) {
+            $path = Storage::disk('public')->path($this->order->invoice_pdf_path);
+            if (file_exists($path)) {
+                $attachments[] = Attachment::fromPath($path)
+                    ->as('Factura_' . $this->order->order_number . '.pdf')
+                    ->withMime('application/pdf');
+            }
         }
 
         return $attachments;
