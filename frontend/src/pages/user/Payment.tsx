@@ -12,7 +12,8 @@ import {
   Check,
   Upload,
   ShoppingBag,
-  Info
+  Info,
+  FileText
 } from 'lucide-react';
 import SEO from '../../components/common/SEO';
 import { useOrderDetail, useUploadPaymentProof } from '../../hooks/useOrders';
