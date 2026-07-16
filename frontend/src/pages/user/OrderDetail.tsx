@@ -211,7 +211,7 @@ const UserOrderDetail: React.FC = () => {
       {/* Header Info */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white dark:bg-[#0B0F1A] p-8 rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm">
         <div>
-          <h1 className="text-3xl font-poppins font-black text-slate-800 dark:text-white uppercase tracking-tighter">Orden #{order.order_number}</h1>
+          <h1 className="text-3xl font-poppins font-black text-slate-800 dark:text-dark-text uppercase tracking-tighter">Orden #{order.order_number}</h1>
           <p className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.2em] mt-1">Realizado el {new Date(order.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
         </div>
         <div className="flex items-center gap-4">
@@ -273,7 +273,7 @@ const UserOrderDetail: React.FC = () => {
                       <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
                       <p className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em]">En Camino</p>
                     </div>
-                    <h4 className="text-sm md:text-base font-black text-slate-800 dark:text-white uppercase tracking-tight">Tu repartidor está en ruta</h4>
+                    <h4 className="text-sm md:text-base font-black text-slate-800 dark:text-dark-text uppercase tracking-tight">Tu repartidor está en ruta</h4>
                     {lastUpdateText && (
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Actualizado {lastUpdateText}</p>
                     )}
@@ -285,7 +285,7 @@ const UserOrderDetail: React.FC = () => {
                   {order.shipment?.driver?.phone && (
                     <a
                       href={`tel:${order.shipment.driver.phone}`}
-                      className="pointer-events-auto w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-2xl text-slate-600 dark:text-white hover:bg-brand-primary hover:text-white transition-all flex items-center justify-center group/btn relative"
+                      className="pointer-events-auto w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-2xl text-slate-600 dark:text-dark-text hover:bg-brand-primary hover:text-white transition-all flex items-center justify-center group/btn relative"
                     >
                       <Phone className="w-5 h-5" />
                       <span className="absolute -top-10 scale-0 group-hover/btn:scale-100 transition-all bg-slate-900 text-white text-[8px] px-2 py-1 rounded-md font-bold uppercase whitespace-nowrap">Llamar</span>
@@ -326,7 +326,7 @@ const UserOrderDetail: React.FC = () => {
                   <CreditCard className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                  <h3 className="text-lg font-black text-slate-800 dark:text-dark-text uppercase tracking-tight">
                     {isPendingPayment ? 'Completa tu pago' : (order.status === 'pago_confirmado' ? 'Pago Verificado' : 'Comprobante recibido')}
                   </h3>
                   <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-0.5">
@@ -340,7 +340,7 @@ const UserOrderDetail: React.FC = () => {
               </div>
 
               {isPendingPayment && (
-                <div className="bg-white dark:bg-brand-dark/40 border border-gray-100 dark:border-white/5 p-8 rounded-[2.5rem] space-y-6">
+                <div className="bg-white dark:bg-dark-surface/40 border border-gray-100 dark:border-white/5 p-8 rounded-[2.5rem] space-y-6">
                   <div className="flex flex-col md:flex-row justify-between gap-6 pb-6 border-b border-gray-100 dark:border-white/5">
                     <div className="space-y-1">
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Monto a pagar</p>
@@ -348,7 +348,7 @@ const UserOrderDetail: React.FC = () => {
                     </div>
                     <div className="space-y-1 md:text-right">
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Referencia del pedido</p>
-                      <p className="text-xl font-poppins font-black text-brand-secondary dark:text-white">#{order.order_number}</p>
+                      <p className="text-xl font-poppins font-black text-light-text dark:text-dark-text">#{order.order_number}</p>
                     </div>
                   </div>
 
@@ -366,7 +366,7 @@ const UserOrderDetail: React.FC = () => {
                             {copiedId === bank.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                           </button>
                         </div>
-                        <p className="text-xl font-black text-slate-800 dark:text-white font-mono tracking-wider">{bank.accountNumber}</p>
+                        <p className="text-xl font-black text-slate-800 dark:text-dark-text font-mono tracking-wider">{bank.accountNumber}</p>
                         <p className="text-[9px] text-slate-400 font-bold uppercase mt-2">{bank.accountType} • {bank.ownerName}</p>
                         <Building2 className="absolute -bottom-2 -right-2 w-12 h-12 text-slate-500/5 -rotate-12 group-hover:scale-110 transition-transform" />
                       </div>
@@ -391,7 +391,7 @@ const UserOrderDetail: React.FC = () => {
                       <CheckCircle2 className="w-10 h-10" />
                    </div>
                    <div className="flex-1 text-center md:text-left">
-                      <p className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight mb-2">Datos registrados correctamente</p>
+                      <p className="text-sm font-black text-slate-800 dark:text-dark-text uppercase tracking-tight mb-2">Datos registrados correctamente</p>
                       <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                          <div className="text-[10px] font-bold uppercase text-slate-400">Banco: <span className="text-slate-600 dark:text-gray-300">{order.issuing_bank}</span></div>
                          <div className="text-[10px] font-bold uppercase text-slate-400">Monto: <span className="text-brand-primary">RD$ {Number(order.amount_paid).toLocaleString()}</span></div>
@@ -420,7 +420,7 @@ const UserOrderDetail: React.FC = () => {
 
           <section className="bg-white dark:bg-[#0B0F1A] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden">
             <div className="p-8 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
-              <h3 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tight">Resumen de productos</h3>
+              <h3 className="text-lg font-black text-slate-800 dark:text-dark-text uppercase tracking-tight">Resumen de productos</h3>
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{order.items?.length} artículos</span>
             </div>
             <div className="divide-y divide-slate-100 dark:divide-white/5">
@@ -434,11 +434,11 @@ const UserOrderDetail: React.FC = () => {
                     />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-black text-sm text-slate-800 dark:text-white uppercase tracking-tight mb-1">{item.product?.name}</h4>
+                    <h4 className="font-black text-sm text-slate-800 dark:text-dark-text uppercase tracking-tight mb-1">{item.product?.name}</h4>
                     <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Cantidad: {item.quantity}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-black text-slate-800 dark:text-white text-lg tracking-tighter">RD$ {Number(item.subtotal).toLocaleString()}</p>
+                    <p className="font-black text-slate-800 dark:text-dark-text text-lg tracking-tighter">RD$ {Number(item.subtotal).toLocaleString()}</p>
                     <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter mt-0.5">RD$ {Number(item.unit_price).toLocaleString()} c/u</p>
                   </div>
                 </div>
@@ -464,7 +464,7 @@ const UserOrderDetail: React.FC = () => {
                 <CreditCard className="w-4 h-4 text-brand-primary" />
                 Pago
               </h4>
-              <p className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest">{order.payment_method === 'transfer' ? 'Transferencia Bancaria' : 'Efectivo contra entrega'}</p>
+              <p className="text-xs font-black text-slate-800 dark:text-dark-text uppercase tracking-widest">{order.payment_method === 'transfer' ? 'Transferencia Bancaria' : 'Efectivo contra entrega'}</p>
               <div className="mt-3">
                 <span className={`text-[10px] px-4 py-2 rounded-xl font-black tracking-widest uppercase ${order.payment_status === 'completed' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>
                   {order.payment_status === 'completed' ? 'PAGADO' : 'PENDIENTE DE PAGO'}
@@ -563,7 +563,7 @@ const UserOrderDetail: React.FC = () => {
               >
                 {messages.length === 0 && (
                   <div className="text-center py-20">
-                    <MessageSquareText className="w-12 h-12 text-slate-200 dark:text-white/5 mx-auto mb-4" />
+                    <MessageSquareText className="w-12 h-12 text-slate-200 dark:text-dark-text/5 mx-auto mb-4" />
                     <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Inicia una conversación con nosotros</p>
                   </div>
                 )}
@@ -591,7 +591,7 @@ const UserOrderDetail: React.FC = () => {
                     value={chatMessage}
                     onChange={(e) => setChatMessage(e.target.value)}
                     placeholder="Escribe tu mensaje aquí..."
-                    className="flex-1 bg-transparent border-none outline-none text-sm py-2 dark:text-white font-bold placeholder:text-slate-400"
+                    className="flex-1 bg-transparent border-none outline-none text-sm py-2 dark:text-dark-text font-bold placeholder:text-slate-400"
                     disabled={isSendingMessage}
                   />
                   <button
@@ -621,7 +621,7 @@ const UserOrderDetail: React.FC = () => {
               <div className="w-20 h-20 bg-red-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <XCircle className="w-10 h-10 text-red-500" />
               </div>
-              <h3 className="text-xl font-black text-slate-800 dark:text-white mb-2 uppercase tracking-tight">¿Cancelar pedido?</h3>
+              <h3 className="text-xl font-black text-slate-800 dark:text-dark-text mb-2 uppercase tracking-tight">¿Cancelar pedido?</h3>
               <p className="text-slate-500 text-xs font-bold mb-10 leading-relaxed uppercase tracking-widest">Se liberará el inventario reservado inmediatamente. Esta acción es irreversible.</p>
               <div className="flex gap-4">
                 <button onClick={() => setIsCancelModalOpen(false)} className="flex-1 py-4 text-xs font-black text-slate-500 uppercase tracking-widest">Cerrar</button>

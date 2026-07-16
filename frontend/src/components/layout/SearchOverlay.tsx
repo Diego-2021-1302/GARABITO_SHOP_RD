@@ -50,7 +50,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -100, opacity: 0 }}
-            className="relative bg-white dark:bg-brand-dark w-full max-h-screen shadow-2xl overflow-hidden rounded-b-[3rem]"
+            className="relative bg-white dark:bg-dark-surface w-full max-h-screen shadow-2xl overflow-hidden rounded-b-[3rem]"
           >
             <div className="container-custom py-8">
               <div className="relative flex items-center gap-4">

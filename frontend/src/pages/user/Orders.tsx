@@ -98,15 +98,15 @@ const UserOrders: React.FC = () => {
       
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-poppins font-bold dark:text-white">Mis Pedidos</h1>
+          <h1 className="text-3xl font-poppins font-bold dark:text-dark-text">Mis Pedidos</h1>
           <p className="text-slate-500 dark:text-gray-400">Sigue el progreso de tus compras desde la revisión hasta la entrega</p>
         </div>
       </div>
 
       {orders.length === 0 ? (
         <div className="text-center py-20 bg-white dark:bg-white/5 rounded-3xl border border-dashed border-slate-200 dark:border-white/10">
-          <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-slate-200 dark:text-white/10" />
-          <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">No tienes pedidos activos</h3>
+          <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-slate-200 dark:text-dark-text/10" />
+          <h3 className="text-xl font-bold text-slate-800 dark:text-dark-text mb-2">No tienes pedidos activos</h3>
           <p className="text-slate-500 dark:text-gray-400 mb-6">Tus compras aparecerán aquí una vez que confirmes el carrito.</p>
           <button onClick={() => navigate('/catalogo')} className="bg-brand-primary text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform">Explorar Tienda</button>
         </div>
@@ -124,7 +124,7 @@ const UserOrders: React.FC = () => {
                 <div className="flex flex-wrap gap-6 md:gap-10">
                   <div>
                     <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">No. Pedido</span>
-                    <span className="font-mono font-bold text-slate-800 dark:text-white">#{order.order_number}</span>
+                    <span className="font-mono font-bold text-slate-800 dark:text-dark-text">#{order.order_number}</span>
                   </div>
                   <div>
                     <span className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Estado Actual</span>
@@ -206,7 +206,7 @@ const UserOrders: React.FC = () => {
                     <Wallet className="w-6 h-6 text-brand-primary" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-800 dark:text-white">Instrucciones de Pago</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-800 dark:text-dark-text">Instrucciones de Pago</h3>
                     <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Pedido #{selectedOrderForPayment.order_number}</p>
                   </div>
                 </div>
@@ -228,7 +228,7 @@ const UserOrders: React.FC = () => {
                     </div>
                     <div className="space-y-1 md:text-right">
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Referencia del pedido</p>
-                      <p className="text-xl font-poppins font-black text-brand-secondary dark:text-white">#{selectedOrderForPayment.order_number}</p>
+                      <p className="text-xl font-poppins font-black text-light-text dark:text-dark-text">#{selectedOrderForPayment.order_number}</p>
                     </div>
                   </div>
                 </div>
@@ -257,11 +257,11 @@ const UserOrders: React.FC = () => {
                               {copiedId === bank.id ? <><Check className="w-3 h-3" /> Copiado</> : <><Copy className="w-3 h-3" /> Copiar</>}
                             </button>
                           </div>
-                          <p className="text-base font-black text-slate-800 dark:text-white tracking-wider relative z-10">{bank.accountNumber}</p>
+                          <p className="text-base font-black text-slate-800 dark:text-dark-text tracking-wider relative z-10">{bank.accountNumber}</p>
                           <p className="text-[9px] text-slate-500 font-bold uppercase relative z-10">
                             {bank.accountType} <span className="mx-1">•</span> {bank.ownerName}
                           </p>
-                          <Building2 className="absolute -bottom-2 -right-2 w-12 h-12 text-slate-100 dark:text-white/5 -rotate-12 group-hover:scale-110 transition-transform duration-500" />
+                          <Building2 className="absolute -bottom-2 -right-2 w-12 h-12 text-slate-100 dark:text-dark-text/5 -rotate-12 group-hover:scale-110 transition-transform duration-500" />
                         </div>
                       ))
                     ) : (
@@ -298,7 +298,7 @@ const UserOrders: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Banco Emisor</label>
-                      <select name="issuing_bank" required className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-4 py-4 text-sm font-bold outline-none dark:text-white focus:ring-2 focus:ring-brand-primary">
+                      <select name="issuing_bank" required className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-4 py-4 text-sm font-bold outline-none dark:text-dark-text focus:ring-2 focus:ring-brand-primary">
                         <option value="">Selecciona tu banco...</option>
                         {settings?.general?.bankAccounts?.map((bank: any) => (
                           <option key={bank.id} value={bank.bankName}>{bank.bankName}</option>
@@ -308,11 +308,11 @@ const UserOrders: React.FC = () => {
                     </div>
                     <div>
                       <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Referencia / No. Autorización</label>
-                      <input name="transaction_reference" type="text" required placeholder="000000" className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-4 py-4 text-sm font-bold outline-none dark:text-white focus:ring-2 focus:ring-brand-primary" />
+                      <input name="transaction_reference" type="text" required placeholder="000000" className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-4 py-4 text-sm font-bold outline-none dark:text-dark-text focus:ring-2 focus:ring-brand-primary" />
                     </div>
                     <div className="md:col-span-2">
                       <label className="block text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Adjuntar Comprobante (JPG, PNG, WEBP, PDF - Máx 10MB)</label>
-                      <input name="proof" type="file" required accept="image/*,.pdf" className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-4 py-3.5 text-xs font-bold outline-none dark:text-white file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-brand-primary file:text-white cursor-pointer" />
+                      <input name="proof" type="file" required accept="image/*,.pdf" className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-4 py-3.5 text-xs font-bold outline-none dark:text-dark-text file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-brand-primary file:text-white cursor-pointer" />
                     </div>
                   </div>
 

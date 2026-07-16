@@ -14,7 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   // Si el store aún no ha terminado de cargar los datos del localStorage, mostramos un loader
   if (!_hasHydrated) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-white dark:bg-brand-dark">
+      <div className="h-screen w-screen flex items-center justify-center bg-white dark:bg-dark-surface">
         <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );

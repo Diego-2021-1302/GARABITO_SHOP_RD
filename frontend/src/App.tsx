@@ -180,7 +180,7 @@ const App: React.FC = () => {
 
   if (!_hasHydrated) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-brand-dark">
+      <div className="h-screen w-screen flex items-center justify-center bg-dark-bg">
         <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -191,7 +191,7 @@ const App: React.FC = () => {
       <Router>
         <Analytics />
         <Suspense fallback={
-          <div className="h-screen w-screen flex items-center justify-center bg-brand-dark">
+          <div className="h-screen w-screen flex items-center justify-center bg-dark-bg">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 border-4 border-brand-primary border-t-transparent rounded-full animate-spin" />
               <p className="font-poppins font-bold text-brand-primary animate-pulse tracking-widest text-xs uppercase">Garabito Shop</p>

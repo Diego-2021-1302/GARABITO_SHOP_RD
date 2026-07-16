@@ -193,7 +193,7 @@ const Cart: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10">
           {/* Listado de Productos */}
-          <div className="lg:col-span-8 space-y-4 sm:space-y-6">
+          <div className={`${items.length === 0 ? 'lg:col-span-12' : 'lg:col-span-8'} space-y-4 sm:space-y-6`}>
             <AnimatePresence mode="popLayout">
               {items.length === 0 ? (
                 <motion.div
@@ -272,133 +272,135 @@ const Cart: React.FC = () => {
             </AnimatePresence>
           </div>
 
-          {/* Resumen de Compra */}
-          <div className="lg:col-span-4 space-y-6">
-            <div className="bg-[#0B0F1A]/80 border border-white/10 p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] sticky top-32 space-y-6 sm:space-y-10 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-3xl">
-              <div className="flex items-center gap-3">
-                 <div className="w-1.5 h-6 bg-brand-primary rounded-full shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
-                 <h3 className="text-xl sm:text-2xl font-black tracking-tighter uppercase">Cálculo Total</h3>
-              </div>
-              
-              <div className="space-y-4 sm:space-y-5">
-                <div className="flex justify-between items-center px-1">
-                   <label className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Destino de Envío:</label>
-                   <button
-                     onClick={() => setShowMapModal(true)}
-                     className="text-[8px] sm:text-[9px] font-black text-brand-primary uppercase hover:underline tracking-widest flex items-center gap-1.5"
-                   >
-                     <MapIcon size={10} /> Cambiar mapa
-                   </button>
+          {/* Resumen de Compra - Solo se muestra si hay productos */}
+          {items.length > 0 && (
+            <div className="lg:col-span-4 space-y-6">
+              <div className="bg-[#0B0F1A]/80 border border-white/10 p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] sticky top-32 space-y-6 sm:space-y-10 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7)] backdrop-blur-3xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-6 bg-brand-primary rounded-full shadow-[0_0_15px_rgba(37,99,235,0.5)]" />
+                  <h3 className="text-xl sm:text-2xl font-black tracking-tighter uppercase">Cálculo Total</h3>
                 </div>
 
-                {!isLoadingAddresses && addressList.length > 0 && !manualLocation ? (
-                  <div className="relative group">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
-                       <MapPin className="text-brand-primary w-4 h-4" />
-                    </div>
-                    <select 
-                      value={selectedAddressId || ''}
-                      onChange={(e) => setSelectedAddressId(Number(e.target.value))}
-                      className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 sm:py-5 pl-14 pr-10 text-[10px] sm:text-[11px] font-bold text-white appearance-none outline-none focus:ring-4 focus:ring-brand-primary/10 transition-all cursor-pointer"
-                    >
-                      {addressList.map((addr: Address) => (
-                        <option key={addr.id} value={addr.id} className="bg-[#0B0F1A]">
-                          {addr.alias || addr.sector} — {addr.first_name}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none group-hover:text-white transition-colors" />
-                  </div>
-                ) : manualLocation ? (
-                  <div className="bg-brand-primary/5 border border-brand-primary/20 rounded-[1.5rem] p-4 sm:p-5 flex items-center justify-between group relative overflow-hidden">
-                    <div className="flex items-center gap-3 sm:gap-4 relative z-10">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-brand-primary text-white flex items-center justify-center shadow-lg">
-                        <Navigation size={18} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[9px] sm:text-[10px] font-black text-brand-primary uppercase tracking-widest mb-0.5">Ubicación Manual</p>
-                        <p className="text-[10px] sm:text-[11px] font-bold text-white truncate max-w-[120px] sm:max-w-[150px] italic">
-                          {manualLocation.sector || manualLocation.municipio}
-                        </p>
-                      </div>
-                    </div>
+                <div className="space-y-4 sm:space-y-5">
+                  <div className="flex justify-between items-center px-1">
+                    <label className="text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Destino de Envío:</label>
                     <button
-                      onClick={() => {
-                        setManualLocation(null);
-                        if (addressList.length > 0) setSelectedAddressId(addressList[0].id);
-                      }}
-                      className="relative z-10 p-2 text-gray-500 hover:text-white transition-colors"
+                      onClick={() => setShowMapModal(true)}
+                      className="text-[8px] sm:text-[9px] font-black text-brand-primary uppercase hover:underline tracking-widest flex items-center gap-1.5"
                     >
-                      <X size={16} />
+                      <MapIcon size={10} /> Cambiar mapa
                     </button>
-                    <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-brand-primary/10 rounded-full blur-2xl group-hover:bg-brand-primary/20 transition-all" />
                   </div>
-                ) : !isLoadingAddresses && (
-                   <button
-                     onClick={() => setShowMapModal(true)}
-                     className="w-full p-4 sm:p-6 bg-white/5 border border-dashed border-white/10 rounded-[1.5rem] flex flex-col items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all text-gray-500 hover:text-white"
-                   >
-                      <MapIcon size={20} className="opacity-40" />
-                      <p className="text-[9px] font-black uppercase tracking-widest">Ubicar en el mapa</p>
-                   </button>
-                )}
-              </div>
 
-              <div className="space-y-4 sm:space-y-5 py-6 sm:py-8 border-y border-white/5">
-                <div className="flex justify-between items-center text-[11px] sm:text-sm font-bold uppercase tracking-widest text-gray-500">
-                  <span className="text-[9px] sm:text-[10px] tracking-[0.2em]">Suma Parcial</span>
-                  <span className="text-white">RD$ {totalPrice.toLocaleString()}</span>
+                  {!isLoadingAddresses && addressList.length > 0 && !manualLocation ? (
+                    <div className="relative group">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
+                        <MapPin className="text-brand-primary w-4 h-4" />
+                      </div>
+                      <select
+                        value={selectedAddressId || ''}
+                        onChange={(e) => setSelectedAddressId(Number(e.target.value))}
+                        className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 sm:py-5 pl-14 pr-10 text-[10px] sm:text-[11px] font-bold text-white appearance-none outline-none focus:ring-4 focus:ring-brand-primary/10 transition-all cursor-pointer"
+                      >
+                        {addressList.map((addr: Address) => (
+                          <option key={addr.id} value={addr.id} className="bg-[#0B0F1A]">
+                            {addr.alias || addr.sector} — {addr.first_name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none group-hover:text-white transition-colors" />
+                    </div>
+                  ) : manualLocation ? (
+                    <div className="bg-brand-primary/5 border border-brand-primary/20 rounded-[1.5rem] p-4 sm:p-5 flex items-center justify-between group relative overflow-hidden">
+                      <div className="flex items-center gap-3 sm:gap-4 relative z-10">
+                        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-brand-primary text-white flex items-center justify-center shadow-lg">
+                          <Navigation size={18} />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-[9px] sm:text-[10px] font-black text-brand-primary uppercase tracking-widest mb-0.5">Ubicación Manual</p>
+                          <p className="text-[10px] sm:text-[11px] font-bold text-white truncate max-w-[120px] sm:max-w-[150px] italic">
+                            {manualLocation.sector || manualLocation.municipio}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setManualLocation(null);
+                          if (addressList.length > 0) setSelectedAddressId(addressList[0].id);
+                        }}
+                        className="relative z-10 p-2 text-gray-500 hover:text-white transition-colors"
+                      >
+                        <X size={16} />
+                      </button>
+                      <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-brand-primary/10 rounded-full blur-2xl group-hover:bg-brand-primary/20 transition-all" />
+                    </div>
+                  ) : !isLoadingAddresses && (
+                    <button
+                      onClick={() => setShowMapModal(true)}
+                      className="w-full p-4 sm:p-6 bg-white/5 border border-dashed border-white/10 rounded-[1.5rem] flex flex-col items-center gap-2 sm:gap-3 hover:bg-white/10 transition-all text-gray-500 hover:text-white"
+                    >
+                        <MapIcon size={20} className="opacity-40" />
+                        <p className="text-[9px] font-black uppercase tracking-widest">Ubicar en el mapa</p>
+                    </button>
+                  )}
                 </div>
-                <div className="flex justify-between items-center text-[11px] sm:text-sm font-bold uppercase tracking-widest text-gray-500">
-                  <div className="flex flex-col">
-                    <span className="text-[9px] sm:text-[10px] tracking-[0.2em]">Logística ({shippingInfo.zoneName})</span>
-                    {shippingInfo.isFree && <span className="text-[8px] text-emerald-500 font-black uppercase tracking-widest">Bonificado</span>}
+
+                <div className="space-y-4 sm:space-y-5 py-6 sm:py-8 border-y border-white/5">
+                  <div className="flex justify-between items-center text-[11px] sm:text-sm font-bold uppercase tracking-widest text-gray-500">
+                    <span className="text-[9px] sm:text-[10px] tracking-[0.2em]">Suma Parcial</span>
+                    <span className="text-white">RD$ {totalPrice.toLocaleString()}</span>
                   </div>
-                  <span className={shippingInfo.isFree ? 'text-emerald-500' : 'text-white'}>
-                    {shippingInfo.isFree ? 'GRATIS' : `RD$ ${shipping.toLocaleString()}`}
-                  </span>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <div className="flex flex-col items-center text-center mb-6 sm:mb-10">
-                   <span className="font-black text-gray-500 uppercase text-[9px] sm:text-[10px] tracking-[0.4em] mb-2 sm:mb-3">Inversión Final</span>
-                   <div className="flex items-baseline gap-2">
-                     <span className="text-lg sm:text-xl font-black text-brand-primary">RD$</span>
-                     <span className="text-4xl sm:text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                       {finalTotal.toLocaleString()}
-                     </span>
-                   </div>
-                   <span className="text-[8px] sm:text-[9px] text-emerald-500/60 font-black uppercase tracking-[0.3em] mt-2 sm:mt-3">Seguridad y Garantía Incluida</span>
+                  <div className="flex justify-between items-center text-[11px] sm:text-sm font-bold uppercase tracking-widest text-gray-500">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] sm:text-[10px] tracking-[0.2em]">Logística ({shippingInfo.zoneName})</span>
+                      {shippingInfo.isFree && <span className="text-[8px] text-emerald-500 font-black uppercase tracking-widest">Bonificado</span>}
+                    </div>
+                    <span className={shippingInfo.isFree ? 'text-emerald-500' : 'text-white'}>
+                      {shippingInfo.isFree ? 'GRATIS' : `RD$ ${shipping.toLocaleString()}`}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="space-y-3 sm:space-y-4">
-                  <button 
-                    onClick={handleGoToCheckout}
-                    disabled={items.length === 0}
-                    className="group relative w-full py-4 sm:py-6 bg-brand-primary text-white rounded-[1.5rem] sm:rounded-[2.5rem] font-black text-[10px] sm:text-[11px] uppercase tracking-[0.4em] shadow-[0_20px_50px_-10px_rgba(37,99,235,0.5)] hover:scale-[1.02] active:scale-95 transition-all overflow-hidden flex items-center justify-center gap-4 disabled:opacity-50 disabled:grayscale"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                    <Zap size={18} className="fill-current" />
-                    PROCEDER AL PAGO
-                  </button>
+                <div className="pt-2">
+                  <div className="flex flex-col items-center text-center mb-6 sm:mb-10">
+                    <span className="font-black text-gray-500 uppercase text-[9px] sm:text-[10px] tracking-[0.4em] mb-2 sm:mb-3">Inversión Final</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-lg sm:text-xl font-black text-brand-primary">RD$</span>
+                      <span className="text-4xl sm:text-6xl font-black tracking-tighter text-white drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                        {finalTotal.toLocaleString()}
+                      </span>
+                    </div>
+                    <span className="text-[8px] sm:text-[9px] text-emerald-500/60 font-black uppercase tracking-[0.3em] mt-2 sm:mt-3">Seguridad y Garantía Incluida</span>
+                  </div>
 
-                  <button 
-                    onClick={handleWhatsAppCheckout}
-                    disabled={items.length === 0}
-                    className="w-full py-3 sm:py-5 bg-white/5 border border-white/10 text-white rounded-[1.25rem] sm:rounded-[1.5rem] font-black text-[9px] sm:text-[10px] uppercase tracking-[0.3em] hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all flex items-center justify-center gap-4 disabled:opacity-50"
-                  >
-                    <MessageCircle size={16} />
-                    WhatsApp
-                  </button>
-                </div>
+                  <div className="space-y-3 sm:space-y-4">
+                    <button
+                      onClick={handleGoToCheckout}
+                      disabled={items.length === 0}
+                      className="group relative w-full py-4 sm:py-6 bg-brand-primary text-white rounded-[1.5rem] sm:rounded-[2.5rem] font-black text-[10px] sm:text-[11px] uppercase tracking-[0.4em] shadow-[0_20px_50px_-10px_rgba(37,99,235,0.5)] hover:scale-[1.02] active:scale-95 transition-all overflow-hidden flex items-center justify-center gap-4 disabled:opacity-50 disabled:grayscale"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                      <Zap size={18} className="fill-current" />
+                      PROCEDER AL PAGO
+                    </button>
 
-                <div className="mt-6 sm:mt-8 flex items-center gap-3 text-[8px] sm:text-[9px] font-black text-gray-600 uppercase justify-center tracking-[0.2em]">
-                  <Lock className="w-3.5 h-3.5 text-emerald-500" /> Seguridad Elite
+                    <button
+                      onClick={handleWhatsAppCheckout}
+                      disabled={items.length === 0}
+                      className="w-full py-3 sm:py-5 bg-white/5 border border-white/10 text-white rounded-[1.25rem] sm:rounded-[1.5rem] font-black text-[9px] sm:text-[10px] uppercase tracking-[0.3em] hover:bg-emerald-500 hover:border-emerald-500 hover:text-white transition-all flex items-center justify-center gap-4 disabled:opacity-50"
+                    >
+                      <MessageCircle size={16} />
+                      WhatsApp
+                    </button>
+                  </div>
+
+                  <div className="mt-6 sm:mt-8 flex items-center gap-3 text-[8px] sm:text-[9px] font-black text-gray-600 uppercase justify-center tracking-[0.2em]">
+                    <Lock className="w-3.5 h-3.5 text-emerald-500" /> Seguridad Elite
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

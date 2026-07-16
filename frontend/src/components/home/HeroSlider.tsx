@@ -56,7 +56,7 @@ const HeroSlider: React.FC = () => {
 
   return (
     <section 
-      className="relative h-[90vh] min-h-[700px] w-full overflow-hidden bg-brand-dark"
+      className="relative h-[90vh] min-h-[700px] w-full overflow-hidden bg-dark-surface"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
@@ -75,8 +75,8 @@ const HeroSlider: React.FC = () => {
             alt={slides[current].title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-dark-surface via-dark-surface/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-dark-surface/80 via-transparent to-transparent" />
         </motion.div>
       </AnimatePresence>
 
@@ -117,7 +117,7 @@ const HeroSlider: React.FC = () => {
               <div className="flex flex-wrap gap-6">
                 <Link 
                   to={slides[current].btnLink} 
-                  className="group relative overflow-hidden bg-white text-brand-dark px-12 py-5 rounded-[2rem] font-black text-lg transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-white/10"
+                  className="group relative overflow-hidden bg-white text-dark-surface px-12 py-5 rounded-[2rem] font-black text-lg transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-white/10"
                 >
                   <div className="absolute inset-0 bg-brand-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                   <span className="relative z-10 flex items-center gap-3 group-hover:text-white transition-colors">
@@ -171,7 +171,7 @@ const HeroSlider: React.FC = () => {
       </div>
 
       {/* Bottom Gradient for smooth transition */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white dark:from-brand-dark to-transparent z-10" />
+      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white dark:from-dark-surface to-transparent z-10" />
     </section>
   );
 };

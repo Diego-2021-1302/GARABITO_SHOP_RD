@@ -22,13 +22,13 @@ import { getAssetUrl } from '../utils/asset';
 // ─── Componentes de Diseño Premium ──────────────────────────────
 
 const FeatureCard = ({ icon: Icon, title, description }: { icon: any, title: string, description: string }) => (
-  <div className="flex flex-col items-center text-center p-8 bg-white/[0.02] border border-white/5 rounded-[2.5rem] backdrop-blur-xl hover:bg-white/[0.05] hover:border-brand-primary/20 transition-all group relative overflow-hidden">
+  <div className="flex flex-col items-center text-center p-8 glass-card backdrop-blur-xl group relative overflow-hidden h-full">
     <div className="absolute -right-4 -top-4 w-24 h-24 bg-brand-primary/5 rounded-full blur-2xl group-hover:bg-brand-primary/10 transition-colors" />
     <div className="w-16 h-16 bg-brand-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
       <Icon size={32} className="text-brand-primary" />
     </div>
-    <h3 className="text-lg font-black uppercase tracking-tight text-white mb-3">{title}</h3>
-    <p className="text-[11px] text-slate-400 leading-relaxed font-medium px-4">{description}</p>
+    <h3 className="text-lg font-black uppercase tracking-tight text-light-text dark:text-white mb-3">{title}</h3>
+    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium px-4">{description}</p>
   </div>
 );
 
@@ -71,7 +71,7 @@ const GuestBanner = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#020617] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-light-bg dark:bg-dark-bg py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-500">
       {/* ─── Capas de Fondo Dinámicas ─── */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_30%_30%,rgba(37,99,235,0.15),transparent_50%)]" />
@@ -91,10 +91,10 @@ const GuestBanner = () => {
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="inline-flex items-center gap-3 self-center lg:self-start px-4 py-2 rounded-full border border-white/5 bg-white/5 backdrop-blur-md"
+            className="inline-flex items-center gap-3 self-center lg:self-start px-4 py-2 rounded-full border border-light-border dark:border-white/5 bg-light-surface dark:bg-white/5 backdrop-blur-md"
           >
             <Sparkles size={14} className="text-brand-primary animate-pulse" />
-            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-gray-400">Premium Tech Experience</span>
+            <span className="text-[10px] font-black tracking-[0.3em] uppercase text-slate-500 dark:text-gray-400">Premium Tech Experience</span>
           </motion.div>
 
           <div className="space-y-6">
@@ -102,7 +102,7 @@ const GuestBanner = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-[0.95] tracking-tighter"
+              className="text-4xl sm:text-6xl lg:text-7xl font-black text-light-text dark:text-white leading-[0.95] tracking-tighter"
             >
               ¡Bienvenidos a <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-blue-400 to-indigo-500">Garabito Shop!</span>
@@ -111,7 +111,7 @@ const GuestBanner = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-sm sm:text-lg text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium"
+              className="text-sm sm:text-lg text-slate-500 dark:text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium"
             >
               Somos tu tienda online premium de tecnología en Santo Domingo. Nos enfocamos exclusivamente en ofrecerte hardware de nueva generación con total comodidad y seguridad. Operamos de forma 100% digital, facilitando tus compras mediante transferencia bancaria y garantizando entregas rápidas directamente hasta tu puerta.
             </motion.p>
@@ -123,20 +123,20 @@ const GuestBanner = () => {
             transition={{ delay: 0.3 }}
             className="grid grid-cols-1 sm:grid-cols-3 gap-4"
           >
-            <div className="flex flex-col items-center lg:items-start gap-2 p-4 bg-white/5 rounded-2xl border border-white/5">
+            <div className="flex flex-col items-center lg:items-start gap-2 p-4 bg-light-surface dark:bg-white/5 rounded-2xl border border-light-border dark:border-white/5">
               <Smartphone size={20} className="text-brand-primary" />
-              <h4 className="text-[10px] font-black uppercase text-white tracking-widest">100% Digital</h4>
-              <p className="text-[9px] text-gray-500 font-bold uppercase leading-tight">Compra desde tu hogar o taller de trabajo.</p>
+              <h4 className="text-[10px] font-black uppercase text-light-text dark:text-white tracking-widest">100% Digital</h4>
+              <p className="text-[9px] text-slate-400 dark:text-gray-500 font-bold uppercase leading-tight">Compra desde tu hogar o taller de trabajo.</p>
             </div>
-            <div className="flex flex-col items-center lg:items-start gap-2 p-4 bg-white/5 rounded-2xl border border-white/5">
+            <div className="flex flex-col items-center lg:items-start gap-2 p-4 bg-light-surface dark:bg-white/5 rounded-2xl border border-light-border dark:border-white/5">
               <CreditCard size={20} className="text-brand-primary" />
-              <h4 className="text-[10px] font-black uppercase text-white tracking-widest">Pagos Seguros</h4>
-              <p className="text-[9px] text-gray-500 font-bold uppercase leading-tight">Transacciones vía transferencia bancaria.</p>
+              <h4 className="text-[10px] font-black uppercase text-light-text dark:text-white tracking-widest">Pagos Seguros</h4>
+              <p className="text-[9px] text-slate-400 dark:text-gray-500 font-bold uppercase leading-tight">Transacciones vía transferencia bancaria.</p>
             </div>
-            <div className="flex flex-col items-center lg:items-start gap-2 p-4 bg-white/5 rounded-2xl border border-white/5">
+            <div className="flex flex-col items-center lg:items-start gap-2 p-4 bg-light-surface dark:bg-white/5 rounded-2xl border border-light-border dark:border-white/5">
               <MapPin size={20} className="text-brand-primary" />
-              <h4 className="text-[10px] font-black uppercase text-white tracking-widest">Envíos Locales</h4>
-              <p className="text-[9px] text-gray-500 font-bold uppercase leading-tight">Entregas exclusivas en Santo Domingo.</p>
+              <h4 className="text-[10px] font-black uppercase text-light-text dark:text-white tracking-widest">Envíos Locales</h4>
+              <p className="text-[9px] text-slate-400 dark:text-gray-500 font-bold uppercase leading-tight">Entregas exclusivas en Santo Domingo.</p>
             </div>
           </motion.div>
 
@@ -160,7 +160,7 @@ const GuestBanner = () => {
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative bg-[#0B0F1A]/60 backdrop-blur-3xl rounded-[2.5rem] p-8 sm:p-12 border border-white/10 shadow-2xl"
+            className="relative glass-card p-8 sm:p-12 shadow-2xl"
           >
             <div className="flex flex-col items-center mb-10 text-center">
               <div className="relative group mb-6">
@@ -169,7 +169,7 @@ const GuestBanner = () => {
                   <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
                 </div>
               </div>
-              <h2 className="text-2xl font-black text-white tracking-tight uppercase">
+              <h2 className="text-2xl font-black text-light-text dark:text-white tracking-tight uppercase">
                 {activeTab === 'login' ? 'Bienvenido' : 'Únete Ahora'}
               </h2>
               <p className="text-[10px] text-brand-primary font-bold uppercase tracking-[0.4em] mt-3">
@@ -177,7 +177,7 @@ const GuestBanner = () => {
               </p>
             </div>
 
-            <div className="flex p-1 bg-black/40 rounded-2xl mb-8 border border-white/5">
+            <div className="flex p-1 bg-light-surface dark:bg-black/40 rounded-2xl mb-8 border border-light-border dark:border-white/5">
               {(['login', 'register'] as const).map((tab) => (
                 <button
                   key={tab}
@@ -209,7 +209,7 @@ const GuestBanner = () => {
                          required
                          value={name}
                          onChange={(e) => setName(e.target.value)}
-                         className="w-full px-5 py-4 bg-black/40 border border-white/5 rounded-2xl text-[11px] font-bold text-white placeholder:text-slate-600 outline-none focus:border-brand-primary/50 transition-all"
+                         className="input-minimal"
                          placeholder="Nombre"
                        />
                        <input
@@ -217,7 +217,7 @@ const GuestBanner = () => {
                          required
                          value={phone}
                          onChange={(e) => setPhone(e.target.value)}
-                         className="w-full px-5 py-4 bg-black/40 border border-white/5 rounded-2xl text-[11px] font-bold text-white placeholder:text-slate-600 outline-none focus:border-brand-primary/50 transition-all"
+                         className="input-minimal"
                          placeholder="WhatsApp"
                        />
                      </div>
@@ -230,7 +230,7 @@ const GuestBanner = () => {
                        required
                        value={email}
                        onChange={(e) => setEmail(e.target.value)}
-                       className="w-full px-12 py-4 bg-black/40 border border-white/5 rounded-2xl text-[11px] font-bold text-white placeholder:text-slate-600 outline-none focus:border-brand-primary/50 transition-all"
+                       className="input-minimal pl-12"
                        placeholder="Email"
                      />
                    </div>
@@ -242,7 +242,7 @@ const GuestBanner = () => {
                        required
                        value={password}
                        onChange={(e) => setPassword(e.target.value)}
-                       className="w-full px-12 py-4 bg-black/40 border border-white/5 rounded-2xl text-[11px] font-bold text-white placeholder:text-slate-600 outline-none focus:border-brand-primary/50 transition-all"
+                       className="input-minimal pl-12"
                        placeholder="Contraseña"
                      />
                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors">
@@ -258,7 +258,7 @@ const GuestBanner = () => {
                          required
                          value={confirmPassword}
                          onChange={(e) => setConfirmPassword(e.target.value)}
-                         className="w-full px-12 py-4 bg-black/40 border border-white/5 rounded-2xl text-[11px] font-bold text-white placeholder:text-slate-600 outline-none focus:border-brand-primary/50 transition-all"
+                         className="input-minimal pl-12"
                          placeholder="Confirmar Contraseña"
                        />
                      </div>
@@ -326,13 +326,13 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-white min-h-screen font-poppins selection:bg-brand-primary/30 relative">
+    <div className="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text min-h-screen font-poppins selection:bg-brand-primary/30 relative transition-colors duration-500">
       <SEO title="Elite Hardware Store | Garabito Shop RD" />
       
       {/* Texture & Glow Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-        <div className="absolute top-[-10%] right-[-5%] w-[60%] h-[60%] bg-brand-primary/10 blur-[150px] rounded-full" />
+        <div className="absolute top-[-10%] right-[-5%] w-[60%] h-[60%] bg-brand-primary/5 blur-[150px] rounded-full" />
         <div className="absolute bottom-[-10%] left-[-5%] w-[60%] h-[60%] bg-blue-600/5 blur-[150px] rounded-full" />
       </div>
 
@@ -359,7 +359,7 @@ const Home: React.FC = () => {
                   </div>
                 </div>
 
-                <h1 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter leading-[0.9]">
+                <h1 className="text-5xl md:text-8xl font-black text-light-text dark:text-white uppercase tracking-tighter leading-[0.9]">
                   Tu próximo <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary via-blue-400 to-indigo-500">Hardware.</span>
                 </h1>
@@ -375,10 +375,10 @@ const Home: React.FC = () => {
 
       {/* --- Marcas Marquee - Ultra Premium --- */}
       {brands && brands.length > 0 && (
-        <div className="py-20 border-y border-white/5 bg-white/[0.02] overflow-hidden relative group">
+        <div className="py-20 border-y border-light-border dark:border-white/5 bg-light-surface dark:bg-white/[0.02] overflow-hidden relative group transition-colors duration-500">
           {/* Gradient Masks */}
-          <div className="absolute left-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none" />
+          <div className="absolute left-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-r from-light-bg dark:from-dark-bg to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-32 md:w-64 bg-gradient-to-l from-light-bg dark:from-dark-bg to-transparent z-10 pointer-events-none" />
 
           {/* Header Centralizado */}
           <div className="max-w-7xl mx-auto px-6 mb-14">
@@ -418,7 +418,7 @@ const Home: React.FC = () => {
              <div className="relative group">
                 <div className="absolute -left-4 top-0 bottom-0 w-1 bg-brand-primary rounded-full shadow-[0_0_20px_rgba(37,99,235,0.8)] transform group-hover:scale-y-110 transition-transform duration-500" />
                 <div className="pl-4 space-y-2">
-                  <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white leading-none">
+                  <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-light-text dark:text-white leading-none">
                     Catálogo <br className="md:hidden" />
                     <span className="text-brand-primary/40 group-hover:text-brand-primary/60 transition-colors">Elite.</span>
                   </h2>
@@ -439,7 +439,7 @@ const Home: React.FC = () => {
                   className={`flex-1 lg:flex-none group relative flex items-center justify-center gap-3 px-4 md:px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] md:tracking-[0.2em] transition-all overflow-hidden ${
                     selectedBrands.length > 0 || priceRange.min || priceRange.max
                     ? 'bg-brand-primary text-white shadow-2xl shadow-brand-primary/40 scale-[1.02] md:scale-105'
-                    : 'bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:border-brand-primary/30'
+                    : 'bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-slate-400 hover:text-white hover:border-brand-primary/30'
                   }`}
                 >
                   <SlidersHorizontal size={14} className="group-hover:rotate-180 transition-transform duration-500" />
@@ -453,7 +453,7 @@ const Home: React.FC = () => {
                 <div className="flex-1 lg:flex-none relative group">
                    <button
                     onClick={() => setShowSortMenu(!showSortMenu)}
-                    className="w-full flex items-center justify-center gap-3 px-4 md:px-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] md:tracking-[0.2em] text-slate-400 hover:text-white hover:border-brand-primary/30 transition-all"
+                    className="w-full flex items-center justify-center gap-3 px-4 md:px-8 py-4 bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] md:tracking-[0.2em] text-slate-400 hover:text-white hover:border-brand-primary/30 transition-all"
                   >
                     <ArrowUpDown size={14} />
                     <span className="whitespace-nowrap">{sortBy === 'featured' ? 'Orden' : sortBy === 'price_asc' ? 'Menor $' : sortBy === 'price_desc' ? 'Mayor $' : 'Nuevos'}</span>
@@ -520,9 +520,9 @@ const Home: React.FC = () => {
           </div>
 
           {/* Categorías Scroller (Sticky & Interactive) */}
-          <div className="sticky top-[72px] md:top-[90px] z-[40] -mx-6 px-6 py-4 bg-[#020617]/95 backdrop-blur-3xl border-y border-white/5 shadow-2xl overflow-hidden">
-            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#020617] to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#020617] to-transparent z-10 pointer-events-none" />
+          <div className="sticky top-[72px] md:top-[90px] z-[40] -mx-6 px-6 py-4 bg-light-bg/95 dark:bg-dark-bg/95 backdrop-blur-3xl border-y border-light-border dark:border-white/5 shadow-2xl overflow-hidden transition-colors duration-500">
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-light-bg dark:from-dark-bg to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-light-bg dark:from-dark-bg to-transparent z-10 pointer-events-none" />
 
             <div className="flex gap-4 overflow-x-auto pb-1 scrollbar-hide snap-x px-10">
               {availableCategories.map(cat => (
@@ -606,14 +606,14 @@ const Home: React.FC = () => {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#0B0F1A] border-l border-white/10 z-[210] flex flex-col shadow-3xl"
+              className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-light-bg dark:bg-dark-surface border-l border-light-border dark:border-white/10 z-[210] flex flex-col shadow-3xl transition-colors duration-500"
             >
-              <div className="p-10 border-b border-white/5 flex items-center justify-between">
+              <div className="p-10 border-b border-light-border dark:border-white/5 flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-1.5 h-8 bg-brand-primary rounded-full" />
-                  <h3 className="text-3xl font-black uppercase tracking-tighter">Filtros</h3>
+                  <h3 className="text-3xl font-black uppercase tracking-tighter text-light-text dark:text-dark-text">Filtros</h3>
                 </div>
-                <button onClick={() => setIsFilterOpen(false)} className="p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all">
+                <button onClick={() => setIsFilterOpen(false)} className="p-4 bg-light-surface dark:bg-white/5 hover:bg-light-border dark:hover:bg-white/10 rounded-2xl transition-all">
                   <X size={24} className="text-slate-400" />
                 </button>
               </div>
@@ -653,7 +653,7 @@ const Home: React.FC = () => {
                       placeholder="Mínimo"
                       value={priceRange.min}
                       onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                      className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-6 text-sm font-bold outline-none focus:border-brand-primary/50 transition-all"
+                      className="flex-1 bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 rounded-2xl p-6 text-sm font-bold outline-none focus:border-brand-primary/50 transition-all"
                     />
                     <div className="w-4 h-[2px] bg-white/10" />
                     <input
@@ -661,7 +661,7 @@ const Home: React.FC = () => {
                       placeholder="Máximo"
                       value={priceRange.max}
                       onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                      className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-6 text-sm font-bold outline-none focus:border-brand-primary/50 transition-all"
+                      className="flex-1 bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 rounded-2xl p-6 text-sm font-bold outline-none focus:border-brand-primary/50 transition-all"
                     />
                   </div>
                 </div>

@@ -87,7 +87,7 @@ const ProductDetails: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#020617]">
+      <div className="h-screen flex items-center justify-center bg-light-bg dark:bg-dark-bg">
         <div className="w-10 h-10 border-2 border-brand-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -95,7 +95,7 @@ const ProductDetails: React.FC = () => {
 
   if (error || !product) {
     return (
-      <div className="min-h-screen bg-[#020617] text-white flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text flex flex-col items-center justify-center p-6 text-center">
         <h2 className="text-3xl font-black mb-4 uppercase">Producto no disponible</h2>
         <Link to="/catalogo" className="text-brand-primary font-bold flex items-center gap-2 hover:underline uppercase text-xs tracking-widest">
           <ArrowLeft className="w-4 h-4" /> Volver al catálogo
@@ -128,7 +128,7 @@ const ProductDetails: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#020617] text-white min-h-screen font-poppins pt-24 pb-20 selection:bg-brand-primary/30">
+    <div className="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text min-h-screen font-poppins pt-24 pb-20 selection:bg-brand-primary/30 transition-colors duration-500">
       <SEO 
         title={`${product.name} | Garabito Shop`} 
         description={product.description} 
@@ -147,7 +147,7 @@ const ProductDetails: React.FC = () => {
           <div className="space-y-6">
             <motion.div 
               layoutId={`product-image-${product.id}`}
-              className="aspect-square bg-[#0B0F1A] rounded-[3rem] border border-white/5 flex items-center justify-center p-12 relative overflow-hidden group"
+              className="aspect-square bg-light-surface dark:bg-dark-surface rounded-[3rem] border border-light-border dark:border-white/5 flex items-center justify-center p-12 relative overflow-hidden group"
             >
               <img 
                 src={getAssetUrl(product.images[activeImage])}
@@ -171,7 +171,7 @@ const ProductDetails: React.FC = () => {
                 <button 
                   key={idx}
                   onClick={() => setActiveImage(idx)}
-                  className={`w-24 h-24 shrink-0 rounded-2xl border-2 transition-all p-3 bg-[#0B0F1A] ${
+                  className={`w-24 h-24 shrink-0 rounded-2xl border-2 transition-all p-3 bg-light-surface dark:bg-dark-surface ${
                     activeImage === idx ? 'border-brand-primary' : 'border-transparent opacity-40 hover:opacity-100'
                   }`}
                 >
@@ -198,7 +198,7 @@ const ProductDetails: React.FC = () => {
               </div>
             </div>
 
-            <div className="mb-10 p-10 bg-white/[0.02] border border-white/5 rounded-[2.5rem] relative overflow-hidden group">
+            <div className="mb-10 p-10 bg-light-surface dark:bg-white/[0.02] border border-light-border dark:border-white/5 rounded-[2.5rem] relative overflow-hidden group">
               <div className="flex items-baseline gap-4 mb-2">
                 <span className="text-5xl font-black tracking-tighter">RD$ {(product.discountPrice || product.price).toLocaleString()}</span>
                 {product.discountPrice && (
@@ -215,9 +215,9 @@ const ProductDetails: React.FC = () => {
             </div>
 
             {isAuthenticated && (
-              <div className="space-y-4 pt-10 border-t border-white/5">
+              <div className="space-y-4 pt-10 border-t border-light-border dark:border-white/5">
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center bg-white/5 border border-white/10 rounded-[1.5rem] p-1.5 shadow-inner">
+                  <div className="flex items-center bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 rounded-[1.5rem] p-1.5 shadow-inner">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="p-4 hover:bg-white/10 rounded-xl transition-all"
@@ -234,7 +234,7 @@ const ProductDetails: React.FC = () => {
                   </div>
                   <button 
                     onClick={handleAddToCart}
-                    className="flex-1 bg-white text-black py-6 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-brand-primary hover:text-white transition-all flex items-center justify-center gap-3 shadow-2xl"
+                    className="flex-1 bg-light-text text-white dark:bg-white dark:text-black py-6 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-brand-primary hover:text-white transition-all flex items-center justify-center gap-3 shadow-2xl"
                   >
                     <ShoppingCart className="w-4 h-4" /> Añadir al carrito
                   </button>
@@ -270,10 +270,10 @@ const ProductDetails: React.FC = () => {
 
             {/* Mobile Sticky Bar - Visible only on mobile and when authenticated */}
             {isAuthenticated && (
-              <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-slate-950/80 backdrop-blur-xl border-t border-white/10 z-[100] flex items-center gap-4">
+              <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-light-bg/80 dark:bg-dark-bg/80 backdrop-blur-xl border-t border-light-border dark:border-white/10 z-[100] flex items-center gap-4">
                 <div className="flex-1">
                     <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Total</p>
-                    <p className="text-xl font-black text-white">RD$ {(quantity * (product.discountPrice || product.price)).toLocaleString()}</p>
+                    <p className="text-xl font-black text-light-text dark:text-dark-text">RD$ {(quantity * (product.discountPrice || product.price)).toLocaleString()}</p>
                 </div>
                 <button
                   onClick={handleAddToCart}

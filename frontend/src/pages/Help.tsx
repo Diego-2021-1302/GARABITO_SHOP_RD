@@ -53,7 +53,7 @@ const Help: React.FC = () => {
   };
 
   return (
-    <div className="pt-24 pb-20 bg-gray-50 dark:bg-brand-dark/50 min-h-screen">
+    <div className="pt-24 pb-20 bg-gray-50 dark:bg-dark-surface/50 min-h-screen">
       <SEO title="Centro de Ayuda y FAQ" description="Encuentra respuestas a tus dudas sobre envíos, pagos y garantías en Garabito Shop Santo Domingo." />
       
       <div className="container-custom">

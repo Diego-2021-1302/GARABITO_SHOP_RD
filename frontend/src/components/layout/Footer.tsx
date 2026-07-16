@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
   const logo = settings?.general.logoDark || '/logo.png';
 
   return (
-    <footer className="bg-[#0B0F1A] pt-20 pb-10 border-t border-gray-800/50">
+    <footer className="bg-light-surface dark:bg-dark-surface pt-20 pb-10 border-t border-light-border dark:border-white/5 transition-colors duration-500">
       <div className="container-custom px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-20">
           {/* Logo & Description */}
@@ -24,15 +24,15 @@ const Footer: React.FC = () => {
                 className="w-10 h-10 object-contain drop-shadow-[0_0_15px_rgba(37,99,235,0.2)]" 
               />
               <div className="flex flex-col">
-                <span className="font-poppins font-black text-white text-lg leading-none tracking-tight">
+                <span className="font-poppins font-black text-light-text dark:text-white text-lg leading-none tracking-tight">
                   {storeName.split(' ')[0]} <span className="text-brand-primary">{storeName.split(' ')[1] || 'Shop'}</span>
                 </span>
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] mt-1">
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mt-1">
                   Santo Domingo
                 </span>
               </div>
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed max-w-sm font-medium">
               {slogan}
             </p>
           </div>
@@ -40,38 +40,38 @@ const Footer: React.FC = () => {
           {/* Links Columns */}
           <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8">
             <div>
-              <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-6">Tienda</h4>
+              <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-6">Tienda</h4>
               <ul className="space-y-4 text-sm font-bold">
-                <li><Link to="/catalogo" className="text-gray-300 hover:text-brand-primary transition-colors">Todos los productos</Link></li>
-                <li><Link to="/catalogo?filter=ofertas" className="text-gray-300 hover:text-brand-primary transition-colors">Ofertas</Link></li>
-                <li><Link to="/catalogo?sort=nuevo" className="text-gray-300 hover:text-brand-primary transition-colors">Nuevos Ingresos</Link></li>
-                <li><Link to="/marcas" className="text-gray-300 hover:text-brand-primary transition-colors">Marcas</Link></li>
+                <li><Link to="/catalogo" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Todos los productos</Link></li>
+                <li><Link to="/catalogo?filter=ofertas" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Ofertas</Link></li>
+                <li><Link to="/catalogo?sort=nuevo" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Nuevos Ingresos</Link></li>
+                <li><Link to="/marcas" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Marcas</Link></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-6">Soporte</h4>
+              <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-6">Soporte</h4>
               <ul className="space-y-4 text-sm font-bold">
-                <li><Link to="/contacto" className="text-gray-300 hover:text-brand-primary transition-colors">Contacto</Link></li>
-                <li><Link to="/ayuda/envios" className="text-gray-300 hover:text-brand-primary transition-colors">Envíos</Link></li>
-                <li><Link to="/ayuda/devoluciones" className="text-gray-300 hover:text-brand-primary transition-colors">Devoluciones</Link></li>
-                <li><Link to="/ayuda/garantia" className="text-gray-300 hover:text-brand-primary transition-colors">Garantía</Link></li>
+                <li><Link to="/contacto" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Contacto</Link></li>
+                <li><Link to="/ayuda/envios" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Envíos</Link></li>
+                <li><Link to="/ayuda/devoluciones" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Devoluciones</Link></li>
+                <li><Link to="/ayuda/garantia" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Garantía</Link></li>
               </ul>
             </div>
 
             <div className="col-span-2 md:col-span-1">
-              <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-6">Contacto</h4>
+              <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-6">Contacto</h4>
               <ul className="space-y-4 text-sm font-bold">
-                <li className="text-gray-300">{supportPhone}</li>
-                <li className="text-gray-300">{contactEmail}</li>
-                <li className="text-gray-300">Santo Domingo, RD</li>
+                <li className="text-light-text dark:text-slate-300">{supportPhone}</li>
+                <li className="text-light-text dark:text-slate-300">{contactEmail}</li>
+                <li className="text-light-text dark:text-slate-300">Santo Domingo, RD</li>
               </ul>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-gray-800/50 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+        <div className="pt-8 border-t border-light-border dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
           <p>© {new Date().getFullYear()} {storeName}. Todos los derechos reservados.</p>
           <div className="flex items-center gap-2">
             <span>Hecho por</span>
@@ -84,4 +84,5 @@ const Footer: React.FC = () => {
   );
 };
 
-export default Footer;
+export default Footer; // Updated by Programador Master
+

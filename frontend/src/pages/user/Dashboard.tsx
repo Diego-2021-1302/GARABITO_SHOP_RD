@@ -61,7 +61,7 @@ const UserDashboard: React.FC = () => {
   return (
     <div className="space-y-10">
       <header>
-        <h1 className="text-4xl font-poppins font-black text-brand-secondary dark:text-white mb-2">
+        <h1 className="text-4xl font-poppins font-black text-light-text dark:text-dark-text mb-2">
           ¡Hola, {user?.name.split(' ')[0]}! 👋
         </h1>
         <p className="text-gray-500 font-medium">
@@ -79,13 +79,13 @@ const UserDashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {activeDeliveries.map((shipment: any) => (
               <div key={shipment.id} className="space-y-4">
-                 <div className="bg-white dark:bg-brand-dark/40 border border-gray-100 dark:border-white/5 p-6 rounded-[2.5rem] flex items-center justify-between">
+                 <div className="bg-white dark:bg-dark-surface/40 border border-gray-100 dark:border-white/5 p-6 rounded-[2.5rem] flex items-center justify-between">
                     <div className="flex items-center gap-4">
                        <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20">
                           <Package className="w-5 h-5" />
                        </div>
                        <div>
-                          <p className="font-poppins font-black text-brand-secondary dark:text-white">Pedido #{shipment.order?.order_number}</p>
+                          <p className="font-poppins font-black text-light-text dark:text-dark-text">Pedido #{shipment.order?.order_number}</p>
                           <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest truncate max-w-[200px]">
                             {shipment.order?.shipping_address?.sector}, {shipment.order?.shipping_address?.municipio}
                           </p>
@@ -108,14 +108,14 @@ const UserDashboard: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="bg-white dark:bg-brand-dark/40 border border-gray-100 dark:border-white/5 p-8 rounded-[2.5rem] flex items-center gap-6 shadow-sm hover:shadow-xl hover:shadow-brand-primary/5 transition-all group"
+            className="bg-white dark:bg-dark-surface/40 border border-gray-100 dark:border-white/5 p-8 rounded-[2.5rem] flex items-center gap-6 shadow-sm hover:shadow-xl hover:shadow-brand-primary/5 transition-all group"
           >
             <div className={`w-14 h-14 rounded-2xl text-white ${stat.color} flex items-center justify-center shadow-lg shadow-current/20 group-hover:scale-110 transition-transform`}>
               {stat.icon}
             </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">{stat.name}</p>
-              <p className="text-3xl font-poppins font-black text-brand-secondary dark:text-white">
+              <p className="text-3xl font-poppins font-black text-light-text dark:text-dark-text">
                 {statsLoading ? '...' : stat.value}
               </p>
             </div>
@@ -141,13 +141,13 @@ const UserDashboard: React.FC = () => {
                <div className="p-10 text-center text-gray-400 font-bold animate-pulse">Cargando tus pedidos...</div>
             ) : recentOrders.length > 0 ? (
               recentOrders.map((order: any) => (
-                <div key={order.id} className="bg-white dark:bg-brand-dark/40 border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] flex flex-wrap items-center justify-between gap-6 hover:border-brand-primary/30 transition-all group">
+                <div key={order.id} className="bg-white dark:bg-dark-surface/40 border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] flex flex-wrap items-center justify-between gap-6 hover:border-brand-primary/30 transition-all group">
                   <div className="flex items-center gap-5">
                     <div className="w-14 h-14 bg-gray-50 dark:bg-white/5 rounded-2xl flex items-center justify-center group-hover:bg-brand-primary/10 transition-colors">
                       <ShoppingBag className="w-6 h-6 text-gray-400 group-hover:text-brand-primary transition-colors" />
                     </div>
                     <div>
-                      <p className="font-poppins font-black text-brand-secondary dark:text-white">#{order.order_number || order.id}</p>
+                      <p className="font-poppins font-black text-light-text dark:text-dark-text">#{order.order_number || order.id}</p>
                       <p className="text-xs text-gray-500 font-bold uppercase tracking-tighter">
                         {new Date(order.created_at).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric' })} • {order.items?.length || 0} artículos
                       </p>
@@ -172,7 +172,7 @@ const UserDashboard: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div className="bg-white dark:bg-brand-dark/40 border-2 border-dashed border-gray-100 dark:border-white/5 p-12 rounded-[2.5rem] text-center">
+              <div className="bg-white dark:bg-dark-surface/40 border-2 border-dashed border-gray-100 dark:border-white/5 p-12 rounded-[2.5rem] text-center">
                 <ShoppingBag className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 font-bold">Aún no has realizado ningún pedido.</p>
                 <Link to="/catalogo" className="text-brand-primary font-black text-sm hover:underline mt-2 inline-block">¡Empieza a comprar ahora!</Link>
@@ -188,11 +188,11 @@ const UserDashboard: React.FC = () => {
             Soporte Directo
           </h2>
           
-          <div className="bg-brand-secondary dark:bg-brand-primary text-white rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl shadow-brand-secondary/20 group">
+          <div className="bg-brand-primary dark:bg-brand-primary text-white rounded-[2.5rem] p-8 relative overflow-hidden shadow-2xl shadow-brand-primary/20 group">
              <div className="relative z-10">
                 <h3 className="font-poppins font-black text-xl mb-4 leading-tight">¿Necesitas ayuda con un pedido?</h3>
                 <p className="text-gray-300 text-sm mb-8 leading-relaxed font-medium">Estamos disponibles 24/7 para resolver cualquier inconveniente o duda que tengas.</p>
-                <button className="w-full bg-white text-brand-secondary py-4 rounded-2xl font-black text-sm hover:scale-105 transition-transform shadow-xl">
+                <button className="w-full bg-white text-brand-primary py-4 rounded-2xl font-black text-sm hover:scale-105 transition-transform shadow-xl">
                   Hablar con un asesor
                 </button>
              </div>
@@ -201,8 +201,8 @@ const UserDashboard: React.FC = () => {
              </div>
           </div>
 
-          <div className="bg-white dark:bg-brand-dark/40 border border-gray-100 dark:border-white/5 p-8 rounded-[2.5rem] shadow-sm">
-            <h3 className="font-poppins font-black text-brand-secondary dark:text-white mb-6">Próxima Entrega</h3>
+          <div className="bg-white dark:bg-dark-surface/40 border border-gray-100 dark:border-white/5 p-8 rounded-[2.5rem] shadow-sm">
+            <h3 className="font-poppins font-black text-light-text dark:text-dark-text mb-6">Próxima Entrega</h3>
             {nextOrder ? (
               <div className="space-y-4">
                 <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-gray-400">
@@ -218,7 +218,7 @@ const UserDashboard: React.FC = () => {
                   />
                 </div>
                 <p className="text-xs text-gray-500 font-medium leading-relaxed">
-                  Tu pedido <span className="font-black text-brand-secondary dark:text-white">#{nextOrder.order_number}</span> está siendo procesado y llegará pronto.
+                  Tu pedido <span className="font-black text-light-text dark:text-dark-text">#{nextOrder.order_number}</span> está siendo procesado y llegará pronto.
                 </p>
               </div>
             ) : (

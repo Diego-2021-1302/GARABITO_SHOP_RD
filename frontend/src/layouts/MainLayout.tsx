@@ -9,7 +9,7 @@ const MainLayout: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#020617]">
+    <div className="flex flex-col min-h-screen bg-light-bg dark:bg-dark-bg transition-colors duration-500">
       <Navbar />
       
       {/* 

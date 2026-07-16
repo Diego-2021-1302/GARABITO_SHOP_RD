@@ -48,7 +48,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen }) => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 15 }}
-      className="absolute top-full left-0 w-full bg-white dark:bg-brand-dark shadow-2xl border-t border-gray-100 dark:border-gray-800 z-40 hidden lg:block"
+      className="absolute top-full left-0 w-full bg-white dark:bg-dark-surface shadow-2xl border-t border-gray-100 dark:border-gray-800 z-40 hidden lg:block"
     >
       <div className="container-custom py-10">
         <div className="grid grid-cols-4 gap-8">

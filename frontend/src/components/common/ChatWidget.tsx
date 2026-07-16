@@ -70,7 +70,7 @@ const ChatWidget: React.FC = () => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="mb-4 w-[350px] sm:w-[400px] h-[500px] bg-white dark:bg-brand-dark rounded-[2rem] shadow-2xl border border-gray-100 dark:border-gray-800 flex flex-col overflow-hidden"
+            className="mb-4 w-[350px] sm:w-[400px] h-[500px] bg-white dark:bg-dark-surface rounded-[2rem] shadow-2xl border border-gray-100 dark:border-gray-800 flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="bg-brand-primary p-6 text-white">
@@ -170,7 +170,7 @@ const ChatWidget: React.FC = () => {
         className="w-16 h-16 bg-brand-primary text-white rounded-full shadow-[0_15px_30px_-5px_rgba(37,99,235,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all relative group"
       >
         {isOpen ? <X className="w-8 h-8" /> : <MessageCircle className="w-8 h-8" />}
-        <span className="absolute right-full mr-4 bg-white dark:bg-brand-dark px-4 py-2 rounded-xl shadow-xl text-brand-secondary dark:text-white text-sm font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+        <span className="absolute right-full mr-4 bg-white dark:bg-dark-surface px-4 py-2 rounded-xl shadow-xl text-brand-secondary dark:text-white text-sm font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           ¿Necesitas ayuda?
         </span>
       </button>

@@ -106,7 +106,7 @@ const AdminDashboard: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {activeDeliveries.map((shipment: any) => (
                 <div key={shipment.id} className="space-y-4">
-                  <div className="bg-white dark:bg-brand-dark/40 border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] flex items-center justify-between shadow-sm">
+                  <div className="bg-white dark:bg-dark-surface/40 border border-gray-100 dark:border-white/5 p-6 rounded-[2rem] flex items-center justify-between shadow-sm">
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20">
                         <ShoppingBag className="w-5 h-5" />

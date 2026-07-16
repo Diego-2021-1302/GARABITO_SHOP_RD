@@ -8,7 +8,7 @@ const Blog: React.FC = () => {
   const posts = []; 
 
   return (
-    <div className="pt-24 pb-20 bg-gray-50 dark:bg-brand-dark/50 min-h-screen">
+    <div className="pt-24 pb-20 bg-gray-50 dark:bg-dark-surface/50 min-h-screen">
       <SEO 
         title="Blog de Tecnología" 
         description="Noticias y tendencias tecnológicas en Santo Domingo."

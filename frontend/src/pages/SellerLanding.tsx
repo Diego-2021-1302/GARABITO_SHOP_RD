@@ -94,7 +94,7 @@ const SellerLanding: React.FC = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-white dark:bg-brand-dark">
+      <section className="py-20 bg-white dark:bg-dark-surface">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="p-8 card-premium">
@@ -140,7 +140,7 @@ const SellerLanding: React.FC = () => {
       </section>
 
       {/* Steps Section */}
-      <section className="py-24 bg-white dark:bg-brand-dark">
+      <section className="py-24 bg-white dark:bg-dark-surface">
         <div className="container-custom">
           <div className="flex flex-col lg:flex-row gap-16 items-center">
             <div className="lg:w-1/2">
@@ -195,7 +195,7 @@ const SellerLanding: React.FC = () => {
       </section>
 
       {/* CTA Final */}
-      <section className="py-24 bg-white dark:bg-brand-dark">
+      <section className="py-24 bg-white dark:bg-dark-surface">
         <div className="container-custom">
           <div className="bg-brand-primary rounded-[3rem] p-12 md:p-20 text-center text-white relative overflow-hidden shadow-[0_40px_80px_-20px_rgba(37,99,235,0.4)]">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />

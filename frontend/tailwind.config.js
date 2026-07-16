@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import colors from 'tailwindcss/colors';
+
 export default {
   content: [
     "./index.html",
@@ -8,41 +10,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        brand: {
-          primary: '#2563EB', // Azul vibrante
-          secondary: '#111827', // Fondo de tarjeta/oscuro
-          dark: '#0B0F1A', // Fondo profundo (Figma)
-          success: '#10B981',
-          error: '#EF4444',
-          surface: '#161D2F', // Superficie secundaria
-        },
-        gray: {
-          50: '#F9FAFB',
-          100: '#F3F4F6',
-          200: '#E5E7EB',
-          300: '#D1D5DB',
-          400: '#9CA3AF',
-          500: '#6B7280',
-          600: '#4B5563',
-          700: '#374151',
-          800: '#1F2937',
-          900: '#111827',
-        }
+        'brand-primary': '#2563EB',
+        'brand-secondary': '#64748B',
+        'brand-accent': '#3B82F6',
+        'brand-success': '#10B981',
+        'brand-error': '#EF4444',
+        // Escala de Grises Minimalista (Slate)
+        'light-bg': '#FFFFFF',
+        'light-surface': '#F8FAFC',
+        'light-border': '#F1F5F9',
+        'light-text': '#0F172A',
+        'dark-bg': '#020617',
+        'dark-surface': '#0F172A',
+        'dark-border': '#1E293B',
+        'dark-text': '#F8FAFC',
+        // Mantener compatibilidad con clases gray/slate existentes
+        gray: colors.slate,
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         poppins: ['Poppins', 'sans-serif'],
       },
       boxShadow: {
-        'premium': '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 10px -2px rgba(0, 0, 0, 0.03)',
-        'blue': '0 20px 40px -15px rgba(37, 99, 235, 0.25)',
+        'glass-light': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+        'glass-dark': '0 8px 32px 0 rgba(0, 0, 0, 0.4)',
+        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       },
       borderRadius: {
-        'premium': '1.25rem',
-        '2xl': '1.5rem',
-        '3xl': '2rem',
-        '4xl': '2.5rem',
-        '5xl': '3rem',
+        'glass': '1.5rem',
       },
       keyframes: {
         shimmer: {
