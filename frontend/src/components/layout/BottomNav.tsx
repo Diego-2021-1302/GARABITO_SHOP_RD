@@ -30,7 +30,7 @@ const BottomNav: React.FC = () => {
   });
 
   return (
-    <nav className="md:hidden fixed bottom-6 left-6 right-6 bg-[#0B0F1A]/80 backdrop-blur-2xl border border-white/10 px-4 py-3 rounded-[2rem] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] z-[100]">
+    <nav className="md:hidden fixed bottom-6 left-6 right-6 bg-light-surface/80 dark:bg-[#0B0F1A]/80 backdrop-blur-2xl border border-light-border dark:border-white/10 px-4 py-3 rounded-[2rem] shadow-glass-light dark:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] z-[100] transition-all duration-500">
       <div className="flex items-center justify-between max-w-lg mx-auto relative">
         {filteredItems.map((item) => {
           const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
@@ -49,7 +49,7 @@ const BottomNav: React.FC = () => {
                 whileTap={{ scale: 0.9 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 className={`relative z-10 p-2 rounded-2xl transition-colors duration-300 ${
-                  isActive ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/40' : 'text-slate-500'
+                  isActive ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/40' : 'text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {item.icon}
@@ -60,7 +60,7 @@ const BottomNav: React.FC = () => {
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
-                      className="absolute -top-1 -right-1 bg-white text-brand-primary text-[8px] font-black min-w-[16px] h-[16px] flex items-center justify-center rounded-full ring-2 ring-brand-primary shadow-sm"
+                      className="absolute -top-1 -right-1 bg-brand-primary text-white text-[8px] font-black min-w-[16px] h-[16px] flex items-center justify-center rounded-full ring-2 ring-white dark:ring-dark-bg shadow-sm"
                     >
                       {item.count > 9 ? '9+' : item.count}
                     </motion.span>
@@ -69,7 +69,7 @@ const BottomNav: React.FC = () => {
               </motion.div>
 
               {!isActive && (
-                <span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-600">
+                <span className="text-[7px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-600">
                   {item.label}
                 </span>
               )}

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { GoogleMap, useJsApiLoader, Autocomplete, Circle, Marker } from '@react-google-maps/api';
 import { MapPin, Search, Loader2, Navigation, Map as MapIcon } from 'lucide-react';
+import { useThemeStore } from '../../store/useThemeStore';
 
 interface LocationInfo {
   lat: number;
@@ -26,6 +27,7 @@ const mapStyles = [
 ];
 
 const MapPickerInline: React.FC<MapPickerProps> = ({ value, onChange, onResolving }) => {
+  const { darkMode } = useThemeStore();
   const { isLoaded, loadError } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
@@ -42,9 +44,9 @@ const MapPickerInline: React.FC<MapPickerProps> = ({ value, onChange, onResolvin
   const mapOptions = React.useMemo(() => ({
     disableDefaultUI: true,
     gestureHandling: 'greedy',
-    styles: mapStyles,
+    styles: darkMode ? mapStyles : [],
     clickableIcons: false
-  }), []);
+  }), [darkMode]);
 
   useEffect(() => {
     if (isLoaded) geocoderRef.current = new google.maps.Geocoder();
@@ -163,11 +165,11 @@ const MapPickerInline: React.FC<MapPickerProps> = ({ value, onChange, onResolvin
     );
   };
 
-  if (loadError) return <div className="h-full bg-slate-900 flex items-center justify-center text-white font-black uppercase tracking-widest p-10 text-center">Error al cargar el mapa. Verifica tu conexión.</div>;
-  if (!isLoaded) return <div className="h-full bg-slate-900 flex items-center justify-center"><Loader2 className="animate-spin text-brand-primary w-12 h-12" /></div>;
+  if (loadError) return <div className="h-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-light-text dark:text-white font-black uppercase tracking-widest p-10 text-center transition-colors duration-500">Error al cargar el mapa. Verifica tu conexión.</div>;
+  if (!isLoaded) return <div className="h-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center transition-colors duration-500"><Loader2 className="animate-spin text-brand-primary w-12 h-12" /></div>;
 
   return (
-    <div className="relative w-full h-full bg-[#020617] overflow-hidden">
+    <div className="relative w-full h-full bg-light-bg dark:bg-dark-bg overflow-hidden transition-colors duration-500">
       <GoogleMap
         mapContainerStyle={{ width: '100%', height: '100%' }}
         center={{ lat: value.lat, lng: value.lng }}
@@ -233,7 +235,7 @@ const MapPickerInline: React.FC<MapPickerProps> = ({ value, onChange, onResolvin
               <input
                 type="text"
                 placeholder="Busca tu calle o sector..."
-                className="w-full bg-[#0B0F1A]/95 backdrop-blur-md border border-white/20 rounded-2xl py-3.5 pl-11 pr-4 text-[13px] text-white placeholder:text-slate-500 focus:ring-2 focus:ring-brand-primary outline-none shadow-2xl"
+                className="w-full bg-light-surface/95 dark:bg-[#0B0F1A]/95 backdrop-blur-md border border-light-border dark:border-white/20 rounded-2xl py-3.5 pl-11 pr-4 text-[13px] text-light-text dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-brand-primary outline-none shadow-2xl transition-all"
               />
             </div>
           </Autocomplete>
@@ -248,13 +250,13 @@ const MapPickerInline: React.FC<MapPickerProps> = ({ value, onChange, onResolvin
 
       {/* Información de Ubicación en la parte inferior */}
       <div className="absolute bottom-4 left-4 right-4 z-30 pointer-events-none sm:bottom-6 sm:left-6 sm:right-6">
-        <div className="pointer-events-auto bg-[#0B0F1A]/95 border border-white/10 p-3 rounded-2xl flex items-center gap-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="pointer-events-auto bg-light-surface/95 dark:bg-[#0B0F1A]/95 border border-light-border dark:border-white/10 p-3 rounded-2xl flex items-center gap-3 shadow-glass-light dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all">
           <div className="w-10 h-10 bg-brand-primary rounded-xl flex items-center justify-center border border-white/10 shrink-0">
             <MapPin className="text-white w-5 h-5" />
           </div>
           <div className="flex-1 overflow-hidden">
             <p className="text-[7px] font-black text-brand-primary uppercase tracking-[0.2em] mb-0.5">Ubicación Seleccionada</p>
-            <p className="text-[10px] text-white font-bold truncate italic leading-tight">{value.addressText || 'Buscando dirección...'}</p>
+            <p className="text-[10px] text-light-text dark:text-white font-bold truncate italic leading-tight">{value.addressText || 'Buscando dirección...'}</p>
           </div>
         </div>
       </div>

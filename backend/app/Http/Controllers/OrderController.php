@@ -168,9 +168,10 @@ class OrderController extends Controller
             // para que el stock solo se descuente al subir el comprobante.
 
             try {
-                Mail::to($request->user()->email)->send(new OrderReceived($order));
+                // Usamos queue() para asegurar que el envío de correo no bloquee la respuesta al cliente
+                Mail::to($request->user()->email)->queue(new OrderReceived($order));
             } catch (\Exception $e) {
-                Log::error('Error enviando correo de pedido: ' . $e->getMessage());
+                Log::error('Error encolando correo de pedido: ' . $e->getMessage());
             }
 
             return response()->json([
@@ -486,50 +487,61 @@ class OrderController extends Controller
 
     public function cancel(Request $request, int|string $id)
     {
+        Log::info("Cancellation attempt for order ID: {$id} by user: " . Auth::id());
         $order = Order::findOrFail($id);
 
         if (! $request->user()->isAdmin() && $order->user_id !== $request->user()->id) {
+            Log::warning("Unauthorized cancellation attempt for order ID: {$id}");
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
         if (in_array($order->status, [Order::STATUS_ON_WAY, Order::STATUS_DELIVERED, Order::STATUS_CANCELLED])) {
-            return response()->json(['message' => 'No se puede cancelar en este estado'], 400);
+            Log::warning("Cancellation rejected: order {$id} is in status {$order->status}");
+            return response()->json(['message' => 'No se puede cancelar un pedido que ya está en camino, entregado o cancelado.'], 400);
         }
 
-        DB::transaction(function () use ($order, $request) {
-            // Si el stock ya había salido (comprobante subido o posterior), lo revertimos físicamente
-            // De lo contrario, solo liberamos la reserva.
-            $alreadyExited = in_array($order->status, [
-                Order::STATUS_PROOF_SUBMITTED,
-                Order::STATUS_PAID_CONFIRMED,
-                Order::STATUS_PREPARING,
-                Order::STATUS_READY_FOR_SHIPPING
-            ]);
-
-            if ($alreadyExited || $order->payment_status === Order::PAYMENT_STATUS_COMPLETED) {
-                $this->inventoryService->revertSalesOrderInventory($order);
-            } else {
-                $this->inventoryService->releaseOrderStock($order);
-            }
-
-            $order->update([
-                'status' => Order::STATUS_CANCELLED,
-                'cancelled_at' => now(),
-            ]);
-
-            OrderStatusHistory::create([
-                'order_id' => $order->id,
-                'status' => Order::STATUS_CANCELLED,
-                'comment' => 'Pedido cancelado por ' . ($request->user()->isAdmin() ? 'admin' : 'cliente') . '.',
-                'user_id' => Auth::id(),
-            ]);
-        });
-
-        // Enviar notificación por correo de cancelación
         try {
-            Mail::to($order->user->email)->send(new OrderStatusUpdated($order, 'Cancelado', 'El pedido ha sido cancelado.'));
+            DB::transaction(function () use ($order, $request) {
+                // Si el stock ya había salido (comprobante subido o posterior), lo revertimos físicamente
+                // De lo contrario, solo liberamos la reserva.
+                $alreadyExited = in_array($order->status, [
+                    Order::STATUS_PROOF_SUBMITTED,
+                    Order::STATUS_PAID_CONFIRMED,
+                    Order::STATUS_PREPARING,
+                    Order::STATUS_READY_FOR_SHIPPING
+                ]);
+
+                if ($alreadyExited || $order->payment_status === Order::PAYMENT_STATUS_COMPLETED) {
+                    Log::info("Reverting physical inventory for order {$order->order_number}");
+                    $this->inventoryService->revertSalesOrderInventory($order);
+                } else {
+                    Log::info("Releasing reserved stock for order {$order->order_number}");
+                    $this->inventoryService->releaseOrderStock($order);
+                }
+
+                $order->update([
+                    'status' => Order::STATUS_CANCELLED,
+                    'cancelled_at' => now(),
+                ]);
+
+                OrderStatusHistory::create([
+                    'order_id' => $order->id,
+                    'status' => Order::STATUS_CANCELLED,
+                    'comment' => 'Pedido cancelado por ' . ($request->user()->isAdmin() ? 'admin' : 'cliente') . '.',
+                    'user_id' => Auth::id(),
+                ]);
+            });
+            Log::info("Order {$id} cancelled successfully");
         } catch (\Exception $e) {
-            Log::error('Error enviando correo de cancelación: ' . $e->getMessage());
+            Log::error("Error during order cancellation transaction: " . $e->getMessage());
+            return response()->json(['message' => 'Error interno al procesar la cancelación. Por favor intenta más tarde.'], 500);
+        }
+
+        // Enviar notificación por correo de cancelación de forma asíncrona
+        try {
+            Mail::to($order->user->email)->queue(new OrderStatusUpdated($order, 'Cancelado', 'El pedido ha sido cancelado.'));
+        } catch (\Exception $e) {
+            Log::error('Error encolando correo de cancelación: ' . $e->getMessage());
         }
 
         return response()->json(['message' => 'Pedido cancelado', 'order' => $order]);

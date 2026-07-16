@@ -151,8 +151,10 @@ const UserOrderDetail: React.FC = () => {
       await cancelOrder.mutateAsync(id);
       addNotification('success', 'Pedido cancelado exitosamente');
       setIsCancelModalOpen(false);
-    } catch (err) {
-      addNotification('error', 'No se pudo cancelar el pedido');
+    } catch (err: any) {
+      console.error("Cancel Error:", err);
+      const message = err.response?.data?.message || 'No se pudo cancelar el pedido';
+      addNotification('error', message);
     }
   };
 
@@ -628,9 +630,9 @@ const UserOrderDetail: React.FC = () => {
                 <button 
                   onClick={handleCancel}
                   disabled={cancelOrder.isPending}
-                  className="flex-1 py-4 text-xs font-black text-white bg-red-500 rounded-2xl shadow-xl shadow-red-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+                  className="flex-1 py-4 text-xs font-black text-white bg-red-500 rounded-2xl shadow-xl shadow-red-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
                 >
-                  Confirmar
+                  {cancelOrder.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirmar'}
                 </button>
               </div>
             </motion.div>
