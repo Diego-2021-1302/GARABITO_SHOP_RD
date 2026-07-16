@@ -374,6 +374,9 @@ class OrderController extends Controller
 
                         // Asegurar salida de inventario (normalmente hecha en store para COD)
                         $this->inventoryService->finalizeOrderStockExit($order);
+
+                        // Generar Factura para pedidos en efectivo al ser entregados
+                        \App\Jobs\GenerateOrderInvoice::dispatch($order->id);
                     }
                     if ($order->shipment) {
                         $order->shipment->update(['status' => 'delivered', 'actual_delivery' => now()]);
@@ -437,13 +440,24 @@ class OrderController extends Controller
         }
 
         return DB::transaction(function () use ($order) {
-            $order->update([
+            $updateData = [
                 'status' => Order::STATUS_DELIVERED,
                 'delivered_at' => now(),
-            ]);
+            ];
+
+            if ($order->payment_method === 'cod') {
+                $updateData['payment_status'] = Order::PAYMENT_STATUS_COMPLETED;
+                $updateData['paid_at'] = now();
+            }
+
+            $order->update($updateData);
 
             if ($order->shipment) {
                 $order->shipment->update(['status' => 'delivered', 'actual_delivery' => now()]);
+            }
+
+            if ($order->payment_method === 'cod') {
+                \App\Jobs\GenerateOrderInvoice::dispatch($order->id);
             }
 
             OrderStatusHistory::create([

@@ -15,7 +15,8 @@ import {
   Bell,
   Home,
   ShieldCheck,
-  Search
+  Search,
+  MessageSquare
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useSettings } from '../hooks/useSettings';
@@ -64,6 +65,7 @@ const UserLayout: React.FC = () => {
       items: [
         { name: 'Mis Pedidos', icon: <ShoppingBag className="w-5 h-5" />, path: '/cuenta/pedidos' },
         { name: 'Favoritos', icon: <Heart className="w-5 h-5" />, path: '/cuenta/favoritos' },
+        { name: 'Chat de Asistencia', icon: <MessageSquare className="w-5 h-5" />, path: '/cuenta/chat' },
       ]
     },
     {

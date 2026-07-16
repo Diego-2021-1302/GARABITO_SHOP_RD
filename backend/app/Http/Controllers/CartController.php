@@ -3,30 +3,44 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\CartItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
     /**
-     * Get cart from session
+     * Get cart for current user
      */
     public function getCart(Request $request)
     {
-        $cart = $request->session()->get('cart', []);
+        $userId = Auth::id();
+        $cartItems = CartItem::where('user_id', $userId)
+            ->with(['product.images', 'product.category', 'variant'])
+            ->get();
 
-        $cartWithDetails = [];
+        $itemsWithDetails = [];
         $total = 0;
 
-        foreach ($cart as $item) {
-            $product = Product::find($item['product_id']);
+        foreach ($cartItems as $item) {
+            $product = $item->product;
             if ($product) {
-                $itemTotal = $product->price * $item['quantity'];
-                $cartWithDetails[] = [
-                    'product_id' => $item['product_id'],
-                    'variant_id' => $item['variant_id'] ?? null,
-                    'product' => $product,
-                    'quantity' => $item['quantity'],
-                    'price' => $product->price,
+                $price = $product->discount_price ?? $product->price;
+                $itemTotal = (float)$price * $item->quantity;
+
+                $itemsWithDetails[] = [
+                    'id' => $product->id,
+                    'cart_item_id' => $item->id,
+                    'variant_id' => $item->variant_id,
+                    'name' => $product->name,
+                    'price' => (float)$product->price,
+                    'discountPrice' => $product->discount_price ? (float)$product->discount_price : null,
+                    'images' => $product->images->count() > 0 ? $product->images->pluck('image_url')->toArray() : [$product->image_url],
+                    'brand' => $product->brand, // Usamos la columna string brand
+                    'category' => $product->category ? $product->category->name : 'Hardware',
+                    'quantity' => $item->quantity,
+                    'stock' => $product->stock_quantity,
                     'total' => $itemTotal,
                 ];
                 $total += $itemTotal;
@@ -34,9 +48,8 @@ class CartController extends Controller
         }
 
         return response()->json([
-            'items' => $cartWithDetails,
+            'items' => $itemsWithDetails,
             'subtotal' => $total,
-            'itbis' => 0, // Impuesto desactivado por el usuario
             'total' => $total,
         ]);
     }
@@ -52,39 +65,57 @@ class CartController extends Controller
             'variant_id' => 'nullable|exists:product_variants,id',
         ]);
 
-        $cart = $request->session()->get('cart', []);
-        $key = $validated['product_id'] . '-' . ($validated['variant_id'] ?? 'none');
+        $userId = Auth::id();
 
-        if (isset($cart[$key])) {
-            $cart[$key]['quantity'] += $validated['quantity'];
+        // Usamos updateOrCreate con incremento manual para mayor compatibilidad
+        $cartItem = CartItem::where('user_id', $userId)
+            ->where('product_id', $validated['product_id'])
+            ->where('variant_id', $validated['variant_id'] ?? null)
+            ->first();
+
+        if ($cartItem) {
+            $cartItem->increment('quantity', $validated['quantity']);
         } else {
-            $cart[$key] = $validated;
+            $cartItem = CartItem::create([
+                'user_id' => $userId,
+                'product_id' => $validated['product_id'],
+                'variant_id' => $validated['variant_id'] ?? null,
+                'quantity' => $validated['quantity'],
+            ]);
         }
 
-        $request->session()->put('cart', $cart);
-
-        return response()->json(['message' => 'Item added to cart']);
+        return response()->json(['message' => 'Item added to cart', 'cart_item' => $cartItem]);
     }
 
     /**
-     * Update cart item
+     * Update cart item quantity
      */
     public function updateItem(Request $request)
     {
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:0',
             'variant_id' => 'nullable|exists:product_variants,id',
         ]);
 
-        $cart = $request->session()->get('cart', []);
-        $key = $validated['product_id'] . '-' . ($validated['variant_id'] ?? 'none');
+        $userId = Auth::id();
 
-        if (isset($cart[$key])) {
-            $cart[$key]['quantity'] = $validated['quantity'];
+        if ($validated['quantity'] <= 0) {
+            CartItem::where('user_id', $userId)
+                ->where('product_id', $validated['product_id'])
+                ->where('variant_id', $validated['variant_id'] ?? null)
+                ->delete();
+            return response()->json(['message' => 'Item removed']);
         }
 
-        $request->session()->put('cart', $cart);
+        CartItem::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'product_id' => $validated['product_id'],
+                'variant_id' => $validated['variant_id'] ?? null,
+            ],
+            ['quantity' => $validated['quantity']]
+        );
 
         return response()->json(['message' => 'Item updated']);
     }
@@ -99,12 +130,10 @@ class CartController extends Controller
             'variant_id' => 'nullable|exists:product_variants,id',
         ]);
 
-        $cart = $request->session()->get('cart', []);
-        $key = $validated['product_id'] . '-' . ($validated['variant_id'] ?? 'none');
-
-        unset($cart[$key]);
-
-        $request->session()->put('cart', $cart);
+        CartItem::where('user_id', Auth::id())
+            ->where('product_id', $validated['product_id'])
+            ->where('variant_id', $validated['variant_id'] ?? null)
+            ->delete();
 
         return response()->json(['message' => 'Item removed from cart']);
     }
@@ -114,8 +143,7 @@ class CartController extends Controller
      */
     public function clearCart(Request $request)
     {
-        $request->session()->forget('cart');
-
+        CartItem::where('user_id', Auth::id())->delete();
         return response()->json(['message' => 'Cart cleared']);
     }
 }

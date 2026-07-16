@@ -31,6 +31,7 @@ const UserPayment = lazy(() => import('./pages/user/Payment'));
 const UserWishlist = lazy(() => import('./pages/user/Wishlist'));
 const UserAddresses = lazy(() => import('./pages/user/Addresses'));
 const UserAddAddress = lazy(() => import('./pages/user/AddAddress'));
+const UserMessaging = lazy(() => import('./pages/user/Messaging'));
 
 // Admin Pages
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
@@ -110,6 +111,7 @@ const AnimatedRoutes = () => {
           <Route path="favoritos" element={<UserWishlist />} />
           <Route path="direcciones" element={<UserAddresses />} />
           <Route path="direcciones/nueva" element={<UserAddAddress />} />
+          <Route path="chat" element={<UserMessaging />} />
         </Route>
 
         {/* Admin Panel Routes */}
@@ -159,7 +161,14 @@ const AnimatedRoutes = () => {
 };
 
 const App: React.FC = () => {
-  const { _hasHydrated } = useAuthStore();
+  const { _hasHydrated, isAuthenticated } = useAuthStore();
+  const { syncWithServer } = useCartStore();
+
+  React.useEffect(() => {
+    if (_hasHydrated && isAuthenticated) {
+      syncWithServer();
+    }
+  }, [_hasHydrated, isAuthenticated, syncWithServer]);
 
   if (!_hasHydrated) {
     return (

@@ -44,12 +44,6 @@ export const useAuthStore = create<AuthState>()(
         try {
           const response = await authService.login({ email, password });
 
-          // Limpiar estados de otros usuarios para evitar filtraciones
-          useCartStore.getState().clearCart();
-          useWishlistStore.getState().clearWishlist();
-          useRecentProductsStore.getState().clearHistory();
-          useCompareStore.getState().clearCompare();
-
           set({
             user: response.user, 
             token: response.token, 
@@ -57,21 +51,22 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false 
           });
           localStorage.setItem('token', response.token);
+
+          // Sincronizar datos del servidor
+          await useCartStore.getState().syncWithServer();
+          // await useWishlistStore.getState().syncWithServer(); // TODO: Implement server side wishlist
         } catch (error) {
           set({ isLoading: false });
           throw error;
         }
       },
 
-      setAuth: (user, token) => {
-        // Limpiar estados previos al establecer autenticación manual (ej: desde modal)
-        useCartStore.getState().clearCart();
-        useWishlistStore.getState().clearWishlist();
-        useRecentProductsStore.getState().clearHistory();
-        useCompareStore.getState().clearCompare();
-
+      setAuth: async (user, token) => {
         set({ user, token, isAuthenticated: true });
         localStorage.setItem('token', token);
+
+        // Sincronizar datos del servidor
+        await useCartStore.getState().syncWithServer();
       },
 
       logout: () => {

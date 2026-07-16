@@ -13,7 +13,7 @@ class InvoiceService
     /**
      * Genera el PDF de la factura para un pedido.
      */
-    public function generateInvoicePDF(Order $order): string
+    public function generateInvoicePDF(Order $order): ?string
     {
         $order->load(['user', 'items.product', 'shippingAddress']);
 
@@ -30,12 +30,17 @@ class InvoiceService
         try {
             $htmlContent = view('emails.orders.invoice_pdf', compact('order', 'settings'))->render();
 
+            // Asegurar que el directorio existe
+            if (!Storage::disk('public')->exists('invoices')) {
+                Storage::disk('public')->makeDirectory('invoices');
+            }
+
             // Si está instalado DomPDF, lo usamos para generar un PDF real
             if (class_exists('\Barryvdh\DomPDF\Facade\Pdf')) {
                 $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($htmlContent);
                 Storage::disk('public')->put($path, $pdf->output());
             } else {
-                // Fallback: Guardar como HTML pero con extensión PDF (no recomendado para producción)
+                Log::warning("DomPDF no encontrado, se guardó factura como HTML con extensión PDF.");
                 Storage::disk('public')->put($path, $htmlContent);
             }
 
@@ -44,15 +49,17 @@ class InvoiceService
 
             $order->update(['invoice_pdf_path' => $path]);
 
-            // Enviar factura por correo automáticamente si el pedido ya está confirmado
-            if ($order->status === \App\Models\Order::STATUS_PAID_CONFIRMED || $order->payment_status === \App\Models\Order::PAYMENT_STATUS_COMPLETED) {
+            // Enviar factura por correo automáticamente si el pedido ya está confirmado o pagado
+            if ($order->status === \App\Models\Order::STATUS_PAID_CONFIRMED ||
+                $order->payment_status === \App\Models\Order::PAYMENT_STATUS_COMPLETED ||
+                $order->status === \App\Models\Order::STATUS_DELIVERED) {
                 $this->sendInvoiceByEmail($order);
             }
 
             return $path;
         } catch (\Exception $e) {
-            Log::error("Error generando factura PDF: " . $e->getMessage());
-            return '';
+            Log::error("Error generando factura PDF para pedido {$order->order_number}: " . $e->getMessage());
+            throw $e; // Re-lanzar para que el Job pueda reintentar si es necesario
         }
     }
 

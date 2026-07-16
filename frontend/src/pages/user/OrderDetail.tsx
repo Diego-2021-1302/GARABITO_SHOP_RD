@@ -18,14 +18,22 @@ import {
   Building2,
   Copy,
   Check,
+  MessageSquare,
   MessageCircle,
-  Phone
+  Phone,
+  Send,
+  Bot,
+  X,
+  MessageSquareText
 } from 'lucide-react';
 import SEO from '../../components/common/SEO';
 import { useOrderDetail, useCancelOrder, useUploadPaymentProof, useMarkAsDelivered } from '../../hooks/useOrders';
 import { useSettings } from '../../hooks/useSettings';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import { getAssetUrl } from '../../utils/asset';
+import MessageService from '../../api/MessageService';
+import type { Message } from '../../api/MessageService';
+import { WhatsAppService } from '../../services/WhatsAppService';
 
 import TrackingMap from '../../components/common/TrackingMap';
 
@@ -52,8 +60,53 @@ const UserOrderDetail: React.FC = () => {
 
   const [lastUpdateText, setLastUpdateText] = useState<string>('');
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+
+  // Cargar mensajes cuando se abre el chat
+  useEffect(() => {
+    if (isChatOpen) {
+      loadMessages();
+      const interval = setInterval(loadMessages, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [isChatOpen]);
+
+  useEffect(() => {
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  const loadMessages = async () => {
+    try {
+      const response = await MessageService.getUserMessages();
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Error loading messages", error);
+    }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!chatMessage.trim() || isSendingMessage) return;
+
+    setIsSendingMessage(true);
+    try {
+      const response = await MessageService.sendMessageAsUser(chatMessage);
+      setMessages([...messages, response.data]);
+      setChatMessage('');
+    } catch (error) {
+      addNotification('error', 'No se pudo enviar el mensaje.');
+    } finally {
+      setIsSendingMessage(false);
+    }
+  };
 
   // Efecto para calcular el tiempo transcurrido desde la última actualización de ubicación
   useEffect(() => {
@@ -180,6 +233,88 @@ const UserOrderDetail: React.FC = () => {
         </div>
       </div>
 
+      {/* MAPA DE SEGUIMIENTO (Solo si está en camino) - TAMAÑO COMPLETO */}
+      {order.status === 'en_camino' && (
+        <section className="bg-white dark:bg-[#0B0F1A] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden h-[650px] relative group/map">
+           <TrackingMap
+             destination={{
+               lat: Number(order.shipping_address?.latitude || 18.4861),
+               lng: Number(order.shipping_address?.longitude || -69.9312)
+             }}
+             driverLocation={order.shipment?.current_lat ? {
+               lat: Number(order.shipment.current_lat),
+               lng: Number(order.shipment.current_lng)
+             } : undefined}
+           />
+
+           {/* Botón Flotante Superior: Confirmar Entrega (Diseño Pill) */}
+           <div className="absolute top-6 inset-x-6 flex justify-center z-20 pointer-events-none">
+              <button
+                onClick={handleMarkAsDelivered}
+                disabled={markAsDelivered.isPending}
+                className="pointer-events-auto px-6 py-3 bg-emerald-500/90 backdrop-blur-md text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-2xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 border border-white/20"
+              >
+                {markAsDelivered.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                Marcar como Entregado
+              </button>
+           </div>
+
+           {/* Card de Información del Repartidor (Bottom Card) */}
+           <div className="absolute bottom-6 inset-x-4 md:inset-x-8 z-10 pointer-events-none">
+              <div className="bg-white/90 dark:bg-[#0B0F1A]/90 backdrop-blur-2xl p-5 md:p-6 rounded-[2.5rem] border border-white/20 dark:border-white/10 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] flex flex-col sm:flex-row items-center justify-between gap-6 transition-all duration-500 translate-y-0 group-hover/map:-translate-y-2">
+
+                {/* Info Repartidor */}
+                <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className="w-14 h-14 bg-brand-primary text-white rounded-[1.25rem] flex items-center justify-center shadow-2xl shadow-brand-primary/40 shrink-0">
+                    <Truck className="w-7 h-7 animate-pulse" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                      <p className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em]">En Camino</p>
+                    </div>
+                    <h4 className="text-sm md:text-base font-black text-slate-800 dark:text-white uppercase tracking-tight">Tu repartidor está en ruta</h4>
+                    {lastUpdateText && (
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Actualizado {lastUpdateText}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Acciones Rápidas (Bubbles) */}
+                <div className="flex items-center justify-center gap-3 w-full sm:w-auto border-t sm:border-t-0 border-slate-100 dark:border-white/5 pt-4 sm:pt-0">
+                  {order.shipment?.driver?.phone && (
+                    <a
+                      href={`tel:${order.shipment.driver.phone}`}
+                      className="pointer-events-auto w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-2xl text-slate-600 dark:text-white hover:bg-brand-primary hover:text-white transition-all flex items-center justify-center group/btn relative"
+                    >
+                      <Phone className="w-5 h-5" />
+                      <span className="absolute -top-10 scale-0 group-hover/btn:scale-100 transition-all bg-slate-900 text-white text-[8px] px-2 py-1 rounded-md font-bold uppercase whitespace-nowrap">Llamar</span>
+                    </a>
+                  )}
+
+                  {/* WhatsApp */}
+                  <button
+                    onClick={() => window.open(WhatsAppService.getSupportUrl(settings?.general?.supportPhone), '_blank')}
+                    className="pointer-events-auto w-12 h-12 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 hover:scale-110 active:scale-95 transition-all group/wa relative"
+                  >
+                    <MessageCircle className="w-6 h-6" />
+                    <span className="absolute -top-10 scale-0 group-hover/wa:scale-100 transition-all bg-slate-900 text-white text-[8px] px-2 py-1 rounded-md font-bold uppercase whitespace-nowrap">WhatsApp</span>
+                  </button>
+
+                  {/* Chat Interno */}
+                  <button
+                    onClick={() => setIsChatOpen(true)}
+                    className="pointer-events-auto w-12 h-12 bg-brand-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-brand-primary/20 hover:scale-110 active:scale-95 transition-all group/chat relative"
+                  >
+                    <MessageSquareText className="w-6 h-6" />
+                    <span className="absolute -top-10 scale-0 group-hover/chat:scale-100 transition-all bg-slate-900 text-white text-[8px] px-2 py-1 rounded-md font-bold uppercase whitespace-nowrap">Chat</span>
+                  </button>
+                </div>
+              </div>
+           </div>
+        </section>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           
@@ -281,67 +416,7 @@ const UserOrderDetail: React.FC = () => {
             </section>
           )}
 
-          {/* MAPA DE SEGUIMIENTO (Solo si está en camino) */}
-          {order.status === 'en_camino' && (
-            <section className="bg-white dark:bg-[#0B0F1A] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden h-[400px] relative">
-               <TrackingMap
-                 destination={{
-                   lat: Number(order.shipping_address?.latitude || 18.4861),
-                   lng: Number(order.shipping_address?.longitude || -69.9312)
-                 }}
-                 driverLocation={order.shipment?.current_lat ? {
-                   lat: Number(order.shipment.current_lat),
-                   lng: Number(order.shipment.current_lng)
-                 } : undefined}
-               />
-
-               {/* Overlay Info */}
-               <div className="absolute bottom-6 left-6 right-6 z-10 pointer-events-none">
-                  <div className="bg-white/95 dark:bg-[#0B0F1A]/95 backdrop-blur-md p-6 rounded-[2rem] border border-slate-100 dark:border-white/10 shadow-2xl flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-brand-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-brand-primary/20">
-                        <Truck className="w-6 h-6 animate-bounce" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-black text-brand-primary uppercase tracking-[0.2em] mb-0.5">En Camino</p>
-                        <h4 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Tu repartidor está en ruta</h4>
-                        {lastUpdateText && (
-                          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">Ubicación actualizada {lastUpdateText}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {order.shipment?.driver?.phone && (
-                        <a
-                          href={`tel:${order.shipment.driver.phone}`}
-                          className="pointer-events-auto p-4 bg-slate-100 dark:bg-white/5 rounded-2xl text-slate-600 dark:text-white hover:bg-brand-primary hover:text-white transition-all"
-                        >
-                          <Phone className="w-5 h-5" />
-                        </a>
-                      )}
-                      <button
-                        onClick={() => window.open(`https://www.google.com/maps?q=${order.shipment.current_lat},${order.shipment.current_lng}`, '_blank')}
-                        className="pointer-events-auto px-6 py-4 bg-brand-primary text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-brand-primary/20 hover:scale-105 transition-all"
-                      >
-                        Ubicación Real
-                      </button>
-                    </div>
-                  </div>
-               </div>
-
-               {/* Botón Flotante para Confirmar Entrega */}
-               <div className="absolute top-6 right-6 z-20 pointer-events-none">
-                  <button
-                    onClick={handleMarkAsDelivered}
-                    disabled={markAsDelivered.isPending}
-                    className="pointer-events-auto px-8 py-4 bg-emerald-500 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-2xl shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
-                  >
-                    {markAsDelivered.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-5 h-5" />}
-                    Marcar como Entregado
-                  </button>
-               </div>
-            </section>
-          )}
+          {/* SECCIÓN DE PAGO ... ya no necesitamos el mapa aquí */}
 
           <section className="bg-white dark:bg-[#0B0F1A] rounded-[2.5rem] border border-slate-100 dark:border-white/5 shadow-sm overflow-hidden">
             <div className="p-8 border-b border-slate-100 dark:border-white/5 flex items-center justify-between">
@@ -449,6 +524,89 @@ const UserOrderDetail: React.FC = () => {
           </section>
         </div>
       </div>
+
+      {/* Modal Chat de Asistencia */}
+      <AnimatePresence>
+        {isChatOpen && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              className="bg-white dark:bg-[#0B0F1A] w-full max-w-lg h-[600px] rounded-[3rem] shadow-3xl border border-slate-200 dark:border-white/10 flex flex-col overflow-hidden"
+            >
+              {/* Header */}
+              <div className="bg-brand-primary p-8 text-white">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                      <Bot className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-lg uppercase tracking-tight leading-none">Asistencia Garabito</h3>
+                      <p className="text-[10px] text-blue-100 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                        En línea para ayudarte
+                      </p>
+                    </div>
+                  </div>
+                  <button onClick={() => setIsChatOpen(false)} className="p-3 hover:bg-white/10 rounded-2xl transition-colors">
+                    <X className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Messages Area */}
+              <div
+                ref={chatScrollRef}
+                className="flex-1 overflow-y-auto p-8 space-y-4 custom-scrollbar bg-slate-50/50 dark:bg-white/[0.02]"
+              >
+                {messages.length === 0 && (
+                  <div className="text-center py-20">
+                    <MessageSquareText className="w-12 h-12 text-slate-200 dark:text-white/5 mx-auto mb-4" />
+                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.2em]">Inicia una conversación con nosotros</p>
+                  </div>
+                )}
+                {messages.map((msg) => (
+                  <div key={msg.id} className={`flex ${msg.sender_type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] p-5 rounded-[2rem] text-sm font-medium shadow-sm ${
+                      msg.sender_type === 'user'
+                        ? 'bg-brand-primary text-white rounded-tr-none'
+                        : 'bg-white dark:bg-white/10 text-slate-800 dark:text-gray-200 rounded-tl-none border border-slate-100 dark:border-white/5'
+                    }`}>
+                      <p className="leading-relaxed">{msg.content}</p>
+                      <p className={`text-[9px] mt-2 font-bold uppercase tracking-widest opacity-50 ${msg.sender_type === 'user' ? 'text-right' : 'text-left'}`}>
+                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Input Area */}
+              <form onSubmit={handleSendMessage} className="p-6 border-t border-slate-100 dark:border-white/5 bg-white dark:bg-[#0B0F1A]">
+                <div className="flex items-center gap-3 bg-slate-50 dark:bg-white/5 rounded-[2rem] px-6 py-3 border border-slate-100 dark:border-white/10">
+                  <input
+                    type="text"
+                    value={chatMessage}
+                    onChange={(e) => setChatMessage(e.target.value)}
+                    placeholder="Escribe tu mensaje aquí..."
+                    className="flex-1 bg-transparent border-none outline-none text-sm py-2 dark:text-white font-bold placeholder:text-slate-400"
+                    disabled={isSendingMessage}
+                  />
+                  <button
+                    type="submit"
+                    disabled={isSendingMessage || !chatMessage.trim()}
+                    className="p-4 bg-brand-primary text-white rounded-2xl hover:scale-105 active:scale-95 transition-all disabled:opacity-50 shadow-lg shadow-brand-primary/20"
+                  >
+                    {isSendingMessage ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Modal Cancelar */}
       <AnimatePresence>

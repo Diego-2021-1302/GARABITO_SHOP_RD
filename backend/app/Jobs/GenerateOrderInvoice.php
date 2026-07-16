@@ -36,10 +36,6 @@ class GenerateOrderInvoice implements ShouldQueue
             return;
         }
 
-        try {
-            $invoiceService->generateInvoicePDF($order);
-        } catch (\Exception $e) {
-            Log::error("Error en Job GenerateOrderInvoice para pedido {$this->orderId}: " . $e->getMessage());
-        }
+        $invoiceService->generateInvoicePDF($order);
     }
 }

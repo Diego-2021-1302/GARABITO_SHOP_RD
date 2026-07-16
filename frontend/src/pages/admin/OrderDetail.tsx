@@ -27,6 +27,7 @@ import { useNotificationStore } from '../../store/useNotificationStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getAssetUrl } from '../../utils/asset';
+import TrackingMap from '../../components/common/TrackingMap';
 import api from '../../api/axios';
 
 const statusStyles: Record<string, string> = {
@@ -336,6 +337,25 @@ const AdminOrderDetail: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          {/* Logística - Mapa Interactivo en Admin */}
+          {order.status === 'en_camino' && (
+            <div className="bg-white dark:bg-[#0B0F1A] rounded-2xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden h-[600px] relative">
+               <TrackingMap
+                 destination={{
+                   lat: Number(order.shipping_address?.latitude || 18.4861),
+                   lng: Number(order.shipping_address?.longitude || -69.9312)
+                 }}
+                 driverLocation={order.shipment?.current_lat ? {
+                   lat: Number(order.shipment.current_lat),
+                   lng: Number(order.shipment.current_lng)
+                 } : undefined}
+               />
+               <div className="absolute top-4 left-4 z-10 bg-brand-primary text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg">
+                  Ruta GPS en Tiempo Real
+               </div>
+            </div>
+          )}
+
           {/* Detalle de Productos */}
           <div className="bg-white dark:bg-[#0B0F1A] border border-slate-200 dark:border-white/5 rounded-2xl shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02] flex items-center gap-2">
@@ -390,6 +410,15 @@ const AdminOrderDetail: React.FC = () => {
               <div>
                 <h3 className="font-black text-slate-800 dark:text-white uppercase tracking-tight text-sm">{order.user?.name}</h3>
                 <p className="text-[10px] text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest">{order.user?.email}</p>
+                <div className="mt-3">
+                  <button
+                    onClick={() => navigate('/admin/mensajeria')}
+                    className="flex items-center gap-2 px-4 py-2 bg-brand-primary/10 text-brand-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-primary hover:text-white transition-all"
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    Chat con Cliente
+                  </button>
+                </div>
               </div>
             </div>
 

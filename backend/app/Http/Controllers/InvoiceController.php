@@ -52,10 +52,17 @@ class InvoiceController extends Controller
         $order = Order::findOrFail($id);
 
         try {
+            // Asegurar que la factura exista antes de enviar
+            if (!$order->invoice_pdf_path || !Storage::disk('public')->exists($order->invoice_pdf_path)) {
+                $this->invoiceService->generateInvoicePDF($order);
+            }
+
             // El mailable ya implementa ShouldQueue, así que se enviará en segundo plano
-            Mail::to($order->user->email)->send(new OrderInvoiceMail($order));
+            Mail::to($order->user->email)->send(new OrderInvoiceMail($order->fresh()));
+
             return response()->json(['message' => 'La factura se enviará por correo en unos momentos']);
         } catch (\Exception $e) {
+            Log::error("Error al reenviar factura para pedido {$order->order_number}: " . $e->getMessage());
             return response()->json(['message' => 'Error al programar el envío: ' . $e->getMessage()], 500);
         }
     }
