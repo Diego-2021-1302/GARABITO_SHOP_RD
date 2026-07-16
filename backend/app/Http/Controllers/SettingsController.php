@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\StoreSetting;
 use App\Services\Cloudinary\CloudinaryService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -20,63 +21,64 @@ class SettingsController extends Controller
     public function index()
     {
         try {
-            $defaults = [
-                'general' => [
-                    'storeName' => 'Garabito Shop',
-                    'slogan' => '',
-                    'contactEmail' => '',
-                    'supportPhone' => '',
-                    'logoLight' => null,
-                    'logoDark' => null,
-                    'bankAccounts' => []
-                ],
-                'payments' => [
-                    'azulActive' => false,
-                    'cardnetActive' => false,
-                    'paypalActive' => false,
-                    'transferActive' => false
-                ],
-                'inventory' => [
-                    'autoDisableNoStock' => true,
-                    'hideOutOfStock' => true
-                ],
-                'shipping' => [
-                    'zones' => []
-                ],
-                'notifications' => [
-                    'orderEmails' => false,
-                    'stockAlerts' => false,
-                    'newCustomers' => false
-                ],
-                'security' => [
-                    'twoFactorAuth' => false,
-                    'sessionTimeout' => 30,
-                    'passwordExpiration' => 90,
-                    'failedAttemptsLimit' => 5
-                ],
-                'email' => [
-                    'provider' => 'smtp',
-                    'fromName' => '',
-                    'fromEmail' => '',
-                    'marketingNewsletter' => false
-                ],
-            ];
+            return Cache::remember('store_settings_v1', 3600, function () {
+                $defaults = [
+                    'general' => [
+                        'storeName' => 'Garabito Shop',
+                        'slogan' => '',
+                        'contactEmail' => '',
+                        'supportPhone' => '',
+                        'logoLight' => null,
+                        'logoDark' => null,
+                        'bankAccounts' => []
+                    ],
+                    'payments' => [
+                        'azulActive' => false,
+                        'cardnetActive' => false,
+                        'paypalActive' => false,
+                        'transferActive' => false
+                    ],
+                    'inventory' => [
+                        'autoDisableNoStock' => true,
+                        'hideOutOfStock' => true
+                    ],
+                    'shipping' => [
+                        'zones' => []
+                    ],
+                    'notifications' => [
+                        'orderEmails' => false,
+                        'stockAlerts' => false,
+                        'newCustomers' => false
+                    ],
+                    'security' => [
+                        'twoFactorAuth' => false,
+                        'sessionTimeout' => 30,
+                        'passwordExpiration' => 90,
+                        'failedAttemptsLimit' => 5
+                    ],
+                    'email' => [
+                        'provider' => 'smtp',
+                        'fromName' => '',
+                        'fromEmail' => '',
+                        'marketingNewsletter' => false
+                    ],
+                ];
 
-            $settings = StoreSetting::all()->pluck('value', 'key')->toArray();
+                $settings = StoreSetting::all()->pluck('value', 'key')->toArray();
 
-            $result = [];
-            foreach ($defaults as $key => $defaultValue) {
-                if (isset($settings[$key])) {
-                    // Merge DB values with defaults to ensure all sub-keys exist
-                    $result[$key] = is_array($settings[$key])
-                        ? array_merge($defaultValue, $settings[$key])
-                        : $settings[$key];
-                } else {
-                    $result[$key] = $defaultValue;
+                $result = [];
+                foreach ($defaults as $key => $defaultValue) {
+                    if (isset($settings[$key])) {
+                        // Merge DB values with defaults to ensure all sub-keys exist
+                        $result[$key] = is_array($settings[$key])
+                            ? array_merge($defaultValue, $settings[$key])
+                            : $settings[$key];
+                    } else {
+                        $result[$key] = $defaultValue;
+                    }
                 }
-            }
-
-            return response()->json($result);
+                return $result;
+            });
         } catch (\Exception $e) {
             Log::error("Error en Settings index: " . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
@@ -135,6 +137,9 @@ class SettingsController extends Controller
                     );
                 }
             }
+
+            // Invalidar el cache para forzar actualización
+            Cache::forget('store_settings_v1');
 
             return response()->json([
                 'message' => 'Configuración actualizada exitosamente',

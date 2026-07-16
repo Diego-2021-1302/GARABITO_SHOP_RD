@@ -52,10 +52,11 @@ class InvoiceController extends Controller
         $order = Order::findOrFail($id);
 
         try {
+            // El mailable ya implementa ShouldQueue, así que se enviará en segundo plano
             Mail::to($order->user->email)->send(new OrderInvoiceMail($order));
-            return response()->json(['message' => 'Factura enviada por correo con éxito']);
+            return response()->json(['message' => 'La factura se enviará por correo en unos momentos']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al enviar correo: ' . $e->getMessage()], 500);
+            return response()->json(['message' => 'Error al programar el envío: ' . $e->getMessage()], 500);
         }
     }
 

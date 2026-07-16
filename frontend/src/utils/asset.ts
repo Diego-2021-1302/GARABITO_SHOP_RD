@@ -28,19 +28,20 @@ export const getAssetUrl = (path: any): string => {
                          cleanPath.includes('categories/');
 
   if (isBackendAsset) {
-    // Extraemos la URL base del backend desde la variable de entorno de la API
     const backendBase = import.meta.env.VITE_API_URL?.replace('/api', '') || '';
-
     let storagePath = cleanPath;
 
     if (cleanPath.includes('/storage/')) {
-       // Si ya tiene /storage/, nos aseguramos de que empiece ahí
        storagePath = cleanPath.substring(cleanPath.indexOf('/storage/'));
     } else {
-       // Si no tiene /storage/ pero es un asset de backend, lo prefijamos
-       // Eliminamos barra inicial si existe para evitar duplicación
        const relativePath = cleanPath.startsWith('/') ? cleanPath.substring(1) : cleanPath;
        storagePath = `/storage/${relativePath}`;
+    }
+
+    // Si es una URL de Cloudinary, inyectamos parámetros de optimización automática
+    if (finalPath.includes('cloudinary.com')) {
+      // f_auto: formato automático (AVIF/WebP), q_auto: calidad inteligente
+      return finalPath.replace('/upload/', '/upload/f_auto,q_auto,w_auto/');
     }
 
     return `${backendBase}${storagePath}`;

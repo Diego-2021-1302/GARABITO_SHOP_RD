@@ -3,11 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ShoppingCart, Heart, Zap, Package } from 'lucide-react';
 import type { Product } from '../../types/product';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useCartStore } from '../../store/useCartStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import { useWishlistStore } from '../../store/useWishlistStore';
 import { getAssetUrl } from '../../utils/asset';
+import api from '../../api/axios';
 
 interface ProductCardProps {
   product: Product;
@@ -21,10 +23,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
   const { toggleItem, isInWishlist } = useWishlistStore();
   const addNotification = useNotificationStore((state) => state.addNotification);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const isWishlisted = isInWishlist(product.id);
   const cartItem = cartItems.find(item => item.id === product.id);
   const quantityInCart = cartItem?.quantity || 0;
+
+  // Optimización de rendimiento: Pre-fetch de datos al hacer hover
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    queryClient.prefetchQuery({
+      queryKey: ['product', product.id],
+      queryFn: async () => {
+        const { data } = await api.get(`/products/${product.id}`);
+        return data;
+      },
+      staleTime: 60000, // 1 minuto de frescura
+    });
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -52,7 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
 
   return (
     <motion.article
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => navigate(`/producto/${product.id}`)}
       className="group relative flex flex-col bg-[#0B0F1A]/60 backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border border-white/5 transition-all duration-300 hover:border-brand-primary/40 h-full cursor-pointer shadow-lg"

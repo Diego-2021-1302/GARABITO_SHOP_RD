@@ -336,13 +336,11 @@ class OrderController extends Controller
                         $order->payment_status = Order::PAYMENT_STATUS_COMPLETED;
                         $order->paid_at = now();
 
-                        // Asegurar salida de inventario (por si no se hizo en proof_submitted o es tarjeta)
+                        // Asegurar salida de inventario
                         $this->inventoryService->finalizeOrderStockExit($order);
 
-                        // Generar Factura PDF (Sin NCF ni ITBIS) y enviar correo
-                        // Pasamos el objeto $order cargado con sus relaciones necesarias
-                        $order->load(['user', 'items.product', 'shippingAddress']);
-                        $this->invoiceService->generateInvoicePDF($order);
+                        // Generar Factura PDF y enviar correo en SEGUNDO PLANO
+                        \App\Jobs\GenerateOrderInvoice::dispatch($order->id);
                     }
                     break;
 
