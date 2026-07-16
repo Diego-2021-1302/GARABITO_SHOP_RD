@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -75,9 +75,6 @@ const Checkout: React.FC = () => {
 
   const shipping = shippingInfo.cost;
   const finalTotal = totalPrice + shipping;
-
-  const isProcessingRef = useRef(false);
-  const isOrderCompletedRef = useRef(false);
 
   useEffect(() => {
     // Redirigir al carrito si está vacío, pero NO si estamos procesando o acabamos de terminar
