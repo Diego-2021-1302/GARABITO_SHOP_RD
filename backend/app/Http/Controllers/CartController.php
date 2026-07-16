@@ -66,12 +66,24 @@ class CartController extends Controller
         ]);
 
         $userId = Auth::id();
+        $product = Product::findOrFail($validated['product_id']);
 
-        // Usamos updateOrCreate con incremento manual para mayor compatibilidad
+        // Buscar si ya existe en el carrito
         $cartItem = CartItem::where('user_id', $userId)
             ->where('product_id', $validated['product_id'])
             ->where('variant_id', $validated['variant_id'] ?? null)
             ->first();
+
+        $currentQuantity = $cartItem ? $cartItem->quantity : 0;
+        $newTotalQuantity = $currentQuantity + $validated['quantity'];
+
+        // VALIDACIÓN DE STOCK
+        if ($newTotalQuantity > $product->stock_quantity) {
+            return response()->json([
+                'message' => "Stock insuficiente. Solo quedan {$product->stock_quantity} unidades disponibles.",
+                'available_stock' => $product->stock_quantity
+            ], 422);
+        }
 
         if ($cartItem) {
             $cartItem->increment('quantity', $validated['quantity']);
@@ -99,6 +111,15 @@ class CartController extends Controller
         ]);
 
         $userId = Auth::id();
+        $product = Product::findOrFail($validated['product_id']);
+
+        // VALIDACIÓN DE STOCK
+        if ($validated['quantity'] > $product->stock_quantity) {
+            return response()->json([
+                'message' => "No puedes agregar más de {$product->stock_quantity} unidades (límite de stock).",
+                'available_stock' => $product->stock_quantity
+            ], 422);
+        }
 
         if ($validated['quantity'] <= 0) {
             CartItem::where('user_id', $userId)

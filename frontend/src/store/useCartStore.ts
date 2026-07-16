@@ -26,59 +26,82 @@ export const useCartStore = create<CartState>()(
       items: [],
       
       syncWithServer: async () => {
+        // Solo sincronizar si hay un token para evitar llamadas innecesarias
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
         try {
           const response = await CartService.getCart();
-          if (response.data && response.data.items) {
+          if (response.data && Array.isArray(response.data.items)) {
             set({ items: response.data.items });
           }
         } catch (error) {
-          console.error("Error syncing cart with server", error);
+          console.error("Error syncing cart with server:", error);
         }
       },
 
       addItem: async (product, quantity = 1) => {
-        // Optimistic update locally
+        // Actualización optimista local con comparación robusta de IDs y LÍMITE DE STOCK
         set((state) => {
-          const existingItem = state.items.find((item) => item.id === product.id);
+          const productIdStr = String(product.id);
+          const existingItem = state.items.find((item) => String(item.id) === productIdStr);
+          const maxAvailable = product.stock || 99;
+
           if (existingItem) {
             return {
               items: state.items.map((item) =>
-                item.id === product.id
-                  ? { ...item, quantity: Math.min(item.quantity + quantity, product.stock || 99) }
+                String(item.id) === productIdStr
+                  ? { ...item, quantity: Math.min(item.quantity + quantity, maxAvailable) }
                   : item
               ),
             };
           }
-          return { items: [...state.items, { ...product, quantity }] };
+
+          // Limitar la cantidad inicial también al stock disponible
+          const safeQuantity = Math.min(quantity, maxAvailable);
+          return { items: [...state.items, { ...product, quantity: safeQuantity }] };
         });
 
-        // Sync with server if logged in
+        // Sincronizar con el servidor
         try {
           await CartService.addItem(Number(product.id), quantity);
+          // Refrescar para asegurar que el estado local coincide exactamente con el server
+          await get().syncWithServer();
         } catch (error) {
-          // If error (e.g. not logged in), it just stays in localStorage which is fine for guest
+          console.error("Failed to add item to server cart", error);
         }
       },
 
       removeItem: async (productId) => {
+        const productIdStr = String(productId);
         set((state) => ({
-          items: state.items.filter((item) => item.id !== productId),
-        })),
+          items: state.items.filter((item) => String(item.id) !== productIdStr),
+        }));
 
         try {
           await CartService.removeItem(Number(productId));
+          await get().syncWithServer();
         } catch (error) {}
       },
 
       updateQuantity: async (productId, quantity) => {
-        set((state) => ({
-          items: state.items.map((item) =>
-            item.id === productId ? { ...item, quantity: Math.max(0, quantity) } : item
-          ).filter(item => item.quantity > 0),
-        }));
+        const productIdStr = String(productId);
+
+        set((state) => {
+          const item = state.items.find(i => String(i.id) === productIdStr);
+          const maxAvailable = item?.stock || 99;
+          const safeQuantity = Math.min(Math.max(0, quantity), maxAvailable);
+
+          return {
+            items: state.items.map((item) =>
+              String(item.id) === productIdStr ? { ...item, quantity: safeQuantity } : item
+            ).filter(item => item.quantity > 0),
+          };
+        });
 
         try {
           await CartService.updateItem(Number(productId), quantity);
+          await get().syncWithServer();
         } catch (error) {}
       },
 

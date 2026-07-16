@@ -398,19 +398,6 @@ const Cart: React.FC = () => {
                 </div>
               </div>
             </div>
-            
-            <div className="grid grid-cols-3 gap-2 sm:gap-3">
-               {[
-                 { icon: <Truck className="w-4 h-4 sm:w-5 h-5" />, label: 'Entrega VIP' },
-                 { icon: <ShieldCheck className="w-4 h-4 sm:w-5 h-5" />, label: 'Certificado' },
-                 { icon: <CheckCircle2 className="w-4 h-4 sm:w-5 h-5" />, label: 'Auténtico' }
-               ].map((feat, i) => (
-                 <div key={i} className="flex flex-col items-center p-3 sm:p-5 bg-white/[0.02] rounded-2xl sm:rounded-3xl border border-white/5 backdrop-blur-sm group hover:border-brand-primary/20 transition-all">
-                    <div className="text-brand-primary mb-1 sm:mb-2 group-hover:scale-110 transition-transform">{feat.icon}</div>
-                    <span className="text-[7px] sm:text-[8px] font-black uppercase text-gray-600 tracking-widest text-center">{feat.label}</span>
-                 </div>
-               ))}
-            </div>
           </div>
         </div>
       </div>

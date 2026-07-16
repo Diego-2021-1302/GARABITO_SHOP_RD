@@ -26,7 +26,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
   const queryClient = useQueryClient();
 
   const isWishlisted = isInWishlist(product.id);
-  const cartItem = cartItems.find(item => item.id === product.id);
+  // Busqueda robusta por ID (numérico o string) para asegurar concurrencia
+  const cartItem = cartItems.find(item => String(item.id) === String(product.id));
   const quantityInCart = cartItem?.quantity || 0;
 
   // Optimización de rendimiento: Pre-fetch de datos al hacer hover
@@ -71,30 +72,36 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
       onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setIsHovered(false)}
       onClick={() => navigate(`/producto/${product.id}`)}
-      className="group relative flex flex-col bg-[#0B0F1A]/60 backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border border-white/5 transition-all duration-300 hover:border-brand-primary/40 h-full cursor-pointer shadow-lg"
+      className={`group relative flex flex-col bg-[#0B0F1A]/60 backdrop-blur-xl rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden border transition-all duration-500 h-full cursor-pointer shadow-lg ${
+        quantityInCart > 0
+        ? 'border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.1)]'
+        : 'border-white/5 hover:border-brand-primary/40'
+      }`}
     >
-      {/* Cart Quantity Indicator Badge */}
+      {/* Cart Quantity Indicator Badge - Premium Style */}
       <AnimatePresence>
         {quantityInCart > 0 && (
           <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            className="absolute top-2 right-12 z-30 bg-white text-brand-primary text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full shadow-lg ring-2 ring-brand-primary/20"
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            className="absolute top-0 right-0 z-30"
           >
-            {quantityInCart}
+            <div className="bg-emerald-500 text-white px-4 py-2 rounded-bl-[1.5rem] font-black flex items-center gap-2 shadow-xl">
+              <ShoppingCart size={12} className="fill-current" />
+              <span className="text-[10px] uppercase tracking-tighter">{quantityInCart} EN CARRITO</span>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Image Container - Square & Compact */}
       <div className="relative aspect-square w-full bg-gradient-to-b from-white/[0.02] to-transparent p-3 sm:p-6">
-        <div className="w-full h-full flex items-center justify-center relative z-10">
-          <motion.img
-            animate={{ scale: isHovered ? 1.05 : 1 }}
+        <div className={`w-full h-full flex items-center justify-center relative z-10 transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}>
+          <img
             src={getAssetUrl(product.images?.[0])}
             alt={product.name}
-            className="max-w-full max-h-full object-contain drop-shadow-2xl"
+            className="max-w-full max-h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
           />
         </div>
 
@@ -104,6 +111,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
             <div className="bg-brand-primary text-white text-[7px] sm:text-[9px] font-black uppercase px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg shadow-lg">
               <Zap size={8} className="inline mr-1 fill-current" />
               Nuevo
+            </div>
+          )}
+          {quantityInCart > 0 && (
+            <div className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 text-[7px] sm:text-[9px] font-black uppercase px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg">
+              Apartado
             </div>
           )}
         </div>
@@ -162,19 +174,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
         </div>
 
         {/* Stock Status */}
-        <div className="mt-3 sm:mt-5 pt-2 sm:pt-4 border-t border-white/5 flex items-center justify-between">
+        <div className={`mt-3 sm:mt-5 pt-2 sm:pt-4 border-t flex items-center justify-between transition-colors ${quantityInCart > 0 ? 'border-emerald-500/10' : 'border-white/5'}`}>
            <div className="flex items-center gap-1.5">
-              <div className={`w-1.5 h-1.5 rounded-full ${product.stock > 0 ? 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]' : 'bg-red-500'}`} />
+              <div className={`w-1.5 h-1.5 rounded-full ${product.stock > 0 ? (quantityInCart > 0 ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-emerald-500 shadow-[0_0_5px_rgba(16,185,129,0.5)]') : 'bg-red-500'}`} />
               <span className="text-[7px] sm:text-[9px] font-black uppercase tracking-widest text-gray-500">
                 Disp: <span className={product.stock > 0 ? 'text-emerald-400' : 'text-red-400'}>{product.stock}</span>
               </span>
            </div>
 
            {quantityInCart > 0 && (
-             <div className="flex items-center gap-1 text-emerald-400">
+             <motion.div
+               initial={{ opacity: 0, x: 10 }}
+               animate={{ opacity: 1, x: 0 }}
+               className="flex items-center gap-1 text-emerald-400"
+             >
                <Package size={10} />
-               <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-tighter">En carrito</span>
-             </div>
+               <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-tighter">Listo para Inversión</span>
+             </motion.div>
            )}
         </div>
       </div>

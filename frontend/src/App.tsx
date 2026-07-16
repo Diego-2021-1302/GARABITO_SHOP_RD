@@ -11,6 +11,7 @@ import UserLayout from './layouts/UserLayout';
 // Auth
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { useAuthStore } from './store/useAuthStore';
+import { useCartStore } from './store/useCartStore';
 
 // Public Pages
 const Home = lazy(() => import('./pages/Home'));
@@ -167,6 +168,13 @@ const App: React.FC = () => {
   React.useEffect(() => {
     if (_hasHydrated && isAuthenticated) {
       syncWithServer();
+
+      // Sincronizar automáticamente cuando la ventana recupera el foco
+      // Útil para concurrencia entre múltiples dispositivos
+      const handleFocus = () => syncWithServer();
+      window.addEventListener('focus', handleFocus);
+
+      return () => window.removeEventListener('focus', handleFocus);
     }
   }, [_hasHydrated, isAuthenticated, syncWithServer]);
 
