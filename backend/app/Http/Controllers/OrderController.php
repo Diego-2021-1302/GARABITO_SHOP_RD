@@ -41,7 +41,16 @@ class OrderController extends Controller
     {
         $orders = $request->user()
                          ->orders()
-                         ->with(['items.product.images', 'statusHistory'])
+                         ->select(['id', 'user_id', 'order_number', 'status', 'total', 'payment_method', 'created_at'])
+                         ->with(['items' => function($q) {
+                             $q->select(['id', 'order_id', 'product_id', 'quantity', 'unit_price', 'subtotal'])
+                               ->with(['product' => function($pq) {
+                                   $q_images = $pq->select(['id', 'name', 'slug']);
+                                   $q_images->with(['images' => function($iq) {
+                                       $iq->select(['id', 'product_id', 'image_url'])->where('is_primary', true);
+                                   }]);
+                               }]);
+                         }])
                          ->latest()
                          ->paginate(10);
 
@@ -77,7 +86,7 @@ class OrderController extends Controller
     public function show(Request $request, int|string $id)
     {
         $order = Order::with([
-            'items.product.images',
+            'items.product.primaryImage',
             'shippingAddress',
             'billingAddress',
             'user',

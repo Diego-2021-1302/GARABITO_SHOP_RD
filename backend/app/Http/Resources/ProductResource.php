@@ -28,7 +28,11 @@ class ProductResource extends JsonResource
             'categoryId' => $this->category_id,
             'rating' => (float) $this->rating,
             'reviewsCount' => (int) $this->reviews_count,
-            'images' => $this->images->pluck('image_url')->toArray() ?: ['https://via.placeholder.com/800'],
+            'images' => $this->relationLoaded('images')
+                ? ($this->images->isEmpty() ? ['https://via.placeholder.com/800'] : $this->images->pluck('image_url')->toArray())
+                : ($this->relationLoaded('primaryImage') && $this->primaryImage
+                    ? [$this->primaryImage->image_url]
+                    : ['https://via.placeholder.com/800']),
             'stock' => (int) $this->stock_quantity,
             'availableStock' => (int) $this->available_stock,
             'reservedStock' => (int) $this->reserved_stock,

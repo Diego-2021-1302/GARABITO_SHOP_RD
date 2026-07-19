@@ -47,11 +47,7 @@ class CartController extends Controller
             }
         }
 
-        return response()->json([
-            'items' => $itemsWithDetails,
-            'subtotal' => $total,
-            'total' => $total,
-        ]);
+        return $this->getCart($request);
     }
 
     /**
@@ -96,7 +92,7 @@ class CartController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Item added to cart', 'cart_item' => $cartItem]);
+        return $this->getCart($request);
     }
 
     /**
@@ -126,19 +122,18 @@ class CartController extends Controller
                 ->where('product_id', $validated['product_id'])
                 ->where('variant_id', $validated['variant_id'] ?? null)
                 ->delete();
-            return response()->json(['message' => 'Item removed']);
+        } else {
+            CartItem::updateOrCreate(
+                [
+                    'user_id' => $userId,
+                    'product_id' => $validated['product_id'],
+                    'variant_id' => $validated['variant_id'] ?? null,
+                ],
+                ['quantity' => $validated['quantity']]
+            );
         }
 
-        CartItem::updateOrCreate(
-            [
-                'user_id' => $userId,
-                'product_id' => $validated['product_id'],
-                'variant_id' => $validated['variant_id'] ?? null,
-            ],
-            ['quantity' => $validated['quantity']]
-        );
-
-        return response()->json(['message' => 'Item updated']);
+        return $this->getCart($request);
     }
 
     /**
@@ -156,7 +151,7 @@ class CartController extends Controller
             ->where('variant_id', $validated['variant_id'] ?? null)
             ->delete();
 
-        return response()->json(['message' => 'Item removed from cart']);
+        return $this->getCart($request);
     }
 
     /**
@@ -165,6 +160,10 @@ class CartController extends Controller
     public function clearCart(Request $request)
     {
         CartItem::where('user_id', Auth::id())->delete();
-        return response()->json(['message' => 'Cart cleared']);
+        return response()->json([
+            'items' => [],
+            'subtotal' => 0,
+            'total' => 0,
+        ]);
     }
 }

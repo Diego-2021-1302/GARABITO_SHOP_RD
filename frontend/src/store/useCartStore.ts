@@ -41,7 +41,7 @@ export const useCartStore = create<CartState>()(
       },
 
       addItem: async (product, quantity = 1) => {
-        // Actualización optimista local con comparación robusta de IDs y LÍMITE DE STOCK
+        // Actualización optimista local
         set((state) => {
           const productIdStr = String(product.id);
           const existingItem = state.items.find((item) => String(item.id) === productIdStr);
@@ -57,18 +57,20 @@ export const useCartStore = create<CartState>()(
             };
           }
 
-          // Limitar la cantidad inicial también al stock disponible
           const safeQuantity = Math.min(quantity, maxAvailable);
           return { items: [...state.items, { ...product, quantity: safeQuantity }] };
         });
 
-        // Sincronizar con el servidor
+        // Sincronizar con el servidor y actualizar con la respuesta real
         try {
-          await CartService.addItem(Number(product.id), quantity);
-          // Refrescar para asegurar que el estado local coincide exactamente con el server
-          await get().syncWithServer();
+          const response = await CartService.addItem(Number(product.id), quantity);
+          if (response.data && Array.isArray(response.data.items)) {
+            set({ items: response.data.items });
+          }
         } catch (error) {
           console.error("Failed to add item to server cart", error);
+          // Opcional: revertir estado local si falla
+          get().syncWithServer();
         }
       },
 
@@ -79,9 +81,13 @@ export const useCartStore = create<CartState>()(
         }));
 
         try {
-          await CartService.removeItem(Number(productId));
-          await get().syncWithServer();
-        } catch (error) {}
+          const response = await CartService.removeItem(Number(productId));
+          if (response.data && Array.isArray(response.data.items)) {
+            set({ items: response.data.items });
+          }
+        } catch (error) {
+           get().syncWithServer();
+        }
       },
 
       updateQuantity: async (productId, quantity) => {
@@ -100,9 +106,13 @@ export const useCartStore = create<CartState>()(
         });
 
         try {
-          await CartService.updateItem(Number(productId), quantity);
-          await get().syncWithServer();
-        } catch (error) {}
+          const response = await CartService.updateItem(Number(productId), quantity);
+          if (response.data && Array.isArray(response.data.items)) {
+            set({ items: response.data.items });
+          }
+        } catch (error) {
+           get().syncWithServer();
+        }
       },
 
       clearCart: async () => {

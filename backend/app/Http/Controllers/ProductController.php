@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
@@ -29,7 +30,7 @@ class ProductController extends Controller
         try {
             $isAdmin = $request->has('admin') && ($request->admin === 'true' || $request->admin === true);
 
-            $query = Product::with(['category', 'brandRelation', 'images', 'mainProvider']);
+            $query = Product::with(['category', 'brandRelation', 'primaryImage', 'mainProvider']);
 
             if (!$isAdmin) {
                 $query->where('is_active', true);
@@ -57,7 +58,7 @@ class ProductController extends Controller
                 }
             }
 
-            $products = $query->latest()->paginate($request->get('per_page', 50));
+            $products = $query->latest()->paginate($request->get('per_page', 24));
 
             return ProductResource::collection($products);
         } catch (\Exception $e) {
@@ -112,6 +113,11 @@ class ProductController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         $product = Product::create($validated);
+
+        // Invalidad caches
+        Cache::forget('featured_products_v1');
+        Cache::forget('categories_admin_v1');
+        Cache::forget('categories_public_v1');
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
@@ -174,6 +180,11 @@ class ProductController extends Controller
 
         $product->update($validated);
 
+        // Invalidad caches
+        Cache::forget('featured_products_v1');
+        Cache::forget('categories_admin_v1');
+        Cache::forget('categories_public_v1');
+
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
                 if (!$file->isValid()) continue;
@@ -205,6 +216,12 @@ class ProductController extends Controller
             $product = Product::findOrFail($id);
             $product->images()->delete();
             $product->delete();
+
+            // Invalidad caches
+            Cache::forget('featured_products_v1');
+            Cache::forget('categories_admin_v1');
+            Cache::forget('categories_public_v1');
+
             return response()->json(['message' => 'Producto eliminado permanentemente']);
         });
     }
@@ -223,12 +240,15 @@ class ProductController extends Controller
 
     public function featured()
     {
-        $products = Product::where('is_active', true)
-            ->where('featured', true)
-            ->with(['category', 'brandRelation', 'images', 'mainProvider'])
-            ->orderBy('updated_at', 'desc')
-            ->limit(12)
-            ->get();
+        $products = Cache::remember('featured_products_v1', 3600, function() {
+            return Product::where('is_active', true)
+                ->where('featured', true)
+                ->with(['category', 'brandRelation', 'primaryImage', 'mainProvider'])
+                ->orderBy('updated_at', 'desc')
+                ->limit(12)
+                ->get();
+        });
+
         return ProductResource::collection($products);
     }
 }

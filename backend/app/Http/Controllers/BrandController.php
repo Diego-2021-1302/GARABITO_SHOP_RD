@@ -7,6 +7,7 @@ use App\Services\Cloudinary\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class BrandController extends Controller
 {
@@ -19,11 +20,16 @@ class BrandController extends Controller
 
     public function index(Request $request)
     {
-        $query = Brand::query();
-        if ($request->has('all')) {
-            return response()->json($query->orderBy('name')->get());
-        }
-        return response()->json($query->orderBy('name')->paginate($request->get('per_page', 20)));
+        $all = $request->has('all');
+        $cacheKey = 'brands_' . ($all ? 'all' : 'page_' . $request->get('page', 1));
+
+        return Cache::remember($cacheKey, 3600, function() use ($all, $request) {
+            $query = Brand::query();
+            if ($all) {
+                return $query->orderBy('name')->get();
+            }
+            return $query->orderBy('name')->paginate($request->get('per_page', 20));
+        });
     }
 
     public function store(Request $request)
@@ -41,6 +47,10 @@ class BrandController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
         $brand = Brand::create($validated);
+
+        // Limpiar caches de marcas (forma simple: el administrador no las cambia cada segundo)
+        Cache::flush();
+
         return response()->json($brand, 201);
     }
 
@@ -67,12 +77,16 @@ class BrandController extends Controller
         }
 
         $brand->update($validated);
+
+        Cache::flush();
+
         return response()->json($brand);
     }
 
     public function destroy(Brand $brand)
     {
         $brand->delete();
+        Cache::flush();
         return response()->json(['message' => 'Marca eliminada con éxito']);
     }
 }

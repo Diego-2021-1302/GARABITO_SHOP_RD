@@ -10,7 +10,8 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  withCredentials: true, // Importante para manejo de sesiones/cookies en producción
+  withCredentials: true,
+  timeout: 30000, // 30 segundos de timeout
 });
 
 // Interceptor de Peticiones: Adjunta el Token JWT
