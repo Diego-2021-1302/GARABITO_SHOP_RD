@@ -18,13 +18,12 @@ export const useBrands = (filters?: { all?: boolean; page?: number }) => {
     queryFn: async () => {
       try {
         const { data } = await api.get('/brands', { params: filters });
-        return data.data || data;
+        return data.data || data || [];
       } catch (error) {
         console.error("Error fetching brands:", error);
-        return []; // Retornar array vacío para evitar crashes
+        return [];
       }
     },
-    initialData: [], // Valor por defecto
   });
 };
 

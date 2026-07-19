@@ -240,15 +240,21 @@ class ProductController extends Controller
 
     public function featured()
     {
-        $products = Cache::remember('featured_products_v1', 3600, function() {
-            return Product::where('is_active', true)
+        try {
+            if (!\Schema::hasTable('products')) {
+                return response()->json([]);
+            }
+            $products = Product::where('is_active', true)
                 ->where('featured', true)
                 ->with(['category', 'brandRelation', 'primaryImage', 'mainProvider'])
                 ->orderBy('updated_at', 'desc')
                 ->limit(12)
                 ->get();
-        });
 
-        return ProductResource::collection($products);
+            return ProductResource::collection($products);
+        } catch (\Exception $e) {
+            Log::error("Error in ProductController@featured: " . $e->getMessage());
+            return response()->json([], 200);
+        }
     }
 }

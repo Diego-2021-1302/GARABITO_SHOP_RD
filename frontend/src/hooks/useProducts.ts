@@ -26,13 +26,12 @@ export const useProducts = (filters?: ProductFilters) => {
         }
 
         const { data } = await api.get('/products', { params });
-        return data.data || data;
+        return data.data || data || [];
       } catch (error) {
         console.error("Error fetching products:", error);
         return [];
       }
     },
-    initialData: [],
   });
 };
 

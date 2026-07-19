@@ -19,13 +19,12 @@ export const useCategories = (options?: { all?: boolean }) => {
         const { data } = await api.get('/categories', {
           params: { all: options?.all }
         });
-        return data.data || data;
+        return data.data || data || [];
       } catch (error) {
         console.error("Error fetching categories:", error);
         return [];
       }
     },
-    initialData: [],
   });
 };
 

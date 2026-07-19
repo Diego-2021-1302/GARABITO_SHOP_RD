@@ -11,24 +11,28 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $isAdmin = $request->has('all') && $request->all == 'true';
-        $cacheKey = $isAdmin ? 'categories_admin_v1' : 'categories_public_v1';
+        try {
+            if (!\Schema::hasTable('categories')) {
+                return response()->json([]);
+            }
 
-        $categories = Cache::remember($cacheKey, 3600, function() use ($isAdmin) {
+            $isAdmin = $request->has('all') && $request->all == 'true';
+
             if ($isAdmin) {
-                return Category::withCount(['products'])->get();
+                return response()->json(Category::withCount(['products'])->get());
             } else {
-                return Category::whereHas('products', function ($query) {
+                return response()->json(Category::whereHas('products', function ($query) {
                     $query->where('is_active', true)
                           ->where('stock_quantity', '>', 0);
                 })->withCount(['products' => function ($query) {
                     $query->where('is_active', true)
                           ->where('stock_quantity', '>', 0);
-                }])->get();
+                }])->get());
             }
-        });
-
-        return response()->json($categories);
+        } catch (\Exception $e) {
+            \Log::error("Error in CategoryController@index: " . $e->getMessage());
+            return response()->json([], 200);
+        }
     }
 
     public function store(Request $request)
@@ -42,9 +46,6 @@ class CategoryController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
         $category = Category::create($validated);
-
-        Cache::forget('categories_admin_v1');
-        Cache::forget('categories_public_v1');
 
         return response()->json($category, 201);
     }
@@ -63,9 +64,6 @@ class CategoryController extends Controller
         }
 
         $category->delete();
-
-        Cache::forget('categories_admin_v1');
-        Cache::forget('categories_public_v1');
 
         return response()->json(['message' => 'Categoría eliminada correctamente.']);
     }

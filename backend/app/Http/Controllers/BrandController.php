@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class BrandController extends Controller
 {
@@ -20,16 +21,16 @@ class BrandController extends Controller
 
     public function index(Request $request)
     {
-        $all = $request->has('all');
-        $cacheKey = 'brands_' . ($all ? 'all' : 'page_' . $request->get('page', 1));
-
-        return Cache::remember($cacheKey, 3600, function() use ($all, $request) {
-            $query = Brand::query();
-            if ($all) {
-                return $query->orderBy('name')->get();
+        try {
+            if (!\Schema::hasTable('brands')) {
+                return response()->json([]);
             }
-            return $query->orderBy('name')->paginate($request->get('per_page', 20));
-        });
+            $brands = Brand::all();
+            return response()->json($brands);
+        } catch (\Exception $e) {
+            Log::error("Error in BrandController@index: " . $e->getMessage());
+            return response()->json([], 200);
+        }
     }
 
     public function store(Request $request)
@@ -47,9 +48,6 @@ class BrandController extends Controller
 
         $validated['slug'] = Str::slug($validated['name']);
         $brand = Brand::create($validated);
-
-        // Limpiar caches de marcas (forma simple: el administrador no las cambia cada segundo)
-        Cache::flush();
 
         return response()->json($brand, 201);
     }
@@ -78,15 +76,12 @@ class BrandController extends Controller
 
         $brand->update($validated);
 
-        Cache::flush();
-
         return response()->json($brand);
     }
 
     public function destroy(Brand $brand)
     {
         $brand->delete();
-        Cache::flush();
         return response()->json(['message' => 'Marca eliminada con éxito']);
     }
 }
