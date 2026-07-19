@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Search, Zap, ShoppingBag, Heart, LogIn, UserPlus, 
+  Search, Zap, ShoppingBag, Heart,
   Lock, Eye, EyeOff, Mail, ChevronDown, ArrowUpDown, 
   SlidersHorizontal, X, Check, TrendingUp, ArrowRight,
   User, Phone, ShieldCheck, Loader2, Compass, Sparkles, Layers,
-  Smartphone, CreditCard, MapPin
+  Smartphone, CreditCard, MapPin, CheckCircle2
 } from "lucide-react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
@@ -20,17 +20,6 @@ import { ProductGridSkeleton } from '../components/common/Skeleton';
 import { getAssetUrl } from '../utils/asset';
 
 // ─── Componentes de Diseño Premium ──────────────────────────────
-
-const FeatureCard = ({ icon: Icon, title, description }: { icon: any, title: string, description: string }) => (
-  <div className="flex flex-col items-center text-center p-8 glass-card backdrop-blur-xl group relative overflow-hidden h-full">
-    <div className="absolute -right-4 -top-4 w-24 h-24 bg-brand-primary/5 rounded-full blur-2xl group-hover:bg-brand-primary/10 transition-colors" />
-    <div className="w-16 h-16 bg-brand-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform">
-      <Icon size={32} className="text-brand-primary" />
-    </div>
-    <h3 className="text-lg font-black uppercase tracking-tight text-light-text dark:text-white mb-3">{title}</h3>
-    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium px-4">{description}</p>
-  </div>
-);
 
 const GuestBanner = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
@@ -242,7 +231,6 @@ const Home: React.FC = () => {
   const { isAuthenticated, user } = useAuthStore();
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
   const [sortBy, setSortBy] = useState('price_asc');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filterType, setFilterType] = useState<'all' | 'brand' | 'category'>('all');
@@ -251,21 +239,19 @@ const Home: React.FC = () => {
     category: selectedCategory === 'Todos' ? undefined : selectedCategory,
     sort: sortBy,
     brand: selectedBrands.length > 0 ? selectedBrands : undefined,
-    minPrice: priceRange.min ? Number(priceRange.min) : undefined,
-    maxPrice: priceRange.max ? Number(priceRange.max) : undefined
   });
 
   const { data: categoriesData } = useCategories();
-  const categories = Array.isArray(categoriesData) ? categoriesData : [];
+  const categories = useMemo(() => Array.isArray(categoriesData) ? categoriesData : [], [categoriesData]);
 
   const { data: brandsData } = useBrands();
-  const brands = Array.isArray(brandsData) ? brandsData : (brandsData as any)?.data || [];
+  const brands = useMemo(() => Array.isArray(brandsData) ? brandsData : (brandsData as any)?.data || [], [brandsData]);
 
-  const availableCategories = ['Todos'].concat(
-    Array.isArray(categories)
-      ? categories.map((c: any) => c?.name).filter(Boolean)
-      : []
-  );
+  const availableCategories = useMemo(() => {
+    const defaultCats = ['Todos'];
+    if (!Array.isArray(categories)) return defaultCats;
+    return defaultCats.concat(categories.map((c: any) => c?.name).filter(Boolean));
+  }, [categories]);
 
   const toggleBrand = (brand: string) => {
     setSelectedBrands(prev => 
@@ -276,7 +262,7 @@ const Home: React.FC = () => {
   const clearFilters = () => {
     setSelectedCategory('Todos');
     setSelectedBrands([]);
-    setPriceRange({ min: '', max: '' });
+    setFilterType('all');
   };
 
   return (
@@ -290,291 +276,173 @@ const Home: React.FC = () => {
         <div className="absolute bottom-[-10%] left-[-5%] w-[60%] h-[60%] bg-blue-600/5 blur-[150px] rounded-full" />
       </div>
 
-      {!isAuthenticated && (
+      {!isAuthenticated ? (
         <React.Suspense fallback={<div className="min-h-screen bg-dark-bg" />}>
           <GuestBanner />
         </React.Suspense>
-      )}
+      ) : (
+        <main className="max-w-7xl mx-auto px-6 relative z-10 pt-4 pb-24">
+          <div className="flex flex-col gap-16">
 
-      <main className={`max-w-7xl mx-auto px-6 relative z-10 ${isAuthenticated ? 'pt-32 pb-24' : 'py-24'}`}>
-        <div className="flex flex-col gap-16">
+            {/* --- Header del Catálogo (UX Minimalista) --- */}
+            <div className="flex flex-col gap-8">
+               <div className="flex items-end justify-between">
+                  <div className="pl-6 relative">
+                    <div className="absolute -left-0 top-0 bottom-0 w-1.5 bg-brand-primary rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)]" />
+                    <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-light-text dark:text-white leading-none">
+                      Hardware <span className="text-brand-primary">Elite.</span>
+                    </h2>
+                  </div>
 
-          {/* --- Header del Catálogo (UX Minimalista) --- */}
-          <div className="flex flex-col gap-8">
-             <div className="flex items-end justify-between">
-                <div className="pl-6 relative">
-                  <div className="absolute -left-0 top-0 bottom-0 w-1.5 bg-brand-primary rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)]" />
-                  <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-light-text dark:text-white leading-none">
-                    Hardware <span className="text-brand-primary">Elite.</span>
-                  </h2>
-                </div>
-
-                {(selectedCategory !== 'Todos' || selectedBrands.length > 0) && (
-                  <button
-                    onClick={() => { setSelectedCategory('Todos'); setSelectedBrands([]); setFilterType('all'); }}
-                    className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-error hover:underline transition-all"
-                  >
-                    Limpiar Filtros
-                  </button>
-                )}
-             </div>
-
-             <div className="flex flex-col gap-4 relative">
-                <div className="grid grid-cols-2 gap-4">
-                  <button
-                    onClick={() => { setFilterType(filterType === 'category' ? 'all' : 'category'); }}
-                    className={`flex items-center justify-center gap-3 px-6 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-glass-light border-2 ${
-                      filterType === 'category' || selectedCategory !== 'Todos'
-                      ? 'bg-brand-primary/10 border-brand-primary text-brand-primary dark:text-white'
-                      : 'bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white'
-                    }`}
-                  >
-                    <Layers size={16} className={filterType === 'category' || selectedCategory !== 'Todos' ? 'text-brand-primary dark:text-white' : 'text-brand-primary'} />
-                    {selectedCategory === 'Todos' ? 'Categoría' : selectedCategory}
-                  </button>
-                  <button
-                    onClick={() => { setFilterType(filterType === 'brand' ? 'all' : 'brand'); }}
-                    className={`flex items-center justify-center gap-3 px-6 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-glass-light border-2 ${
-                      filterType === 'brand' || selectedBrands.length > 0
-                      ? 'bg-brand-primary/10 border-brand-primary text-brand-primary dark:text-white'
-                      : 'bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white'
-                    }`}
-                  >
-                    <Compass size={16} className={filterType === 'brand' || selectedBrands.length > 0 ? 'text-brand-primary dark:text-white' : 'text-brand-primary'} />
-                    {selectedBrands.length === 0
-                      ? 'Marca'
-                      : selectedBrands.length === 1
-                        ? selectedBrands[0]
-                        : `${selectedBrands.length} Marcas`}
-                  </button>
-                </div>
-
-                {/* Listado Desplegable Inline */}
-                <AnimatePresence>
-                  {filterType !== 'all' && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute top-full left-0 right-0 mt-4 z-[50] p-6 bg-white dark:bg-[#0B0F1A] border border-light-border dark:border-white/10 rounded-[2rem] shadow-2xl space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar"
+                  {(selectedCategory !== 'Todos' || selectedBrands.length > 0) && (
+                    <button
+                      onClick={clearFilters}
+                      className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-error hover:underline transition-all"
                     >
-                      <div className="flex items-center justify-between mb-2">
-                         <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary">
-                           {filterType === 'category' ? 'Filtrar Categoría' : 'Filtrar Marca'}
-                         </h4>
-                         <button onClick={() => setFilterType('all')} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition-all">
-                            <X size={14} className="text-slate-400" />
-                         </button>
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-2">
-                        {filterType === 'category' ? (
-                          availableCategories.map(cat => (
-                            <button
-                              key={cat}
-                              onClick={() => {
-                                setSelectedCategory(cat);
-                                setFilterType('all');
-                              }}
-                              className={`flex items-center justify-between p-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-                                selectedCategory === cat
-                                ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
-                                : 'text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-white/5'
-                              }`}
-                            >
-                              {cat}
-                              {selectedCategory === cat && <Check size={14} />}
-                            </button>
-                          ))
-                        ) : (
-                          brands?.map(brand => (
-                            <button
-                              key={brand.id}
-                              onClick={() => {
-                                toggleBrand(brand.name);
-                                setFilterType('all');
-                              }}
-                              className={`flex items-center justify-between p-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-                                selectedBrands.includes(brand.name)
-                                ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
-                                : 'text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-white/5'
-                              }`}
-                            >
-                              {brand.name}
-                              {selectedBrands.includes(brand.name) && <Check size={14} />}
-                            </button>
-                          ))
-                        )}
-                      </div>
-                    </motion.div>
+                      Limpiar Filtros
+                    </button>
                   )}
-                </AnimatePresence>
-             </div>
-          </div>
+               </div>
 
-          {/* Grid de Productos - Diseño Compacto para Móvil */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 items-stretch">
-            <AnimatePresence mode="popLayout">
-              {isLoading ? (
-                <ProductGridSkeleton count={10} />
-              ) : (
-                products?.map((product: any, idx: number) => (
-                  <motion.div
-                    key={product.id}
-                    layout
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{
-                      delay: idx * 0.05,
-                      type: "spring",
-                      stiffness: 100,
-                      damping: 15
-                    }}
-                    className="flex"
-                  >
-                    <ProductCard product={product} />
-                  </motion.div>
-                ))
-              )}
-            </AnimatePresence>
-          </div>
+               <div className="flex flex-col gap-4 relative">
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      onClick={() => { setFilterType(filterType === 'category' ? 'all' : 'category'); }}
+                      className={`flex items-center justify-center gap-3 px-6 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-glass-light border-2 ${
+                        filterType === 'category' || selectedCategory !== 'Todos'
+                        ? 'bg-brand-primary/10 border-brand-primary text-brand-primary dark:text-white'
+                        : 'bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white'
+                      }`}
+                    >
+                      <Layers size={16} className={filterType === 'category' || selectedCategory !== 'Todos' ? 'text-brand-primary dark:text-white' : 'text-brand-primary'} />
+                      {selectedCategory === 'Todos' ? 'Categoría' : selectedCategory}
+                    </button>
+                    <button
+                      onClick={() => { setFilterType(filterType === 'brand' ? 'all' : 'brand'); }}
+                      className={`flex items-center justify-center gap-3 px-6 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all shadow-glass-light border-2 ${
+                        filterType === 'brand' || selectedBrands.length > 0
+                        ? 'bg-brand-primary/10 border-brand-primary text-brand-primary dark:text-white'
+                        : 'bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white'
+                      }`}
+                    >
+                      <Compass size={16} className={filterType === 'brand' || selectedBrands.length > 0 ? 'text-brand-primary dark:text-white' : 'text-brand-primary'} />
+                      {selectedBrands.length === 0
+                        ? 'Marca'
+                        : selectedBrands.length === 1
+                          ? selectedBrands[0]
+                          : `${selectedBrands.length} Marcas`}
+                    </button>
+                  </div>
 
-          {!isLoading && products?.length === 0 && (
-            <div className="py-40 text-center bg-white/[0.01] border border-dashed border-white/10 rounded-[4rem]">
-              <div className="inline-flex items-center justify-center w-32 h-32 rounded-[3rem] bg-brand-primary/5 mb-8 border border-brand-primary/10">
-                <Search size={48} className="text-brand-primary opacity-30" />
-              </div>
-              <h3 className="text-4xl font-black uppercase tracking-tighter mb-4">Sin Coincidencias</h3>
-              <p className="text-slate-500 text-sm max-w-sm mx-auto font-medium leading-relaxed">Ajusta los filtros o cambia los términos de búsqueda para encontrar lo que necesitas.</p>
-              <button 
-                onClick={clearFilters}
-                className="mt-12 px-12 py-5 bg-brand-primary text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-brand-primary/20"
-              >
-                Limpiar Filtros
-              </button>
+                  {/* Listado Desplegable Inline */}
+                  <AnimatePresence>
+                    {filterType !== 'all' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="absolute top-full left-0 right-0 mt-4 z-[50] p-6 bg-white dark:bg-[#0B0F1A] border border-light-border dark:border-white/10 rounded-[2rem] shadow-2xl space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                           <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary">
+                             {filterType === 'category' ? 'Filtrar Categoría' : 'Filtrar Marca'}
+                           </h4>
+                           <button onClick={() => setFilterType('all')} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full transition-all">
+                              <X size={14} className="text-slate-400" />
+                           </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-2">
+                          {filterType === 'category' ? (
+                            availableCategories.map(cat => (
+                              <button
+                                key={cat}
+                                onClick={() => {
+                                  setSelectedCategory(cat);
+                                  setFilterType('all');
+                                }}
+                                className={`flex items-center justify-between p-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+                                  selectedCategory === cat
+                                  ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
+                                  : 'text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-white/5'
+                                }`}
+                              >
+                                {cat}
+                                {selectedCategory === cat && <CheckCircle2 size={14} />}
+                              </button>
+                            ))
+                          ) : (
+                            brands.map((brand: any) => (
+                              <button
+                                key={brand.id}
+                                onClick={() => {
+                                  toggleBrand(brand.name);
+                                  setFilterType('all');
+                                }}
+                                className={`flex items-center justify-between p-4 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+                                  selectedBrands.includes(brand.name)
+                                  ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
+                                  : 'text-slate-500 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-white/5'
+                                }`}
+                              >
+                                {brand.name}
+                                {selectedBrands.includes(brand.name) && <CheckCircle2 size={14} />}
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+               </div>
             </div>
-          )}
-        </div>
-      </main>
 
-      {/* --- Cajón de Filtros Lateral --- */}
-      <AnimatePresence>
-        {isFilterOpen && (
-          <>
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsFilterOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-lg z-[200]"
-            />
-            <motion.div 
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-light-bg dark:bg-dark-surface border-l border-light-border dark:border-white/10 z-[210] flex flex-col shadow-3xl transition-colors duration-500"
-            >
-              <div className="p-10 border-b border-light-border dark:border-white/5 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-1.5 h-8 bg-brand-primary rounded-full" />
-                  <h3 className="text-3xl font-black uppercase tracking-tighter text-light-text dark:text-dark-text">Filtros</h3>
+            {/* Grid de Productos - Diseño Compacto para Móvil */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 items-stretch">
+              <AnimatePresence mode="popLayout">
+                {isLoading ? (
+                  <ProductGridSkeleton count={10} />
+                ) : (
+                  products?.map((product: any, idx: number) => (
+                    <motion.div
+                      key={product.id}
+                      layout
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{
+                        delay: idx * 0.05,
+                        type: "spring",
+                        stiffness: 100,
+                        damping: 15
+                      }}
+                      className="flex"
+                    >
+                      <ProductCard product={product} />
+                    </motion.div>
+                  ))
+                )}
+              </AnimatePresence>
+            </div>
+
+            {!isLoading && products?.length === 0 && (
+              <div className="py-40 text-center bg-white/[0.01] border border-dashed border-white/10 rounded-[4rem]">
+                <div className="inline-flex items-center justify-center w-32 h-32 rounded-[3rem] bg-brand-primary/5 mb-8 border border-brand-primary/10">
+                  <Search size={48} className="text-brand-primary opacity-30" />
                 </div>
-                <button onClick={() => setIsFilterOpen(false)} className="p-4 bg-light-surface dark:bg-white/5 hover:bg-light-border dark:hover:bg-white/10 rounded-2xl transition-all">
-                  <X size={24} className="text-slate-400" />
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-y-auto p-10 space-y-16 custom-scrollbar">
-                {(filterType === 'all' || filterType === 'category') && (
-                  <div className="space-y-8">
-                    <div className="flex items-center gap-3">
-                      <Layers size={18} className="text-brand-primary" />
-                      <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-brand-primary">Seleccionar Categoría</h4>
-                    </div>
-                    <div className="grid grid-cols-1 gap-3">
-                      {availableCategories.map(cat => (
-                        <button
-                          key={cat}
-                          onClick={() => {
-                            setSelectedCategory(cat);
-                            setIsFilterOpen(false);
-                          }}
-                          className={`flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 ${
-                            selectedCategory === cat
-                            ? 'bg-brand-primary/10 border-brand-primary text-white shadow-xl shadow-brand-primary/10'
-                            : 'bg-white/5 border-transparent text-slate-500 hover:border-white/10 hover:text-white'
-                          }`}
-                        >
-                          <span className="text-xs font-black uppercase tracking-widest">{cat}</span>
-                          {selectedCategory === cat ? (
-                            <div className="w-6 h-6 bg-brand-primary rounded-lg flex items-center justify-center">
-                               <Check className="w-4 h-4 text-white" />
-                            </div>
-                          ) : (
-                            <div className="w-6 h-6 rounded-lg border-2 border-white/10" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {(filterType === 'all' || filterType === 'brand') && (
-                  <div className="space-y-8">
-                    <div className="flex items-center gap-3">
-                      <Compass size={18} className="text-brand-primary" />
-                      <h4 className="text-[11px] font-black uppercase tracking-[0.4em] text-brand-primary">Filtrar por Marca</h4>
-                    </div>
-                    <div className="grid grid-cols-1 gap-3">
-                      {brands?.map(brand => (
-                        <button
-                          key={brand.id}
-                          onClick={() => toggleBrand(brand.name)}
-                          className={`flex items-center justify-between p-6 rounded-2xl border-2 transition-all duration-300 ${
-                            selectedBrands.includes(brand.name)
-                            ? 'bg-brand-primary/10 border-brand-primary text-white shadow-xl shadow-brand-primary/10'
-                            : 'bg-white/5 border-transparent text-slate-500 hover:border-white/10 hover:text-white'
-                          }`}
-                        >
-                          <span className="text-xs font-black uppercase tracking-widest">{brand.name}</span>
-                          {selectedBrands.includes(brand.name) ? (
-                            <div className="w-6 h-6 bg-brand-primary rounded-lg flex items-center justify-center">
-                               <Check className="w-4 h-4 text-white" />
-                            </div>
-                          ) : (
-                            <div className="w-6 h-6 rounded-lg border-2 border-white/10" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="p-10 border-t border-white/5 bg-black/20 flex flex-col gap-4">
+                <h3 className="text-4xl font-black uppercase tracking-tighter mb-4">Sin Coincidencias</h3>
+                <p className="text-slate-500 text-sm max-w-sm mx-auto font-medium leading-relaxed">Ajusta los filtros o cambia los términos de búsqueda para encontrar lo que necesitas.</p>
                 <button
-                  onClick={() => setIsFilterOpen(false)}
-                  className="w-full py-6 bg-brand-primary text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-brand-primary/30 hover:scale-[1.02] active:scale-95 transition-all"
+                  onClick={clearFilters}
+                  className="mt-12 px-12 py-5 bg-brand-primary text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-brand-primary/20"
                 >
-                  Confirmar Selección
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedCategory('Todos');
-                    setSelectedBrands([]);
-                    setIsFilterOpen(false);
-                  }}
-                  className="w-full py-5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all"
-                >
-                  Limpiar y Cerrar
+                  Limpiar Filtros
                 </button>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+            )}
+          </div>
+        </main>
+      )}
 
       <style>{`
         @keyframes marquee {

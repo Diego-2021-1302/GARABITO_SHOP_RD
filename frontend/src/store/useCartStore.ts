@@ -36,7 +36,10 @@ export const useCartStore = create<CartState>()(
             set({ items: response.data.items });
           }
         } catch (error) {
-          console.error("Error syncing cart with server:", error);
+          // Silencioso en producción para evitar ruido en consola si el server está despertando
+          if (import.meta.env.DEV) {
+            console.error("Error syncing cart with server:", error);
+          }
         }
       },
 
@@ -119,7 +122,11 @@ export const useCartStore = create<CartState>()(
         set({ items: [] });
         try {
           await CartService.clearCart();
-        } catch (error) {}
+        } catch (error) {
+          if (import.meta.env.DEV) {
+            console.error("Error clearing cart on server:", error);
+          }
+        }
       },
 
       getTotalItems: () => get().items.reduce((acc, item) => acc + item.quantity, 0),

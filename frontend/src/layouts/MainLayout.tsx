@@ -16,7 +16,7 @@ const MainLayout: React.FC = () => {
           Padding superior para compensar el Navbar fijo. 
           pt-24 (~96px) para el estado inicial del Nav.
       */}
-      <main className="flex-grow pt-24 md:pt-32">
+      <main className="flex-grow pt-24 md:pt-28">
         <Outlet />
       </main>
       

@@ -169,11 +169,17 @@ const App: React.FC = () => {
     if (_hasHydrated && isAuthenticated) {
       syncWithServer();
 
-      // Sincronizar automáticamente cuando la ventana recupera el foco
-      // Útil para concurrencia entre múltiples dispositivos
-      const handleFocus = () => syncWithServer();
-      window.addEventListener('focus', handleFocus);
+      // Sincronizar automáticamente cuando la ventana recupera el foco con límite de tiempo
+      let lastSync = Date.now();
+      const handleFocus = () => {
+        const now = Date.now();
+        if (now - lastSync > 30000) { // Solo sincronizar si han pasado más de 30s
+          syncWithServer();
+          lastSync = now;
+        }
+      };
 
+      window.addEventListener('focus', handleFocus);
       return () => window.removeEventListener('focus', handleFocus);
     }
   }, [_hasHydrated, isAuthenticated, syncWithServer]);

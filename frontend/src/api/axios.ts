@@ -11,7 +11,7 @@ const api = axios.create({
     'Accept': 'application/json',
   },
   withCredentials: true,
-  timeout: 30000, // 30 segundos de timeout
+  timeout: 120000, // Aumentado a 120 segundos (2 minutos) para dar tiempo de sobra a Render Free a despertar
 });
 
 // Interceptor de Peticiones: Adjunta el Token JWT

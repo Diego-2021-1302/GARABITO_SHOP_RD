@@ -26,11 +26,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
   const queryClient = useQueryClient();
 
   const isWishlisted = isInWishlist(product.id);
-  // Busqueda robusta por ID (numérico o string) para asegurar concurrencia
   const cartItem = cartItems.find(item => String(item.id) === String(product.id));
   const quantityInCart = cartItem?.quantity || 0;
 
-  // Optimización de rendimiento: Pre-fetch de datos al hacer hover
   const handleMouseEnter = () => {
     setIsHovered(true);
     queryClient.prefetchQuery({
@@ -39,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
         const { data } = await api.get(`/products/${product.id}`);
         return data;
       },
-      staleTime: 60000, // 1 minuto de frescura
+      staleTime: 60000,
     });
   };
 
@@ -47,7 +45,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
     e.stopPropagation();
     if (!isAuthenticated) {
       addNotification('info', 'Inicia sesión para comprar');
-      document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
     if (product.stock <= 0) {
