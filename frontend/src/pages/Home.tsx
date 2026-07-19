@@ -305,12 +305,15 @@ const Home: React.FC = () => {
     maxPrice: priceRange.max ? Number(priceRange.max) : undefined
   });
 
-  const { data: categories } = useCategories();
-  const { data: brands } = useBrands();
+  const { data: categoriesData } = useCategories();
+  const categories = Array.isArray(categoriesData) ? categoriesData : [];
+
+  const { data: brandsData } = useBrands();
+  const brands = Array.isArray(brandsData) ? brandsData : (brandsData as any)?.data || [];
 
   const availableCategories = useMemo(() => {
-    if (!categories) return ['Todos'];
-    return ['Todos', ...categories.map(c => c.name)];
+    if (!Array.isArray(categories) || categories.length === 0) return ['Todos'];
+    return ['Todos', ...categories.map((c: any) => c.name)];
   }, [categories]);
 
   const toggleBrand = (brand: string) => {
@@ -390,7 +393,7 @@ const Home: React.FC = () => {
 
           <div className="flex gap-24 animate-marquee whitespace-nowrap items-center px-6">
             {/* Multiplicamos el array para asegurar que el scroll infinito sea fluido */}
-            {[...brands, ...brands, ...brands, ...brands, ...brands].map((brand: any, i) => (
+            {Array.isArray(brands) && brands.length > 0 && [...brands, ...brands, ...brands, ...brands, ...brands].map((brand: any, i) => (
               <div
                 key={`${brand.id}-${i}`}
                 className="flex items-center justify-center min-w-[120px] md:min-w-[200px] transition-all duration-700 hover:scale-110 group/brand"

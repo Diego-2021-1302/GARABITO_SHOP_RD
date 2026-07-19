@@ -19,14 +19,20 @@ export const useProducts = (filters?: ProductFilters) => {
   return useQuery({
     queryKey: ['products', filters],
     queryFn: async () => {
-      const params = { ...filters };
-      if (Array.isArray(params.brand)) {
-        params.brand = params.brand.join(',');
+      try {
+        const params = { ...filters };
+        if (Array.isArray(params.brand)) {
+          params.brand = params.brand.join(',');
+        }
+
+        const { data } = await api.get('/products', { params });
+        return data.data || data;
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        return [];
       }
-      
-      const { data } = await api.get('/products', { params });
-      return data.data || data;
     },
+    initialData: [],
   });
 };
 

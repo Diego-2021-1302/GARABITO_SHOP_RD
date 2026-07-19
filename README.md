@@ -44,3 +44,8 @@ sh
 php artisan db:seed
 
 php artisan migrate:fresh
+
+git add .
+
+git commit -m "Actualizacion 16/7/2026 8:57"
+
