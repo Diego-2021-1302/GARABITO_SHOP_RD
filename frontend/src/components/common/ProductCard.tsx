@@ -92,11 +92,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
               Nuevo
             </div>
           )}
-          {product.stock <= 5 && product.stock > 0 && (
-            <div className="bg-brand-error text-white text-[8px] font-black uppercase px-2.5 py-1 rounded-lg shadow-lg animate-pulse">
-              Últimas {product.stock}
-            </div>
-          )}
           {product.stock <= 0 && (
             <div className="bg-slate-500 text-white text-[8px] font-black uppercase px-2.5 py-1 rounded-lg shadow-lg">
               Agotado
@@ -134,8 +129,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, showActions = true }
 
       {/* Info Section */}
       <div className="flex flex-col flex-1 p-5 sm:p-6 pt-4 sm:pt-0">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-[10px] font-black tracking-widest uppercase text-brand-primary">
+        <div className="flex items-center justify-between mb-3 gap-2">
+          <span className="text-[10px] font-black tracking-widest uppercase text-brand-primary truncate">
             {product.brand}
           </span>
           <div className="flex items-center gap-1.5">

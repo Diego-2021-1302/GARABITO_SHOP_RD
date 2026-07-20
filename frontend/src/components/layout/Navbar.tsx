@@ -37,7 +37,7 @@ const Navbar: React.FC = () => {
     e.preventDefault();
     const query = (e.currentTarget.elements.namedItem('search') as HTMLInputElement).value;
     if (query.trim()) {
-      navigate(`/catalogo?q=${encodeURIComponent(query)}`);
+      navigate(`/?q=${encodeURIComponent(query)}`);
       setIsMenuOpen(false);
     }
   };
@@ -159,9 +159,9 @@ const Navbar: React.FC = () => {
               </form>
 
               <div className="grid grid-cols-2 gap-4">
-                <Link to="/catalogo" className="p-5 glass-card flex flex-col gap-3 items-center">
+                <Link to="/" className="p-5 glass-card flex flex-col gap-3 items-center">
                   <Search className="w-5 h-5 text-brand-primary" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Catálogo</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Tienda</span>
                 </Link>
                 {isAuthenticated && (
                   <Link to="/cuenta" className="p-5 glass-card flex flex-col gap-3 items-center">

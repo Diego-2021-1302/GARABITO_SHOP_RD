@@ -108,7 +108,7 @@ const UserOrders: React.FC = () => {
           <ShoppingBag className="w-16 h-16 mx-auto mb-4 text-slate-200 dark:text-dark-text/10" />
           <h3 className="text-xl font-bold text-slate-800 dark:text-dark-text mb-2">No tienes pedidos activos</h3>
           <p className="text-slate-500 dark:text-gray-400 mb-6">Tus compras aparecerán aquí una vez que confirmes el carrito.</p>
-          <button onClick={() => navigate('/catalogo')} className="bg-brand-primary text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform">Explorar Tienda</button>
+          <button onClick={() => navigate('/')} className="bg-brand-primary text-white px-8 py-3 rounded-xl font-bold hover:scale-105 transition-transform">Explorar Tienda</button>
         </div>
       ) : (
         <div className="grid gap-6">

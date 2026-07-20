@@ -144,6 +144,14 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'elite-cart-storage',
+      // Sincronización automática entre pestañas del mismo navegador
+      onRehydrateStorage: () => (state) => {
+        window.addEventListener('storage', (event) => {
+          if (event.key === 'elite-cart-storage') {
+            useCartStore.persist.rehydrate();
+          }
+        });
+      },
     }
   )
 );

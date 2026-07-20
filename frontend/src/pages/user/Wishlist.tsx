@@ -27,7 +27,7 @@ const UserWishlist: React.FC = () => {
         <p className="text-gray-500 mb-8 max-w-sm mx-auto">
           Guarda los productos que más te gustan para comprarlos después o compartirlos con tus amigos.
         </p>
-        <Link to="/catalogo" className="btn-primary inline-flex items-center gap-2">
+        <Link to="/" className="btn-primary inline-flex items-center gap-2">
           Explorar Catálogo
           <ArrowRight className="w-5 h-5" />
         </Link>

@@ -15,7 +15,6 @@ import { useCartStore } from './store/useCartStore';
 
 // Public Pages
 const Home = lazy(() => import('./pages/Home'));
-const Shop = lazy(() => import('./pages/Shop'));
 const ProductDetails = lazy(() => import('./pages/ProductDetails'));
 const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/auth/ResetPassword'));
@@ -88,7 +87,7 @@ const AnimatedRoutes = () => {
         {/* Public Routes */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Home />} />
-          <Route path="catalogo" element={<Shop />} />
+          <Route path="catalogo" element={<Navigate to="/" replace />} />
           <Route path="producto/:id" element={<ProductDetails />} />
           <Route path="carrito" element={<Cart />} />
           <Route path="checkout" element={
@@ -167,20 +166,30 @@ const App: React.FC = () => {
 
   React.useEffect(() => {
     if (_hasHydrated && isAuthenticated) {
+      // Sincronización inicial
       syncWithServer();
 
-      // Sincronizar automáticamente cuando la ventana recupera el foco con límite de tiempo
+      // 1. Sincronización al recuperar el foco (cambio de pestaña o retorno a la app)
       let lastSync = Date.now();
       const handleFocus = () => {
         const now = Date.now();
-        if (now - lastSync > 30000) { // Solo sincronizar si han pasado más de 30s
+        if (now - lastSync > 10000) { // Reducido a 10s para mayor frescura
           syncWithServer();
           lastSync = now;
         }
       };
 
+      // 2. Sincronización periódica (Background Polling) cada 1 minuto
+      const interval = setInterval(() => {
+        syncWithServer();
+      }, 60000);
+
       window.addEventListener('focus', handleFocus);
-      return () => window.removeEventListener('focus', handleFocus);
+
+      return () => {
+        window.removeEventListener('focus', handleFocus);
+        clearInterval(interval);
+      };
     }
   }, [_hasHydrated, isAuthenticated, syncWithServer]);
 

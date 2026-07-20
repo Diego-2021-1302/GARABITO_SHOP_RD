@@ -11,7 +11,7 @@ const slides = [
     description: "Descubre lo último en gadgets, iPhones y MacBooks con garantía local y envío express a todo RD.",
     image: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?q=80&w=2070&auto=format&fit=crop",
     btnText: "Comprar Ahora",
-    btnLink: "/catalogo",
+    btnLink: "/",
     color: "from-brand-primary to-blue-400"
   },
   {
@@ -21,7 +21,7 @@ const slides = [
     description: "Equípate con los mejores periféricos y componentes de alto rendimiento para dominar la competencia.",
     image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop",
     btnText: "Ver Equipos",
-    btnLink: "/catalogo?categoria=gaming",
+    btnLink: "/?categoria=gaming",
     color: "from-purple-600 to-pink-500"
   },
   {
@@ -31,7 +31,7 @@ const slides = [
     description: "Las mejores laptops y accesorios para trabajar desde casa o en movimiento con total comodidad.",
     image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=2071&auto=format&fit=crop",
     btnText: "Explorar Laptops",
-    btnLink: "/catalogo?categoria=laptops",
+    btnLink: "/?categoria=laptops",
     color: "from-blue-600 to-cyan-500"
   }
 ];
@@ -127,10 +127,10 @@ const HeroSlider: React.FC = () => {
                 </Link>
                 
                 <Link 
-                  to="/catalogo" 
+                  to="/"
                   className="px-12 py-5 bg-white/5 backdrop-blur-xl border border-white/10 text-white rounded-[2rem] font-black text-lg hover:bg-white/10 transition-all flex items-center gap-2"
                 >
-                  Ver Catálogo
+                  Explorar Tienda
                 </Link>
               </div>
             </motion.div>

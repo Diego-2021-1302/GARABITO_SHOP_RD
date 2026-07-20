@@ -69,7 +69,7 @@ const FlashSale: React.FC = () => {
           </div>
         </div>
 
-        <Link to="/catalogo?ofertas=true" className="flex items-center gap-2 text-brand-error font-bold hover:gap-3 transition-all">
+        <Link to="/?ofertas=true" className="flex items-center gap-2 text-brand-error font-bold hover:gap-3 transition-all">
           Ver todas las ofertas
           <ChevronRight className="w-5 h-5" />
         </Link>

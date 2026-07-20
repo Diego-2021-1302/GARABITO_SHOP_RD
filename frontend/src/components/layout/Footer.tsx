@@ -42,9 +42,9 @@ const Footer: React.FC = () => {
             <div>
               <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-6">Tienda</h4>
               <ul className="space-y-4 text-sm font-bold">
-                <li><Link to="/catalogo" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Todos los productos</Link></li>
-                <li><Link to="/catalogo?filter=ofertas" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Ofertas</Link></li>
-                <li><Link to="/catalogo?sort=nuevo" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Nuevos Ingresos</Link></li>
+                <li><Link to="/" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Todos los productos</Link></li>
+                <li><Link to="/?filter=ofertas" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Ofertas</Link></li>
+                <li><Link to="/?sort=nuevo" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Nuevos Ingresos</Link></li>
                 <li><Link to="/marcas" className="text-light-text dark:text-slate-300 hover:text-brand-primary transition-colors">Marcas</Link></li>
               </ul>
             </div>

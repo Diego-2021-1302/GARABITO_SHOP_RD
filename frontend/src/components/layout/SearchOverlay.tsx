@@ -30,7 +30,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
   const handleSearch = (searchQuery: string) => {
     if (searchQuery.trim()) {
       onClose();
-      navigate(`/catalogo?search=${encodeURIComponent(searchQuery)}`);
+      navigate(`/?search=${encodeURIComponent(searchQuery)}`);
     }
   };
 

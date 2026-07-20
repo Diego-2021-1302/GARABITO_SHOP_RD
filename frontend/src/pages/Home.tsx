@@ -97,10 +97,13 @@ const GuestBanner = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
-            <Link to="/catalogo" className="group flex items-center gap-4 bg-brand-primary text-white px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-brand-primary/20">
-              Explorar Catálogo
+            <button
+              onClick={() => document.getElementById('auth-form')?.scrollIntoView({ behavior: 'smooth' })}
+              className="group flex items-center gap-4 bg-brand-primary text-white px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest hover:scale-105 transition-all shadow-2xl shadow-brand-primary/20"
+            >
+              Comenzar Ahora
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -290,7 +293,7 @@ const Home: React.FC = () => {
                   <div className="pl-6 relative">
                     <div className="absolute -left-0 top-0 bottom-0 w-1.5 bg-brand-primary rounded-full shadow-[0_0_20px_rgba(37,99,235,0.4)]" />
                     <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-light-text dark:text-white leading-none">
-                      Hardware <span className="text-brand-primary">Elite.</span>
+                      <span className="text-brand-dark">catálogo</span>
                     </h2>
                   </div>
 

@@ -62,7 +62,7 @@ const MegaMenu: React.FC<MegaMenuProps> = ({ isOpen }) => {
                 {cat.items.map((item, i) => (
                   <li key={i}>
                     <Link 
-                      to={`/catalogo?categoria=${item.toLowerCase()}`}
+                      to={`/?categoria=${item.toLowerCase()}`}
                       className="text-gray-500 dark:text-gray-400 hover:text-brand-primary transition-colors flex items-center justify-between group"
                     >
                       {item}

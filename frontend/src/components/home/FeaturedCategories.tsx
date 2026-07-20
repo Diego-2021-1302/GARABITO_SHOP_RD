@@ -36,7 +36,7 @@ const FeaturedCategories: React.FC = () => {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ delay: index * 0.05 }}
-          onClick={() => navigate(`/catalogo?categoria=${cat.name}`)}
+          onClick={() => navigate(`/?categoria=${cat.name}`)}
           className="group cursor-pointer flex flex-col items-center gap-4"
         >
           <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-50 dark:bg-white/5 border border-transparent group-hover:border-brand-primary group-hover:bg-white dark:group-hover:bg-brand-dark rounded-full flex items-center justify-center transition-all duration-500 shadow-sm group-hover:shadow-xl group-hover:shadow-brand-primary/10">

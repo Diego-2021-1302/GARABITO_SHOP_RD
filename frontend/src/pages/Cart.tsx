@@ -186,7 +186,7 @@ const Cart: React.FC = () => {
             </p>
           </div>
 
-          <Link to="/catalogo" className="group flex items-center justify-center gap-3 text-[9px] font-black uppercase text-slate-500 dark:text-gray-500 hover:text-brand-primary dark:hover:text-white transition-all tracking-[0.2em] bg-light-surface dark:bg-white/5 px-6 py-4 rounded-2xl border border-light-border dark:border-white/5 hover:border-brand-primary/20">
+          <Link to="/" className="group flex items-center justify-center gap-3 text-[9px] font-black uppercase text-slate-500 dark:text-gray-500 hover:text-brand-primary dark:hover:text-white transition-all tracking-[0.2em] bg-light-surface dark:bg-white/5 px-6 py-4 rounded-2xl border border-light-border dark:border-white/5 hover:border-brand-primary/20">
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Continuar Explorando
           </Link>
         </div>
@@ -206,7 +206,7 @@ const Cart: React.FC = () => {
                    </div>
                    <h2 className="text-2xl sm:text-3xl font-black uppercase mb-4 tracking-tighter text-light-text dark:text-white">Bolsa Vacía</h2>
                    <p className="text-slate-500 dark:text-slate-500 text-xs sm:text-sm max-w-xs mx-auto mb-8 sm:mb-10 font-medium px-4">Parece que aún no has agregado hardware de alto rendimiento a tu selección.</p>
-                   <Link to="/catalogo" className="bg-brand-primary text-white px-8 py-4 sm:px-10 sm:py-5 rounded-2xl font-black text-[10px] sm:text-[11px] uppercase tracking-widest inline-flex items-center gap-3 shadow-2xl shadow-brand-primary/20 hover:scale-105 transition-all">
+                   <Link to="/" className="bg-brand-primary text-white px-8 py-4 sm:px-10 sm:py-5 rounded-2xl font-black text-[10px] sm:text-[11px] uppercase tracking-widest inline-flex items-center gap-3 shadow-2xl shadow-brand-primary/20 hover:scale-105 transition-all">
                     Ver Catálogo Elite <Zap size={14} className="fill-current" />
                    </Link>
                 </motion.div>

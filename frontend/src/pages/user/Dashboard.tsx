@@ -175,7 +175,7 @@ const UserDashboard: React.FC = () => {
               <div className="bg-white dark:bg-dark-surface/40 border-2 border-dashed border-gray-100 dark:border-white/5 p-12 rounded-[2.5rem] text-center">
                 <ShoppingBag className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 font-bold">Aún no has realizado ningún pedido.</p>
-                <Link to="/catalogo" className="text-brand-primary font-black text-sm hover:underline mt-2 inline-block">¡Empieza a comprar ahora!</Link>
+                <Link to="/" className="text-brand-primary font-black text-sm hover:underline mt-2 inline-block">¡Empieza a comprar ahora!</Link>
               </div>
             )}
           </div>

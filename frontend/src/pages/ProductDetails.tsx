@@ -97,7 +97,7 @@ const ProductDetails: React.FC = () => {
     return (
       <div className="min-h-screen bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text flex flex-col items-center justify-center p-6 text-center">
         <h2 className="text-3xl font-black mb-4 uppercase">Producto no disponible</h2>
-        <Link to="/catalogo" className="text-brand-primary font-bold flex items-center gap-2 hover:underline uppercase text-xs tracking-widest">
+        <Link to="/" className="text-brand-primary font-bold flex items-center gap-2 hover:underline uppercase text-xs tracking-widest">
           <ArrowLeft className="w-4 h-4" /> Volver al catálogo
         </Link>
       </div>
@@ -138,7 +138,7 @@ const ProductDetails: React.FC = () => {
       
       <div className="container-custom px-6">
         <div className="mb-10">
-          <Link to="/catalogo" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+          <Link to="/" className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
             <ArrowLeft className="w-4 h-4" /> Volver al catálogo
           </Link>
         </div>
@@ -290,7 +290,7 @@ const ProductDetails: React.FC = () => {
         <div className="mt-40">
           <div className="flex items-center justify-between mb-16">
             <h2 className="text-2xl md:text-3xl font-black tracking-tighter uppercase">Productos Relacionados</h2>
-            <Link to="/catalogo" className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary hover:underline">Ver todo</Link>
+            <Link to="/" className="text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary hover:underline">Ver todo</Link>
           </div>
 
           <AnimatePresence mode="wait">

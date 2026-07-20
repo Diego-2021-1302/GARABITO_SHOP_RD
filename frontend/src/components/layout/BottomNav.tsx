@@ -12,7 +12,6 @@ const BottomNav: React.FC = () => {
 
   const navItems = [
     { icon: <Home className="w-5 h-5" />, label: 'Inicio', path: '/' },
-    { icon: <Search className="w-5 h-5" />, label: 'Catálogo', path: '/catalogo' },
     { icon: <ShoppingCart className="w-5 h-5" />, label: 'Carrito', path: '/carrito', count: totalItems, protected: true },
     { icon: <Heart className="w-5 h-5" />, label: 'Favoritos', path: '/cuenta/favoritos', protected: true },
     {
